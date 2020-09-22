@@ -1,15 +1,15 @@
-#import smbus
+import smbus
 import math
 import time
-#import board
-#import adafruit_dht
+import board
+import adafruit_dht
 import json
 import requests
 import datetime
 import ssl
 
 # DHT22 Attribute
-#dhtDevice = adafruit_dht.DHT22(board.D17)
+dhtDevice = adafruit_dht.DHT22(board.D17)
 temp_c=0.0
 humidity=0
 
@@ -18,8 +18,8 @@ while True:
 
     #DHT22
     try:
-        #temp_c = dhtDevice.temperature
-        #humidity = dhtDevice.humidity
+        temp_c = dhtDevice.temperature
+        humidity = dhtDevice.humidity
         print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
     except RuntimeError as error:
         print(error.args[0])
@@ -65,8 +65,8 @@ while True:
 
     
     ssl._create_default_https_context = ssl._create_unverified_context
-
-    r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec', json=TransferJSONData, auth=auth)
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
     print(r)
 
 
