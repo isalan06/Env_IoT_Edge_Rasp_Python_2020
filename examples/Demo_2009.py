@@ -94,9 +94,9 @@ while True:
     accel_zout_scaled = accel_zout / 16384.0
     x_rotation = get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
     y_rotation = get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-    print("gyro_xout:" + gyro_xout + "-" + gyro_xout_scaled + ";gyro_yout:" + gyro_yout + "-" + gyro_yout_scaled + ";gyro_zout:" + gyro_zout + "-" + gyro_zout_scaled)
-    print("accel_xout:" + accel_xout + "-" + accel_xout_scaled + ";accel_yout:" + accel_yout + "-" + accel_yout_scaled + ";accel_zout:" + accel_zout + "-" + accel_zout_scaled)
-    print("x_rotation:" + x_rotation + ";y_rotation:" + y_rotation)
+    print("gyro_xout:" + str(gyro_xout) + "-" + str(gyro_xout_scaled) + ";gyro_yout:" + str(gyro_yout) + "-" + str(gyro_yout_scaled) + ";gyro_zout:" + str(gyro_zout) + "-" + str(gyro_zout_scaled))
+    print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
+    print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
 
     #JSON
     SetKey="Machine"
