@@ -131,7 +131,7 @@ while True:
     humiditylist["Value"]=humidity
     InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
-    setKey2="Vibration"
+    SetKey2="Vibration"
     InformationData[SetKey][SetKey2]={}
     InformationData[SetKey][SetKey2]["Count"]=1
     InformationData[SetKey][SetKey2][SetKey3]=[]
