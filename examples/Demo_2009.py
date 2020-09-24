@@ -7,6 +7,7 @@ import json
 import requests
 import datetime
 import ssl
+from Adafruit_AMG88xx import Adafruit_AMG88xx
 
 #Vibration Power Management registers
 power_mgmt_1 = 0x6b
@@ -29,6 +30,11 @@ accel_yout_scaled = 0
 accel_zout_scaled = 0
 x_rotation = 0
 y_rotation = 0
+
+#AMG8833 Attribute
+thermalImage = Adafruit_AMG88xx()
+thermalpixels= []
+
 
 #Vibration Function
 def read_byte(adr):
@@ -98,6 +104,9 @@ while True:
     print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
     print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
 
+    #Thermal Image
+    thermalpixels = thermalImage.readPixels()
+
     #JSON
     SetKey="Machine"
     SetValue="IoT Edge"
@@ -156,6 +165,26 @@ while True:
     VibrationList["RotationX"]=x_rotation
     VibrationList["RotationY"]=y_rotation
     InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
+
+    SetKey2="ThermalCamera"
+    InformationData[SetKey][SetKey2]={}
+    InformationData[SetKey][SetKey2]["Count"]=1
+    InformationData[SetKey][SetKey2][SetKey3]=[]
+    thermalDataLength=len(thermalpixels)
+    ThermalDataList={}
+    ThermalDataList["ID"]=1
+    ThermalDataList["Type"]="Gateway"
+    ThermalDataList["Unit"]="C"
+    ThermalDataList["Length"]=thermalDataLength
+    ThermalDataList["Value"]=[]
+    setIDIndex=1
+    for thermalpoint in thermalpixels:
+        ThermalDataValue={}
+        ThermalDataValue["ID"]=setIDIndex
+        ThermalDataValue["Value"]=thermalpoint
+        setIDIndex = setIDIndex + 1
+        ThermalDataList["Value"].append(ThermalDataValue)
+    InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
 
     TransferJSONData=json.dumps(InformationData)
     print(TransferJSONData)
