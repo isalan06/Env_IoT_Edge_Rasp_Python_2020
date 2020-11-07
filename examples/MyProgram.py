@@ -8,7 +8,7 @@ import board
 import adafruit_dht
 import json
 import requests
-import datetime
+from datetime import datetime
 import ssl
 from Adafruit_AMG88xx import Adafruit_AMG88xx
 import threading
@@ -210,7 +210,7 @@ def UpdateLocalSensorsInformation():
             InformationData[SetKey]=SetValue
             InformationData["Machine ID"]="Test ID"
             InformationData["Comm Type"]="Ethernet"
-            InformationData["Gateway Time"]=datetime.datetime.now().strftime("%Y%m%d%H%M%S")	
+            InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
             SetKey="Data"
             InformationData[SetKey]={}
             SetKey2="Temp"
