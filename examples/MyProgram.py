@@ -40,6 +40,14 @@ humidity=0
 
 #Vibration Attribute
 vib_bus = smbus.SMBus(1)
+vib_address = 0x68
+
+#Vibration Power Management registers
+power_mgmt_1 = 0x6b
+power_mgmt_2 = 0x6c
+
+#Vibration - Now make the 6050 up as it starts in sleep mode
+vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
 #Vibration Function
 def read_byte(adr):
@@ -103,16 +111,8 @@ def GetSensorsData():
     # DHT22 Attribute
     dhtDevice = adafruit_dht.DHT22(board.D17)
 
-    #Vibration Attribute
-    global vib_bus
-    vib_address = 0x68
-
-    #Vibration Power Management registers
-    power_mgmt_1 = 0x6b
-    power_mgmt_2 = 0x6c
-
-    #Vibration - Now make the 6050 up as it starts in sleep mode
-    vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
+   
+    
 
     #AMG8833 Attribute
     thermalImage = Adafruit_AMG88xx()
