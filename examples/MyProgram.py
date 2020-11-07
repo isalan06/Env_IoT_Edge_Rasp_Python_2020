@@ -15,13 +15,7 @@ bRunning = True
 bGetData = False
 bNetConnected = True
 
-#Vibration Power Management registers
-power_mgmt_1 = 0x6b
-power_mgmt_2 = 0x6c
-
 #Vibration Attribute
-vib_bus = smbus.SMBus(1)
-vib_address = 0x68
 gyro_xout = 0
 gyro_yout = 0
 gyro_zout = 0
@@ -38,7 +32,6 @@ x_rotation = 0
 y_rotation = 0
 
 #AMG8833 Attribute
-thermalImage = Adafruit_AMG88xx()
 thermalpixels= []
 
 #DHT Attribute
@@ -74,11 +67,48 @@ def get_x_rotation(x, y, z):
     return math.degrees(radians)
 
 def GetSensorsData():
+
+    #DHT Attribute
+    global temp_c
+    global humidity
+
+    #Vibration Attribute
+    global gyro_xout
+    global gyro_yout
+    global gyro_zout
+    global gyro_xout_scaled
+    global gyro_yout_scaled
+    global gyro_zout_scaled
+    global accel_xout
+    global accel_yout
+    global accel_zout
+    global accel_xout_scaled
+    global accel_yout_scaled
+    global accel_zout_scaled
+    global x_rotation
+    global y_rotation
+
+    #AMG8833 Attribute
+    global thermalpixels
+
+    print("Get Local Sensors Thread Start")
+
     # DHT22 Attribute
     dhtDevice = adafruit_dht.DHT22(board.D17)
 
+    #Vibration Attribute
+    vib_bus = smbus.SMBus(1)
+    vib_address = 0x68
+
+    #Vibration Power Management registers
+    power_mgmt_1 = 0x6b
+    power_mgmt_2 = 0x6c
+
     #Vibration - Now make the 6050 up as it starts in sleep mode
     vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
+
+    #AMG8833 Attribute
+    thermalImage = Adafruit_AMG88xx()
 
     while bRunning:
 
@@ -127,10 +157,38 @@ def GetSensorsData():
         time.sleep(3.0)
 
 def UpdateLocalSensorsInformation():
+
+    global bRunning
+    global bGetData
+    global bNetConnected
+
+    #DHT Attribute
+    global temp_c
+    global humidity
+
+    #Vibration Attribute
+    global gyro_xout
+    global gyro_yout
+    global gyro_zout
+    global gyro_xout_scaled
+    global gyro_yout_scaled
+    global gyro_zout_scaled
+    global accel_xout
+    global accel_yout
+    global accel_zout
+    global accel_xout_scaled
+    global accel_yout_scaled
+    global accel_zout_scaled
+    global x_rotation
+    global y_rotation
+
+    #AMG8833 Attribute
+    global thermalpixels
+
     print("Update Sensors Informatnio Start")
     while bRunning:
         time.sleep(5.0)
-        if True:
+        if bGetData & bNetConnected:
             bGetData = False
 
             #JSON
@@ -228,9 +286,7 @@ def UpdateLocalSensorsInformation():
 
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
-print("Get Local Sensors Thread Start")
 GetLocalSensorsThread.start()
-print("Update Sensors Thread Start")
 UpdateSensorsThread.start()
 
 GetLocalSensorsThread.join()
@@ -241,6 +297,6 @@ try:
         time.sleep(10.0)
 except KeyboardInterrupt:
     bRunning=False
-    pass
+    print("Program Finish")
 
 bRunning=False
