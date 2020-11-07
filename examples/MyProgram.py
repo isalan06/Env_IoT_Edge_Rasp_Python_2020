@@ -41,6 +41,10 @@ y_rotation = 0
 thermalImage = Adafruit_AMG88xx()
 thermalpixels= []
 
+#DHT Attribute
+temp_c=0.0
+humidity=0
+
 #Vibration Function
 def read_byte(adr):
     return vib_bus.read_byte_data(vib_address, adr)
@@ -72,8 +76,6 @@ def get_x_rotation(x, y, z):
 def GetSensorsData():
     # DHT22 Attribute
     dhtDevice = adafruit_dht.DHT22(board.D17)
-    temp_c=0.0
-    humidity=0
 
     #Vibration - Now make the 6050 up as it starts in sleep mode
     vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
@@ -87,7 +89,6 @@ def GetSensorsData():
             print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
-            continue
 
         #Vibration
         try:
@@ -111,7 +112,7 @@ def GetSensorsData():
             print("accel_xout:" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout_scaled))
         except:
             print("Get G Sensor Failure")
-            continue
+            
 
         #Thermal Image
         try:
@@ -119,16 +120,17 @@ def GetSensorsData():
             print("Get ThermalPixels Success")
         except:
             print("Get TermalPixels Failure")
-            continue
+            
 
         bGetData = True
 
-        Sleep(5.0)
+        time.sleep(3.0)
 
 def UpdateLocalSensorsInformation():
+    print("Update Sensors Informatnio Start")
     while bRunning:
-
-        if bGetData==True:
+        time.sleep(5.0)
+        if True:
             bGetData = False
 
             #JSON
@@ -218,15 +220,17 @@ def UpdateLocalSensorsInformation():
                 ssl._create_default_https_context = ssl._create_unverified_context
                 headers = {'Content-Type': 'application/json'}
                 r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
-                print("Update Sensors Information Success: \n" + r)
+                print("Update Sensors Information Success")
             except BaseException as error:
-                print("Update Sensors Information Failure: " + error)
+                print("Update Sensors Information Failure")
 
-                Sleep(2.0)
+                
 
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
+print("Get Local Sensors Thread Start")
 GetLocalSensorsThread.start()
+print("Update Sensors Thread Start")
 UpdateSensorsThread.start()
 
 GetLocalSensorsThread.join()
@@ -234,8 +238,9 @@ UpdateSensorsThread.join()
 
 try:
     while True:
-        sleep(10.0)
+        time.sleep(10.0)
 except KeyboardInterrupt:
+    bRunning=False
     pass
 
 bRunning=False
