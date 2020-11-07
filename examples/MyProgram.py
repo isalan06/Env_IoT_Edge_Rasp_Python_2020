@@ -38,6 +38,9 @@ thermalpixels= []
 temp_c=0.0
 humidity=0
 
+#Vibration Attribute
+vib_bus = smbus.SMBus(1)
+
 #Vibration Function
 def read_byte(adr):
     return vib_bus.read_byte_data(vib_address, adr)
@@ -68,6 +71,10 @@ def get_x_rotation(x, y, z):
 
 def GetSensorsData():
 
+    global bRunning
+    global bGetData
+    global bNetConnected
+
     #DHT Attribute
     global temp_c
     global humidity
@@ -97,7 +104,7 @@ def GetSensorsData():
     dhtDevice = adafruit_dht.DHT22(board.D17)
 
     #Vibration Attribute
-    vib_bus = smbus.SMBus(1)
+    global vib_bus
     vib_address = 0x68
 
     #Vibration Power Management registers
