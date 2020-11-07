@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import cv2
 import smbus
 import math
@@ -10,6 +12,9 @@ import datetime
 import ssl
 from Adafruit_AMG88xx import Adafruit_AMG88xx
 import threading
+
+import os
+import picamera
 
 bRunning = True
 bGetData = False
@@ -291,13 +296,53 @@ def UpdateLocalSensorsInformation():
 
                 
 
+
+
+def UpdateLocalPicture():
+    print("Update Local Picture Start")
+    while bRunning:
+        bconnected = os.system("ping -c 1 192.168.8.100")
+
+        nowtime = datetime.now()
+        datestring = nowtime.strftime('%Y%m%d')
+        fileString ="Pictures/" + datestring + "/"
+
+        if not os.path.isdir("Pictures/"):
+            os.mkdir("Pictures/")
+        if not os.path.isdir(fileString):
+            os.mkdir(fileString)
+        filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+        fileString += filename
+
+        with picamera.PiCamera() as camera:
+            camera.resolution = (1024,768)
+            time.sleep(1.0)
+            camera.capture(fileString)
+
+        if bconnected == 0:
+            setsn=1
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+            url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+            file=open(fileString ,'rb')
+            payload=file.read()
+            file.close()
+            headers = {'Content-Type': 'image/jpeg'}
+            responses = requests.request("POST", url, headers=headers, data = payload)
+            print(responses.text.encode('utf8'))
+
+        time.sleep(300.0)
+
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
+UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
+UpdateLocalPictureThread.start()
 
 GetLocalSensorsThread.join()
 UpdateSensorsThread.join()
+UpdateLocalPictureThread.join()
 
 try:
     while True:
