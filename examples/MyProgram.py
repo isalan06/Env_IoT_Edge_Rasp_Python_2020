@@ -388,7 +388,7 @@ def GetCommandFromCloud():
             CapturePictureRV=data['CapturePictureRV']
             CaptureVideoSecond=data['CaptureVideoSecond']
             print("Set Value Completely")
-        if _command == "":
+        if _command == "CapturePicture":
             bconnected = os.system("ping -c 1 192.168.8.100")
 
             nowtime = datetime.now()
@@ -416,6 +416,37 @@ def GetCommandFromCloud():
                 payload=file.read()
                 file.close()
                 headers = {'Content-Type': 'image/jpeg'}
+                responses = requests.request("POST", url, headers=headers, data = payload)
+                print(responses.text.encode('utf8'))
+
+        if _command == "CaptureVideo":
+            bconnected = os.system("ping -c 1 192.168.8.100")
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="CapVideo/" + datestring + "/"
+
+            if not os.path.isdir("CapVideo/"):
+                os.mkdir("CapVideo/")
+            if not os.path.isdir(fileString):
+                os.mkdir(fileString)
+            filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
+            fileString += filename
+
+            with picamera.PiCamera() as camera:
+                camera.resolution = (CapturePictureRH,CapturePictureRV)
+                time.sleep(1.0)
+                camera.start_recording(fileString)                camera.wait_recording(3)
+                camera.stop_recording()
+            if bconnected == 0:
+                setsn=1
+                setfilename=filename
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+                url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                file=open(fileString ,'rb')
+                payload=file.read()
+                file.close()
+                headers = {'Content-Type': 'video/mp4'}
                 responses = requests.request("POST", url, headers=headers, data = payload)
                 print(responses.text.encode('utf8'))
 
