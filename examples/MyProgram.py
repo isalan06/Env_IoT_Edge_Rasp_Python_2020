@@ -364,6 +364,7 @@ def GetCommandFromCloud():
             CapturePictureRH=data['CapturePictureRH']
             CapturePictureRV=data['CapturePictureRV']
             CaptureVideoSecond=data['CaptureVideoSecond']
+            print("Set Value Completely: " + str(FireWarningTempValue))
 
 
         time.sleep(1.0)
