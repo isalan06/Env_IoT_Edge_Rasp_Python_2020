@@ -124,6 +124,14 @@ def GetSensorsData():
     global x_rotation
     global y_rotation
 
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountVaue
+
     #AMG8833 Attribute
     global thermalpixels
 
@@ -339,6 +347,17 @@ def GetCommandFromCloud():
     global bRunning
     global bNetConnected
 
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountVaue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+
     print("Get Command From Cloud")
     
     while bRunning:
@@ -364,7 +383,7 @@ def GetCommandFromCloud():
             CapturePictureRH=data['CapturePictureRH']
             CapturePictureRV=data['CapturePictureRV']
             CaptureVideoSecond=data['CaptureVideoSecond']
-            print("Set Value Completely: " + str(FireWarningTempValue))
+            print("Set Value Completely")
 
 
         time.sleep(1.0)
