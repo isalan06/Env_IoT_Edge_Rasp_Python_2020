@@ -124,6 +124,10 @@ def GetSensorsData():
     global x_rotation
     global y_rotation
 
+    #Alarm Status
+    global sVibrationStatus
+    global sFireDetectStatus
+
     #Parameter
     global VibrationWarningValue
     global VibrationAlarmValue
