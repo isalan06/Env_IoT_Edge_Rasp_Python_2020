@@ -20,6 +20,9 @@ bRunning = True
 bGetData = False
 bNetConnected = True
 
+sVibrationStatus = "Normal"
+sFireDetectStatus = "Normal"
+
 #Vibration Attribute
 gyro_xout = 0
 gyro_yout = 0
@@ -210,6 +213,8 @@ def UpdateLocalSensorsInformation():
             InformationData[SetKey]=SetValue
             InformationData["Machine ID"]="Test ID"
             InformationData["Comm Type"]="Ethernet"
+            InformationData["VibrationStatus"]=sVibrationStatus
+            InformationData["FireDetectStatus"]=sFireDetectStatus
             InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
             SetKey="Data"
             InformationData[SetKey]={}
@@ -294,7 +299,27 @@ def UpdateLocalSensorsInformation():
             except BaseException as error:
                 print("Update Sensors Information Failure")
 
-                
+def GetCommandFromCloud():
+    global bRunning
+    global bNetConnected
+
+    print("Get Command From Cloud")
+    
+    while bRunning:
+
+        url = "https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec"
+
+        payload = {}
+        headers= {}
+
+        response = requests.request("GET", url, headers=headers, data = payload)
+        #response.text.encode('utf8')
+        data = response.json()
+
+        _command = data['Command']
+        print(_command)
+
+        time.sleep(1.0)
 
 
 
@@ -336,13 +361,16 @@ def UpdateLocalPicture():
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
+GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
+GetCommandFromCloudThread.start()
 
 GetLocalSensorsThread.join()
 UpdateSensorsThread.join()
 UpdateLocalPictureThread.join()
+GetCommandFromCloudThread.join()
 
 try:
     while True:
