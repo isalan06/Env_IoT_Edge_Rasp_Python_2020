@@ -16,12 +16,25 @@ import threading
 import os
 import picamera
 
+#Flag
 bRunning = True
 bGetData = False
 bNetConnected = True
 
+#Alarm Status
 sVibrationStatus = "Normal"
 sFireDetectStatus = "Normal"
+
+#Parameter
+VibrationWarningValue=30.0
+VibrationAlarmValue=50.0
+FireWarningTempValue=50.0
+FireWarningCountValue=4
+FireAlarmTempValue=70.0
+FireAlarmCountVaue=1
+CapturePictureRH=1920
+CapturePictureRV=1080
+CaptureVideoSecond=15
 
 #Vibration Attribute
 gyro_xout = 0
@@ -154,7 +167,13 @@ def GetSensorsData():
             #print("gyro_xout:" + str(gyro_xout) + "-" + str(gyro_xout_scaled) + ";gyro_yout:" + str(gyro_yout) + "-" + str(gyro_yout_scaled) + ";gyro_zout:" + str(gyro_zout) + "-" + str(gyro_zout_scaled))
             #print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
             #print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
-            print("accel_xout:" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout_scaled))
+            if (gyro_xout_scaled > VibrationAlarmValue) or (gyro_yout_scaled > VibrationAlarmValue) or (gyro_zout_scaled > VibrationAlarmValue):
+                sVibrationStatus = "Alarm"
+            elif (gyro_xout_scaled > VibrationWarningValue) or (gyro_yout_scaled > VibrationWarningValue) or (gyro_zout_scaled > VibrationWarningValue):
+                sVibrationStatus = "Warning"
+            else:
+                sVibrationStatus = "Normal"
+            print("Get G Sensors Success: " + sVibrationStatus)
         except:
             print("Get G Sensor Failure")
             
@@ -162,7 +181,24 @@ def GetSensorsData():
         #Thermal Image
         try:
             thermalpixels = thermalImage.readPixels()
-            print("Get ThermalPixels Success")
+
+            fireAlarmCount=0
+            fireWarningCount=0
+            for i in thermalpixels:
+                if i >FireAlarmTempValue:
+                    fireAlarmCount += 1
+                elif i > FireWarningTempValue:
+                    fireWarningCount += 1
+
+            if fireAlarmCount > FireAlarmCountVaue:
+                sFireDetectStatus="Alarm"
+            elif fireWarningCount > FireWarningCountValue:
+                sFireDetectStatus="Warning"
+            else:
+                sFireDetectStatus="Normal"
+
+
+            print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
             
@@ -317,7 +353,18 @@ def GetCommandFromCloud():
         data = response.json()
 
         _command = data['Command']
-        print(_command)
+        print("Get Command: " + _command)
+        if _command == "SetValue":
+            VibrationWarningValue=data['VibrationWarningValue']
+            VibrationAlarmValue=data['VibrationAlarmValue']
+            FireWarningTempValue=data['FireWarningTempValue']
+            FireWarningCountValue=data['FireWarningCountValue']
+            FireAlarmTempValue=data['FireAlarmTempValue']
+            FireAlarmCountVaue=data['FileAlarmCountValue']
+            CapturePictureRH=data['CapturePictureRH']
+            CapturePictureRV=data['CapturePictureRV']
+            CaptureVideoSecond=data['CaptureVideoSecond']
+
 
         time.sleep(1.0)
 
