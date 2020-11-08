@@ -433,11 +433,7 @@ def GetCommandFromCloud():
             filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
             fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (CapturePictureRH,CapturePictureRV)
-                time.sleep(1.0)
-                camera.start_recording(fileString)                camera.wait_recording(3)
-                camera.stop_recording()
+            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 20.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()
             if bconnected == 0:
                 setsn=1
                 setfilename=filename
