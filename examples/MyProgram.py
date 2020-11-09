@@ -407,6 +407,8 @@ def GetCommandFromCloud():
                 time.sleep(1.0)
                 camera.capture(fileString)
 
+            time.sleep(1.0)
+
             if bconnected == 0:
                 setsn=1
                 setfilename=filename
@@ -433,7 +435,7 @@ def GetCommandFromCloud():
             filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
             fileString += filename
 
-            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 20.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()
+            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 10.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    showString = "Test String"                    cv2.putText(frame, showString, (0, 450), cv2.FONT_HERSHEY_SIMPLES, 2, (255, 255, 0), 5)                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()            time.sleep(4.0)
             if bconnected == 0:
                 setsn=1
                 setfilename=filename
@@ -470,6 +472,8 @@ def UpdateLocalPicture():
             camera.resolution = (1024,768)
             time.sleep(1.0)
             camera.capture(fileString)
+
+        time.sleep(1.0)
 
         if bconnected == 0:
             setsn=1
