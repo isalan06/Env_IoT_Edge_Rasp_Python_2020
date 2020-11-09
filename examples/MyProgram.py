@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+﻿#!/usr/bin/python3
 
 import cv2
 import smbus
@@ -54,6 +54,8 @@ y_rotation = 0
 
 #AMG8833 Attribute
 thermalpixels= []
+thermalmaxValue = 0.0
+thermalminValue = 0.0
 
 #DHT Attribute
 temp_c=0.0
@@ -138,6 +140,8 @@ def GetSensorsData():
 
     #AMG8833 Attribute
     global thermalpixels
+    global thermalmaxValue
+    global thermalminValue
 
     print("Get Local Sensors Thread Start")
 
@@ -196,11 +200,21 @@ def GetSensorsData():
 
             fireAlarmCount=0
             fireWarningCount=0
+            bFirstFlag = False
             for i in thermalpixels:
                 if i >FireAlarmTempValue:
                     fireAlarmCount += 1
                 elif i > FireWarningTempValue:
                     fireWarningCount += 1
+                if not bFirstFlag:
+                    bFirstFlag=True
+                    thermalmaxValue = i
+                    thermalminValue = i
+                else:
+                    if i > thermalmaxValue:
+                        thermalmaxValue=i
+                    if i < thermalminValue:
+                        thermalminValue=i
 
             if fireAlarmCount > FireAlarmCountVaue:
                 sFireDetectStatus="Alarm"
@@ -435,7 +449,7 @@ def GetCommandFromCloud():
             filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
             fileString += filename
 
-            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 10.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    showString = "Test String"                    cv2.putText(frame, showString, (0, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 0), 5)                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()            time.sleep(4.0)
+            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 10.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    showString = "Information: EnvTemp(" + str(temp_c) + "℃), EnvHumidity(" + str(humidity) + "%RH), Max ObjTemp(" + str(thermalmaxValue) + "℃), Min ObjTemp(" + str(thermalminValue) + "℃)"                    cv2.putText(frame, showString, (0, 450), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 255), 2)                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()            time.sleep(4.0)
             if bconnected == 0:
                 setsn=1
                 setfilename=filename
