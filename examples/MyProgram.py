@@ -19,7 +19,7 @@ import picamera
 #Flag
 bRunning = True
 bGetData = False
-bNetConnected = True
+bNetConnected = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -99,6 +99,19 @@ def get_y_rotation(x, y, z):
 def get_x_rotation(x, y, z):
     radians = math.atan2(y, dist(x, z))
     return math.degrees(radians)
+
+def CheckCloudExist():
+    global bNetConnected
+
+    while bRunning:
+        if not bNetConnected:
+            bconnected = os.system("ping -c 1 8.8.8.8")
+            if bconnected:
+                bNetConnected = True
+        time.sleep(1.0)
+
+            
+
 
 def GetSensorsData():
 
@@ -359,6 +372,7 @@ def UpdateLocalSensorsInformation():
                 r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
                 print("Update Sensors Information Success")
             except BaseException as error:
+                bNetConnected = False
                 print("Update Sensors Information Failure")
 
 def GetCommandFromCloud():
@@ -449,7 +463,7 @@ def GetCommandFromCloud():
             filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
             fileString += filename
 
-            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "; Location: (260.252, 23.523)"                    showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                     showString2 = "Max ObjTemp(" + str(thermalmaxValue) + "C), Min ObjTemp(" + str(thermalminValue) + "C)"                    cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()            time.sleep(4.0)
+            cap = cv2.VideoCapture(0)            encode = cv2.VideoWriter_fourcc(*'mp4v')            out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))            start_time=time.time()            while(int(time.time()-start_time)<CaptureVideoSecond):                ret, frame = cap.read()                if ret == True:                    showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "; Location: (260.252, 23.523)"                    showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                     showString2 = "Max ObjTemp(" + str(thermalmaxValue) + "C), Min ObjTemp(" + str(thermalminValue) + "C)"                    cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                    out.write(frame)                else:                    break            cap.release()            out.release()            cv2.destroyAllWindows()            time.sleep(5.0)
             if bconnected == 0:
                 setsn=1
                 setfilename=filename
@@ -503,15 +517,19 @@ def UpdateLocalPicture():
 
         time.sleep(300.0)
 
+CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
+
+CheckCloudExistThread.start()
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
+CheckCloudExistThread.join()
 GetLocalSensorsThread.join()
 UpdateSensorsThread.join()
 UpdateLocalPictureThread.join()
