@@ -508,47 +508,64 @@ def GetCommandFromCloud():
 
 def UpdateLocalPicture():
     #print("Update Local Picture Start")
+    tStart = time.time()
+
+    time.sleep(2.0)
+
+    bUpdate=True
     while bRunning:
-        bconnected = os.system("ping -c 1 192.168.8.100")
+        
+        if bUpdate:
+            bUpdate=False
+            bconnected = os.system("ping -c 1 192.168.8.100")
 
-        nowtime = datetime.now()
-        datestring = nowtime.strftime('%Y%m%d')
-        fileString ="Pictures/" + datestring + "/"
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="Pictures/" + datestring + "/"
 
-        if not os.path.isdir("Pictures/"):
-            os.mkdir("Pictures/")
-        if not os.path.isdir(fileString):
-            os.mkdir(fileString)
-        filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
-        fileString += filename
+            if not os.path.isdir("Pictures/"):
+                os.mkdir("Pictures/")
+            if not os.path.isdir(fileString):
+                os.mkdir(fileString)
+            filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+            fileString += filename
 
-        with picamera.PiCamera() as camera:
-            camera.resolution = (1024,768)
+            with picamera.PiCamera() as camera:
+                camera.resolution = (1024,768)
+                time.sleep(1.0)
+                camera.capture(fileString)
+
             time.sleep(1.0)
-            camera.capture(fileString)
+
+            if bconnected == 0:
+                setsn=1
+                setfilename=filename
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+                url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                file=open(fileString ,'rb')
+                payload=file.read()
+                file.close()
+                headers = {'Content-Type': 'image/jpeg'}
+                responses = requests.request("POST", url, headers=headers, data = payload)
+                #print(responses.text.encode('utf8'))
+                if responses.status_code == 200:
+                    print("\033[1;34mUpdate Local Picture Success\033[0m")
+                else:
+                    print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                #print(responses)
+            else:
+                print("\033[1;31mUpdate Local Picture Failure\033[0m")
+
+        tEnd = time.time()
+        intervalTime = tEnd - tStart
+        if intervalTime >= 300.0:
+            tStart=time.time()
+            bUpdate=True
 
         time.sleep(1.0)
 
-        if bconnected == 0:
-            setsn=1
-            setfilename=filename
-            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-            url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
-            file=open(fileString ,'rb')
-            payload=file.read()
-            file.close()
-            headers = {'Content-Type': 'image/jpeg'}
-            responses = requests.request("POST", url, headers=headers, data = payload)
-            #print(responses.text.encode('utf8'))
-            if responses.status_code == 200:
-                print("\033[1;34mUpdate Local Picture Success\033[0m")
-            else:
-                print("\033[1;31mUpdate Local Picture Failure\033[0m")
-            #print(responses)
-        else:
-            print("\033[1;31mUpdate Local Picture Failure\033[0m")
 
-        time.sleep(300.0)
+print("\033[1;33mProgram Start\033[0m")
 
 CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
@@ -559,16 +576,14 @@ GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 CheckCloudExistThread.start()
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
-#UpdateLocalPictureThread.start()
+UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
 CheckCloudExistThread.join()
 GetLocalSensorsThread.join()
 UpdateSensorsThread.join()
-#UpdateLocalPictureThread.join()
+UpdateLocalPictureThread.join()
 GetCommandFromCloudThread.join()
-
-print("\033[1;33mProgram Start\033[0m")
 
 try:
     while bRunning:
@@ -580,7 +595,9 @@ except KeyboardInterrupt:
 bRunning=False
 print("\033[1;33mProgram Finish\033[0m")
 
-time.sleep(10.0)
+time.sleep(2.0)
 
 if bRebootTrigger:
+    print("\033[1;33mSystem Reboot\033[0m")
+    time.sleep(5.0)
     os.system("sudo reboot")
