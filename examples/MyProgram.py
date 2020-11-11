@@ -110,9 +110,9 @@ def CheckCloudExist():
                 bconnected = os.system("ping -c 1 8.8.8.8")
                 if bconnected == 0:
                     bNetConnected = True
-                    print("\033[1;32mConnect to cloud success\033[0m!")
+                    print("\033[1;32mConnect to cloud success\033[0m")
         except:
-            print("\033[1;31mConnect to cloud failure\033[0m!")
+            print("\033[1;31mConnect to cloud failure\033[0m")
         time.sleep(30.0)
 
             
@@ -375,10 +375,10 @@ def UpdateLocalSensorsInformation():
                 ssl._create_default_https_context = ssl._create_unverified_context
                 headers = {'Content-Type': 'application/json'}
                 r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
-                print("\033[1;32mUpdate Sensors Information Success\033[0m!")
+                print("\033[1;32mUpdate Sensors Information Success\033[0m")
             except BaseException as error:
                 bNetConnected = False
-                print("\033[1;31mUpdate Sensors Information Failure\033[0m!")
+                print("\033[1;31mUpdate Sensors Information Failure\033[0m")
 
 def GetCommandFromCloud():
     global bRunning
@@ -410,9 +410,9 @@ def GetCommandFromCloud():
         data = response.json()
 
         _command = data['Command']
-        print("\033[1;34mGet Command: " + _command + "\033[0m!")
+        print("\033[1;34mGet Command: " + _command + "\033[0m")
 
-        if _command == "":
+        if _command == "Reboot":
             bRebootTrigger = True
             bRunning = False
 
@@ -459,11 +459,11 @@ def GetCommandFromCloud():
                 headers = {'Content-Type': 'image/jpeg'}
                 responses = requests.request("POST", url, headers=headers, data = payload)
                 if responses.status_code == 200:
-                    print("\033[1;34mUpdate Capture Picture Success\033[0m!")
+                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
                 else:
-                    print("\033[1;31mUpdate Capture Picture Failure\033[0m!")
+                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
             else:
-                print("\033[1;31mUpdate Capture Picture Failure\033[0m!")
+                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
         if _command == "CaptureVideo":
             bconnected = os.system("ping -c 1 192.168.8.100")
@@ -491,11 +491,11 @@ def GetCommandFromCloud():
                 headers = {'Content-Type': 'video/mp4'}
                 responses = requests.request("POST", url, headers=headers, data = payload)
                 if responses.status_code == 200:
-                    print("\033[1;34mUpdate Capture Video Success\033[0m!")
+                    print("\033[1;34mUpdate Capture Video Success\033[0m")
                 else:
-                    print("\033[1;31mUpdate Capture Video Failure\033[0m!")
+                    print("\033[1;31mUpdate Capture Video Failure\033[0m")
             else:
-                print("\033[1;31mUpdate Capture Video Failure\033[0m!")
+                print("\033[1;31mUpdate Capture Video Failure\033[0m")
 
         time.sleep(1.0)
 
@@ -536,12 +536,12 @@ def UpdateLocalPicture():
             responses = requests.request("POST", url, headers=headers, data = payload)
             #print(responses.text.encode('utf8'))
             if responses.status_code == 200:
-                print("\033[1;34mUpdate Local Picture Success\033[0m!")
+                print("\033[1;34mUpdate Local Picture Success\033[0m")
             else:
-                print("\033[1;31mUpdate Local Picture Failure\033[0m!")
+                print("\033[1;31mUpdate Local Picture Failure\033[0m")
             #print(responses)
         else:
-            print("\033[1;31mUpdate Local Picture Failure\033[0m!")
+            print("\033[1;31mUpdate Local Picture Failure\033[0m")
 
         time.sleep(300.0)
 
