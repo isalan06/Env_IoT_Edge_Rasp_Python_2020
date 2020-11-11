@@ -564,12 +564,13 @@ UpdateLocalPictureThread.join()
 GetCommandFromCloudThread.join()
 
 try:
-    while True:
-        time.sleep(10.0)
+    while bRunning:
+        time.sleep(1.0)
 except KeyboardInterrupt:
     bRunning=False
     print("Program Finish")
 
+time.sleep(10.0)
 bRunning=False
 if bRebootTrigger:
     os.system("sudo reboot")
