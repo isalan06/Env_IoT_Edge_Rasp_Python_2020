@@ -568,7 +568,7 @@ UpdateSensorsThread.join()
 UpdateLocalPictureThread.join()
 GetCommandFromCloudThread.join()
 
-print("Program Start")
+print("\033[1;33mProgram Start\033[0m")
 
 try:
     while bRunning:
@@ -578,7 +578,7 @@ except KeyboardInterrupt:
 
 
 bRunning=False
-print("Program Finish")
+print("\033[1;33mProgram Finish\033[0m")
 
 time.sleep(10.0)
 
