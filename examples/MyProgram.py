@@ -20,6 +20,7 @@ import picamera
 bRunning = True
 bGetData = False
 bNetConnected = False
+bRebootTrigger = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -382,6 +383,7 @@ def UpdateLocalSensorsInformation():
 def GetCommandFromCloud():
     global bRunning
     global bNetConnected
+    global bRebootTrigger
 
     #Parameter
     global VibrationWarningValue
@@ -409,6 +411,11 @@ def GetCommandFromCloud():
 
         _command = data['Command']
         print("\033[1;34mGet Command: " + _command + "\033[0m!")
+
+        if _command == "":
+            bRebootTrigger = True
+            bRunning = False
+
         if _command == "SetValue":
             VibrationWarningValue=data['VibrationWarningValue']
             VibrationAlarmValue=data['VibrationAlarmValue']
@@ -564,3 +571,5 @@ except KeyboardInterrupt:
     print("Program Finish")
 
 bRunning=False
+if bRebootTrigger:
+    os.system("sudo reboot")
