@@ -104,11 +104,15 @@ def CheckCloudExist():
     global bNetConnected
 
     while bRunning:
-        if not bNetConnected:
-            bconnected = os.system("ping -c 1 8.8.8.8")
-            if bconnected:
-                bNetConnected = True
-        time.sleep(1.0)
+        try:
+            if not bNetConnected:
+                bconnected = os.system("ping -c 1 8.8.8.8")
+                if bconnected == 0:
+                    bNetConnected = True
+                    print("\033[1;32mConnect to cloud success\033[0m!")
+        except:
+            print("\033[1;31mConnect to cloud failure\033[0m!")
+        time.sleep(30.0)
 
             
 
