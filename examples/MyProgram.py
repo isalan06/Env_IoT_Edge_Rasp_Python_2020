@@ -451,7 +451,12 @@ def GetCommandFromCloud():
                 file.close()
                 headers = {'Content-Type': 'image/jpeg'}
                 responses = requests.request("POST", url, headers=headers, data = payload)
-                print(responses.text.encode('utf8'))
+                if responses.status_code == 200:
+                    print("\033[1;34mUpdate Capture Picture Success\033[0m!")
+                else:
+                    print("\033[1;31mUpdate Capture Picture Failure\033[0m!")
+            else:
+                print("\033[1;31mUpdate Capture Picture Failure\033[0m!")
 
         if _command == "CaptureVideo":
             bconnected = os.system("ping -c 1 192.168.8.100")
@@ -478,7 +483,12 @@ def GetCommandFromCloud():
                 file.close()
                 headers = {'Content-Type': 'video/mp4'}
                 responses = requests.request("POST", url, headers=headers, data = payload)
-                print(responses.text.encode('utf8'))
+                if responses.status_code == 200:
+                    print("\033[1;34mUpdate Capture Video Success\033[0m!")
+                else:
+                    print("\033[1;31mUpdate Capture Video Failure\033[0m!")
+            else:
+                print("\033[1;31mUpdate Capture Video Failure\033[0m!")
 
         time.sleep(1.0)
 
@@ -518,8 +528,11 @@ def UpdateLocalPicture():
             headers = {'Content-Type': 'image/jpeg'}
             responses = requests.request("POST", url, headers=headers, data = payload)
             #print(responses.text.encode('utf8'))
-            print("\033[1;34mUpdate Local Picture Success\033[0m!")
-            print(responses)
+            if responses.status_code == 200:
+                print("\033[1;34mUpdate Local Picture Success\033[0m!")
+            else:
+                print("\033[1;31mUpdate Local Picture Failure\033[0m!")
+            #print(responses)
         else:
             print("\033[1;31mUpdate Local Picture Failure\033[0m!")
 
