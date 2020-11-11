@@ -279,7 +279,7 @@ def UpdateLocalSensorsInformation():
     #AMG8833 Attribute
     global thermalpixels
 
-    print("Update Sensors Informatnio Start")
+    #print("Update Sensors Informatnio Start")
     while bRunning:
         time.sleep(5.0)
         if bGetData & bNetConnected:
@@ -374,10 +374,10 @@ def UpdateLocalSensorsInformation():
                 ssl._create_default_https_context = ssl._create_unverified_context
                 headers = {'Content-Type': 'application/json'}
                 r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
-                print("Update Sensors Information Success")
+                print("\033[1;32mUpdate Sensors Information Success\033[0m!")
             except BaseException as error:
                 bNetConnected = False
-                print("Update Sensors Information Failure")
+                print("\033[1;31mUpdate Sensors Information Failure\033[0m!")
 
 def GetCommandFromCloud():
     global bRunning
@@ -394,7 +394,7 @@ def GetCommandFromCloud():
     global CapturePictureRV
     global CaptureVideoSecond
 
-    print("Get Command From Cloud")
+    #print("Get Command From Cloud")
     
     while bRunning:
 
@@ -408,7 +408,7 @@ def GetCommandFromCloud():
         data = response.json()
 
         _command = data['Command']
-        print("Get Command: " + _command)
+        print("\033[1;34mGet Command: " + _command + "\033[0m!")
         if _command == "SetValue":
             VibrationWarningValue=data['VibrationWarningValue']
             VibrationAlarmValue=data['VibrationAlarmValue']
@@ -485,7 +485,7 @@ def GetCommandFromCloud():
 
 
 def UpdateLocalPicture():
-    print("Update Local Picture Start")
+    #print("Update Local Picture Start")
     while bRunning:
         bconnected = os.system("ping -c 1 192.168.8.100")
 
@@ -517,7 +517,11 @@ def UpdateLocalPicture():
             file.close()
             headers = {'Content-Type': 'image/jpeg'}
             responses = requests.request("POST", url, headers=headers, data = payload)
-            print(responses.text.encode('utf8'))
+            #print(responses.text.encode('utf8'))
+            print("\033[1;34mUpdate Local Picture Success\033[0m!")
+            print(responses)
+        else:
+            print("\033[1;31mUpdate Local Picture Failure\033[0m!")
 
         time.sleep(300.0)
 
