@@ -91,6 +91,10 @@ class ScanPrint(btle.DefaultDelegate):
                 print ('\t' + desc + ': \'' + ANSI_CYAN + val + ANSI_OFF + '\'')
             else:
                 print ('\t' + desc + ': <' + val + '>')
+
+            if(desc == 'Complete Local Name'):
+                print ('\t' + ANSI_RED + 'Get Complete Local Name' + ANSI_OFF)
+
         if not dev.scanData:
             print ('\t(no data)')
         print
