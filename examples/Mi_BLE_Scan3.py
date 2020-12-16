@@ -125,7 +125,7 @@ def main():
 
     print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
     #devices = scanner.scan(arg.timeout)
-    devices = scanner.scan(1000)
+    devices = scanner.scan(10)
 
     if arg.discover:
         print (ANSI_RED + "Discovering services..." + ANSI_OFF)
