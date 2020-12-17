@@ -24,6 +24,8 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
+get_mac_address=[]
+
 #dump_services
 #region dump_services
 
@@ -103,6 +105,7 @@ class ScanPrint(btle.DefaultDelegate):
             if(desc == 'Complete Local Name'):
                 if(val == 'LYWSD03MMC'):
                     print ('\t' + ANSI_RED + 'Get Sensors Address: %s' % (dev.addr) + ANSI_OFF)
+                    get_mac_address.append(dev.addr)
 
         if not dev.scanData:
             print ('\t(no data)')
@@ -181,6 +184,7 @@ def main():
 if __name__ == "__main__":
     main()
 
+print(len(get_mac_address))
 print("Start To Connect BLE")
 p = Peripheral('a4:c1:38:0b:99:ed')
 p.setDelegate(MyDelegate())
