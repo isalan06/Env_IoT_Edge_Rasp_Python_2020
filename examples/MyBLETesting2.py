@@ -130,8 +130,8 @@ class MyDelegate(btle.DefaultDelegate):
 
 #class MyBLEReceiver
 #region
-class MyBLEReceiver(self, index, mac_address):
-    def __init__(self, index):
+class MyBLEReceiver():
+    def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
 
