@@ -5,6 +5,7 @@ import binascii
 import os
 import sys
 import struct
+import time
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
@@ -117,7 +118,8 @@ class ScanPrint(btle.DefaultDelegate):
 #region
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self):
-        btle.DefaultDelegate.__init__(self)
+        btle.DefaultDelegate.__init__(self, index)
+        self.index=index
         print("Delegate initial Success")
 
     def handleNotification(self, cHandle, data):
@@ -127,7 +129,7 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
-                print("Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                print("Index: " + str(index) + " - Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
 
 #endregion
 
@@ -184,66 +186,36 @@ def main():
 if __name__ == "__main__":
     main()
 
-print(len(get_mac_address))
+length=len(get_mac_address)
+print("Get Machine Number: " + str(length))
 print("Start To Connect BLE")
-p = Peripheral('a4:c1:38:0b:99:ed')
-p.setDelegate(MyDelegate())
+p_List=[]
+p_Connected_List=[]
+
+for index in range(1, length):
+    try:
+        p = Peripheral('a4:c1:38:0b:99:ed')
+        p.setDelegate(MyDelegate(index))
+        p_List.append[p]
+        p_Connected_List.append(True)
+        print("Connect Machine-" + str(index) + " Success")
+    except:
+        p_Connected_List.append(False)
+        print("Connect Machine-" + str(index) + " Fail")
+
 try:
-    chList=p.getCharacteristics()
-
-
-    seList=p.getServices()
-    for se in seList:
-        try:
-            print(se.uuid)
-        except:
-            print("SE Error")
-
-    print("---------------------------")
-    print("Get Service1")
-
-
-    try:
-        se1=p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
-        ch1=se1.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')
-
-        for _ch1 in ch1:
-            print(_ch1.uuid)
-
-        print("----------------------------------")
-        print(ch1[0].uuid)
-        print(ch1[0].read())
-    except:
-        print("SE1 Error")
-
-    print("-------------------------------------------")
-    print("Get Data")
-    try:
-        se10=p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
-        print("------------------------")
-        print(se10)
-        ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
-        print("-------------------------")
-        print(ch10)
-        print("---------------------------------")
-        #print("Set Notification")
-        #print(ch.getHandle())
-        #p.setDelegate(MyDelegate())
-        #print("Set Notification Success")
-
-        #print(ch10[0].uuid)
-        #print(ch10[0].read())
-    except:
-        print("Get Data Error")
-
-
     for i in range(1, 100):
-        if p.waitForNotifications(1.0):
-            print("----------------------")
-        #print("Waiting..."+str(i))
-
+        time.sleep(1.0)
 except:
     print("Connect Fail")
 finally:
     print("Finish")
-    p.disconnect()
+    #p.disconnect()
+
+for index in range(1, length):
+    try:
+        if p_Connected_List[index] == True:
+            p_List[index].disconnect()
+    except:
+        print("Disconnect Error-" + str(index))
+
