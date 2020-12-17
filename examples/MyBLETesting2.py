@@ -137,9 +137,6 @@ class MyBLEReceiver():
 
 #endregion
 
-if __name__ == "__main__":
-    main()
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--hci', action='store', type=int, default=0,
@@ -180,6 +177,9 @@ def main():
             dump_services(dev)
             dev.disconnect()
             print
+
+if __name__ == "__main__":
+    main()
 
 print("Start To Connect BLE")
 p = Peripheral('a4:c1:38:0b:99:ed')
