@@ -194,7 +194,9 @@ p_Connected_List=[]
 
 for index in range(1, length):
     try:
-        p = Peripheral('a4:c1:38:0b:99:ed')
+        #p = Peripheral('a4:c1:38:0b:99:ed')
+        print("Try to connect to " + get_mac_address[index-1])
+        p = Peripheral(get_mac_address[index-1])
         p.setDelegate(MyDelegate(index))
         p_List.append[p]
         p_Connected_List.append(True)
