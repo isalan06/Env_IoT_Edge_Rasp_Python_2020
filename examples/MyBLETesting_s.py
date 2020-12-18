@@ -62,7 +62,7 @@ try:
         print(ch10)
         print("---------------------------------")
         print("Set Notification")
-        print(ch10[0].valHandle)
+        print(ch10[0].valHandle+1)
         p.writeCharacteristic(ch10[0].valHandle+1, "\x02\x00")
         #print("Set Notification")
         #print(ch.getHandle())
