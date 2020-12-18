@@ -20,15 +20,21 @@ class MyDelegate(btle.DefaultDelegate):
                 print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
 
 class MyTest():
-    p=None
+    BLE_Connected=False
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
 
+    def Connect(self):
+        print("Start To Connect BLE-" + str(self.index))
+        try:
+            p = Peripheral(self.mac_address)
+            p.setDelegate(MyDelegate(self.index))
+            self.BLE_Connected = True
+        except:
+            self.BLE_Connected = False
+
     def Run(self):
-        print("Start To Connect BLE")
-        p = Peripheral(self.mac_address)
-        p.setDelegate(MyDelegate(self.index))
         try:
 
             for i in range(1, 20):
@@ -42,7 +48,7 @@ class MyTest():
             #p.disconnect()
     
     def Close(self):
-        if p is not None:
+        if self.BLE_Connected == True:
             try:
                 p.disconnect()
             except:
@@ -51,6 +57,9 @@ class MyTest():
 def main():
     myTest = MyTest(1, 'a4:c1:38:0b:99:ed')
     myTest2 = MyTest(2, 'a4:c1:38:ee:b6:50')
+
+    myTest.Connect()
+    myTest2.Connect()
 
     myTest.Run()
     myTest2.Run()
