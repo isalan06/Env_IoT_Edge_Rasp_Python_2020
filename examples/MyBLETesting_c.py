@@ -16,7 +16,8 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
-                print("Machine-" + str(index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                print("Get Notification")
+                print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
 
 class MyTest():
     def __init__(self, index, mac_address):
