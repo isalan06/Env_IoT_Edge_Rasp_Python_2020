@@ -39,7 +39,7 @@ class MyTest():
         try:
             if self.BLE_Connected == True:
                 for i in range(1, 20):
-                    if p.waitForNotifications(1.0):
+                    if self.p.waitForNotifications(1.0):
                         print("----------------------")
         except:
             print("Connect Fail")
