@@ -79,7 +79,7 @@ class MyTest():
             print("Finish")
             p.disconnect()
 
-def main(self):
+def main():
     myTest = MyTest(1, 'a4:c1:38:0b:99:ed')
 
     myTest.Run()
