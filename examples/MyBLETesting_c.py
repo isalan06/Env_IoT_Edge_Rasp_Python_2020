@@ -54,8 +54,8 @@ class MyTest():
                 self.p=None
 
 def main():
-    myTest = MyTest(1, 'a4:c1:38:0b:99:ed')
-    myTest2 = MyTest(2, 'a4:c1:38:ee:b6:50')
+    myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
+    myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
 
     myTest.Connect()
     myTest2.Connect()
