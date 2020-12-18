@@ -20,6 +20,7 @@ class MyDelegate(btle.DefaultDelegate):
                 print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
 
 class MyTest():
+    p=None
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
@@ -29,49 +30,8 @@ class MyTest():
         p = Peripheral(self.mac_address)
         p.setDelegate(MyDelegate(self.index))
         try:
-            chList=p.getCharacteristics()
 
-
-            seList=p.getServices()
-            for se in seList:
-                try:
-                    print(se.uuid)
-                except:
-                    print("SE Error")
-
-            print("---------------------------")
-            print("Get Service1")
-
-
-            try:
-                se1=p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
-                ch1=se1.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')
-
-                for _ch1 in ch1:
-                    print(_ch1.uuid)
-
-                print("----------------------------------")
-                print(ch1[0].uuid)
-                print(ch1[0].read())
-            except:
-                print("SE1 Error")
-
-            print("-------------------------------------------")
-            print("Get Data")
-            try:
-                se10=p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
-                print("------------------------")
-                print(se10)
-                ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
-                print("-------------------------")
-                print(ch10)
-                print("---------------------------------")
-
-            except:
-                print("Get Data Error")
-
-
-            for i in range(1, 100):
+            for i in range(1, 20):
                 if p.waitForNotifications(1.0):
                     print("----------------------")
 
@@ -79,12 +39,24 @@ class MyTest():
             print("Connect Fail")
         finally:
             print("Finish")
-            p.disconnect()
+            #p.disconnect()
+    
+    def Close(self):
+        if p is not None:
+            try:
+                p.disconnect()
+            except:
+                p=None
 
 def main():
     myTest = MyTest(1, 'a4:c1:38:0b:99:ed')
+    myTest2 = MyTest(2, 'a4:c1:38:ee:b6:50')
 
     myTest.Run()
+    myTest2.Run()
+
+    myTest.Close()
+    myTest2.Close()
 
 if __name__ == "__main__":
     main()
