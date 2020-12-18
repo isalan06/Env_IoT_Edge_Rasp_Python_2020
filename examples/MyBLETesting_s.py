@@ -62,8 +62,11 @@ try:
         print(ch10)
         print("---------------------------------")
         print("Set Notification")
-        print(ch10[0].valHandle+1)
-        p.writeCharacteristic(ch10[0].valHandle+1, "\x02\x00")
+        ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+        print(ccc_desc)
+        ccc_desc.write(b"\x02")
+        #print(ch10[0].valHandle+1)
+        #p.writeCharacteristic(ch10[0].valHandle+1, "\x02\x00")
         #print("Set Notification")
         #print(ch.getHandle())
         #p.setDelegate(MyDelegate())
