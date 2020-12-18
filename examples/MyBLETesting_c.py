@@ -4,7 +4,8 @@ from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
 class MyDelegate(btle.DefaultDelegate):
-    def __init__(self):
+    def __init__(self, index):
+        self.index=index
         btle.DefaultDelegate.__init__(self)
         print("Delegate initial Success")
 
@@ -15,7 +16,7 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
-                print("Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                print("Machine-" + str(index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
 
 class MyTest():
     def __init__(self, index, mac_address):
@@ -25,7 +26,7 @@ class MyTest():
     def Run(self):
         print("Start To Connect BLE")
         p = Peripheral(self.mac_address)
-        p.setDelegate(MyDelegate())
+        p.setDelegate(MyDelegate(self.index))
         try:
             chList=p.getCharacteristics()
 
