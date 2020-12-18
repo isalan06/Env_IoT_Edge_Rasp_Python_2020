@@ -7,7 +7,7 @@ class MyDelegate(btle.DefaultDelegate):
     def __init__(self, index):
         self.index=index
         btle.DefaultDelegate.__init__(self)
-        print("Delegate initial Success")
+        print("Delegate initial Success-" + str(self.index))
 
     def handleNotification(self, cHandle, data):
             #print(data)
@@ -21,6 +21,7 @@ class MyDelegate(btle.DefaultDelegate):
 
 class MyTest():
     BLE_Connected=False
+    p=None
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
@@ -28,31 +29,29 @@ class MyTest():
     def Connect(self):
         print("Start To Connect BLE-" + str(self.index))
         try:
-            p = Peripheral(self.mac_address)
-            p.setDelegate(MyDelegate(self.index))
+            self.p = Peripheral(self.mac_address)
+            self.p.setDelegate(MyDelegate(self.index))
             self.BLE_Connected = True
         except:
             self.BLE_Connected = False
 
     def Run(self):
         try:
-
-            for i in range(1, 20):
-                if p.waitForNotifications(1.0):
-                    print("----------------------")
-
+            if self.BLE_Connected == True:
+                for i in range(1, 20):
+                    if p.waitForNotifications(1.0):
+                        print("----------------------")
         except:
             print("Connect Fail")
         finally:
             print("Finish")
-            #p.disconnect()
     
     def Close(self):
         if self.BLE_Connected == True:
             try:
-                p.disconnect()
+                self.p.disconnect()
             except:
-                p=None
+                self.p=None
 
 def main():
     myTest = MyTest(1, 'a4:c1:38:0b:99:ed')
