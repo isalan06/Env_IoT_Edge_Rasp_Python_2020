@@ -123,6 +123,15 @@ class MyTest():
             self.p = Peripheral(self.mac_address)
             self.p.setDelegate(MyDelegate(self.index))
             self.BLE_Connected = True
+
+            try:
+                se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                ccc_desc.write(b"\x02")
+            except:
+                print("Machine-" + str(self.index) + " Set Notification Error")
+         
         except:
             self.BLE_Connected = False
 
