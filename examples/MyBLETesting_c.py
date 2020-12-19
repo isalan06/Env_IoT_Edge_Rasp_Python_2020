@@ -46,9 +46,9 @@ class MyTest():
                 self.DoWorkThread = threading.Thread(target=self.DoWork)
                 self.DoWorkThread.start()
         except:
-            print("Connect Fail")
+            print("Machine-" + str(self.index) + " Run Threading Fail")
         finally:
-            print("Finish")
+            print("Machine-" + str(self.index) + " Run Threading Success")
 
     def DoWork(self):
         while self.bRunning:
@@ -68,19 +68,32 @@ class MyTest():
                 self.p=None
 
 def main():
-    myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
-    myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
+    #myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
+    #myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
 
-    myTest.Connect()
-    myTest2.Connect()
+    myBleDevice=[]
+    myBleDevice.append(MyTest(1, 'a4:c1:38:ee:b6:50'))
+    myBleDevice.append(MyTest(2, 'a4:c1:38:0b:99:ed'))
+    
+    #myTest.Connect()
+    #myTest2.Connect()
 
-    myTest.Run()
-    myTest2.Run()
+    myBleDevice[0].Connect()
+    myBleDevice[1].Connect()
+
+    #myTest.Run()
+    #myTest2.Run()
+
+    myBleDevice[0].Run()
+    myBleDevice[1].Run()
 
     input()
 
-    myTest.Close()
-    myTest2.Close()
+    #myTest.Close()
+    #myTest2.Close()
+
+    myBleDevice[0].Close()
+    myBleDevice[1].Close()
 
 if __name__ == "__main__":
     main()
