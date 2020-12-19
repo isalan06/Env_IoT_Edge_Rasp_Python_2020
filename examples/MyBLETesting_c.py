@@ -1,5 +1,7 @@
 import sys
 import struct
+import time
+import threading
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
@@ -22,6 +24,8 @@ class MyDelegate(btle.DefaultDelegate):
 class MyTest():
     BLE_Connected=False
     p=None
+    bRunning=False
+    DoWorkThread = 0
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
@@ -38,15 +42,25 @@ class MyTest():
     def Run(self):
         try:
             if self.BLE_Connected == True:
-                for i in range(1, 20):
-                    if self.p.waitForNotifications(0.2):
-                        print("----------------------")
+                self.bRunning = True
+                self.DoWorkThread = threading.Thread(target=self.DoWork)
+                self.DoWorkThread.start()
         except:
             print("Connect Fail")
         finally:
             print("Finish")
+
+    def DoWork(self):
+        while self.bRunning:
+            try:
+                self.p.waitForNotifications(0.5)
+            except:
+                self.bRunning = False
+                print("Machine-" + str(self.index) + " - Wait For Notification Error")
+            time.sleep(0.5)
     
     def Close(self):
+        self.bRunning = False
         if self.BLE_Connected == True:
             try:
                 self.p.disconnect()
@@ -62,6 +76,8 @@ def main():
 
     myTest.Run()
     myTest2.Run()
+
+    input()
 
     myTest.Close()
     myTest2.Close()
