@@ -11,6 +11,8 @@ import threading
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
+mac_address_list = []
+
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
     ANSI_GREEN = ''
@@ -69,6 +71,8 @@ class ScanPrint(btle.DefaultDelegate):
         self.opts = opts
 
     def handleDiscovery(self, dev, isNewDev, isNewData):
+        global mac_address_list
+
         if isNewDev:
             status = "new"
         elif isNewData:
@@ -87,6 +91,7 @@ class ScanPrint(btle.DefaultDelegate):
             if(desc == 'Complete Local Name'):
                 if(val == 'LYWSD03MMC'):
                     print ('\t' + ANSI_RED + 'Get Sensors Address: %s' % (dev.addr) + ANSI_OFF)
+                    mac_address_list.append(dev.addr)
 
         if not dev.scanData:
             print ('\t(no data)')
@@ -167,6 +172,8 @@ def main():
     #myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
     #myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
 
+    global mac_address_list
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--hci', action='store', type=int, default=0,
                         help='Interface number for scan')
@@ -206,6 +213,9 @@ def main():
             dump_services(dev)
             dev.disconnect()
             print
+
+    print("List of Mac Address:")
+    print(mac_address_list)
 
 
     myBleDevice=[]
