@@ -216,31 +216,44 @@ def main():
 
     print("List of Mac Address:")
     print(mac_address_list)
-
+    length = len(mac_address_list)
 
     myBleDevice=[]
-    myBleDevice.append(MyTest(1, 'a4:c1:38:ee:b6:50'))
-    myBleDevice.append(MyTest(2, 'a4:c1:38:0b:99:ed'))
+
+    for index in range(1, length):
+        myBleDevice.append(MyTest(index, mac_address_list[index-1]))
+
+    for index in range(1, length):
+        myBleDevice[index-1].Connect()
+
+    for index in range(1, length):
+        myBleDevice[index-1].Run()
+
+    #myBleDevice.append(MyTest(1, 'a4:c1:38:ee:b6:50'))
+    #myBleDevice.append(MyTest(2, 'a4:c1:38:0b:99:ed'))
     
     #myTest.Connect()
     #myTest2.Connect()
 
-    myBleDevice[0].Connect()
-    myBleDevice[1].Connect()
+    #myBleDevice[0].Connect()
+    #myBleDevice[1].Connect()
 
     #myTest.Run()
     #myTest2.Run()
 
-    myBleDevice[0].Run()
-    myBleDevice[1].Run()
+    #myBleDevice[0].Run()
+    #myBleDevice[1].Run()
 
     input()
 
     #myTest.Close()
     #myTest2.Close()
 
-    myBleDevice[0].Close()
-    myBleDevice[1].Close()
+    for index in range(1, length):
+        myBleDevice[index-1].Close()
+
+    #myBleDevice[0].Close()
+    #myBleDevice[1].Close()
 
 if __name__ == "__main__":
     main()
