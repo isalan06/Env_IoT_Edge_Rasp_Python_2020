@@ -130,6 +130,7 @@ class MyTest():
             self.BLE_Connected = True
 
             try:
+
                 se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
                 ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
                 ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
@@ -139,6 +140,7 @@ class MyTest():
          
         except:
             self.BLE_Connected = False
+            print("Machine-" + str(self.index) + " Connect Error")
 
     def Run(self):
         try:
@@ -168,51 +170,81 @@ class MyTest():
             except:
                 self.p=None
 
+class BLEDeviceForMi():
+    sMac_Address_List = []
+    bBLEDeviceExist = False
+    bCheckBLEDeivce = False
+    bExecuteConnect = False
+    bExecuteStop = False
+    bRunning = False
+    DoWorkThread = 0
+
+    def __init__(self, bScanBLE):
+        self.bScanBLE = bScanBLE
+        self.bRunning = True
+        self.DoWorkThread = threading.Thread(target=self.DoWork)
+        self.DoWorkThread.start()
+
+    def Start(self):
+        self.bExecuteConnect = True
+
+    def Stop(self):
+        self.bExecuteStop = True
+
+    def DoWork(self):
+        while self.bRunning:
+
+            if self.bExecuteConnect:
+                self.bExecuteConnect = False
+
+                # Scan BLE
+                #region Scan BLE
+
+                if self.bScanBLE:
+                    parser = argparse.ArgumentParser()
+                    parser.add_argument('-i', '--hci', action='store', type=int, default=0,
+                        help='Interface number for scan')
+                    parser.add_argument('-t', '--timeout', action='store', type=int, default=4,
+                        help='Scan delay, 0 for continuous')
+                    parser.add_argument('-s', '--sensitivity', action='store', type=int, default=-128,
+                        help='dBm value for filtering far devices')
+                    parser.add_argument('-d', '--discover', action='store_true',
+                        help='Connect and discover service to scanned devices')
+                    parser.add_argument('-a', '--all', action='store_true',
+                        help='Display duplicate adv responses, by default show new + updated')
+                    parser.add_argument('-n', '--new', action='store_true',
+                        help='Display only new adv responses, by default show new + updated')
+                    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Increase output verbosity')
+                    arg = parser.parse_args(sys.argv[1:])
+
+                    btle.Debugging = arg.verbose
+
+                    scanner = btle.Scanner(arg.hci).withDelegate(ScanPrint(arg))
+
+                    print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
+                    #devices = scanner.scan(arg.timeout)
+                    devices = scanner.scan(30)
+
+                    self.bBLEDeviceExist = True
+
+                #endregion
+
+                # Connect to BLE Device
+                #region Connect to BLE Device
+
+
+                #endregion
+
+            time.sleep(0.5)
+
 def main():
     #myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
     #myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
 
     global mac_address_list
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--hci', action='store', type=int, default=0,
-                        help='Interface number for scan')
-    parser.add_argument('-t', '--timeout', action='store', type=int, default=4,
-                        help='Scan delay, 0 for continuous')
-    parser.add_argument('-s', '--sensitivity', action='store', type=int, default=-128,
-                        help='dBm value for filtering far devices')
-    parser.add_argument('-d', '--discover', action='store_true',
-                        help='Connect and discover service to scanned devices')
-    parser.add_argument('-a', '--all', action='store_true',
-                        help='Display duplicate adv responses, by default show new + updated')
-    parser.add_argument('-n', '--new', action='store_true',
-                        help='Display only new adv responses, by default show new + updated')
-    parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Increase output verbosity')
-    arg = parser.parse_args(sys.argv[1:])
-
-    btle.Debugging = arg.verbose
-
-    scanner = btle.Scanner(arg.hci).withDelegate(ScanPrint(arg))
-
-    print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
-    #devices = scanner.scan(arg.timeout)
-    devices = scanner.scan(10)
-
-    if arg.discover:
-        print (ANSI_RED + "Discovering services..." + ANSI_OFF)
-
-        for d in devices:
-            if not d.connectable or d.rssi < arg.sensitivity:
-
-                continue
-
-            print ("    Connecting to", ANSI_WHITE + d.addr + ANSI_OFF + ":")
-
-            dev = btle.Peripheral(d)
-            dump_services(dev)
-            dev.disconnect()
-            print
+    
 
     print("List of Mac Address:")
     print(mac_address_list)
@@ -228,6 +260,7 @@ def main():
 
     for index in range(1, length):
         myBleDevice[index-1].Run()
+        
 
     #myBleDevice.append(MyTest(1, 'a4:c1:38:ee:b6:50'))
     #myBleDevice.append(MyTest(2, 'a4:c1:38:0b:99:ed'))
