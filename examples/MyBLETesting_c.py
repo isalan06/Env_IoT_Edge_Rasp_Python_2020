@@ -250,9 +250,11 @@ class BLEDeviceForMi():
                     for index in range(length):
                         _device = MyTest(index, mac_address_list[index])
                         _device.Connect()
-                        _device.Run()
                         self.myBleDevice.append(_device)
                         time.sleep(1.0)
+
+                    for index in range(length):
+                        self.myBleDevice[index].Run()
 
                 else:
                     print("There is no BLE Device")
