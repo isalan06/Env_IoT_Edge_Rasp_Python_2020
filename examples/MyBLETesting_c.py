@@ -238,13 +238,14 @@ class BLEDeviceForMi():
                 # Connect to BLE Device
                 #region Connect to BLE Device
 
-                if bBLEDeviceExist:
+                length = len(mac_address_list)
+
+                if length > 0:
+                    self.bBLEDeviceExist = True
+
+                if self.bBLEDeviceExist:
                     print("List of Mac Address:")
                     print(mac_address_list)
-                    length = len(mac_address_list)
-
-                    if length > 0:
-                        self.bBLEDeviceExist = True
 
                     for index in range(1, length):
                         myBleDevice.append(MyTest(index, mac_address_list[index-1]))
