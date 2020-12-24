@@ -11,7 +11,8 @@ ftp.connect(IP)
 ftp.login(user,password)
 try:
     ftp.cwd('/photo')
-    ftp.storbinary('STOR %s'%filename, open(path, 'rb',8192)) 
+    f = open(path, 'rb')  
+    ftp.storbinary('STOR %s'%filename, f) 
     print('success')
 except:
     print('fail')
