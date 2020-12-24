@@ -236,7 +236,7 @@ class BLEDeviceForMi():
                 # Connect to BLE Device
                 #region Connect to BLE Device
 
-                if bBLE.DeviceExist:
+                if bBLEDeviceExist:
                     print("List of Mac Address:")
                     print(mac_address_list)
                     length = len(mac_address_list)
