@@ -8,7 +8,6 @@ path = '~/download/sn_2020-11-11 16-35-28-000.jpg'
 ftp=FTP() 
 ftp.set_debuglevel(2) 
 ftp.connect(IP) 
-print(ftp.welcome())
 ftp.login(user,password)
 try:
     ftp.cwd('/upload/fire_smoke/photo')
