@@ -10,7 +10,7 @@ ftp.set_debuglevel(2)
 ftp.connect(IP) 
 ftp.login(user,password)
 try:
-    ftp.cwd('/upload/fire_smoke/photo')
+    ftp.cwd('/photo')
     ftp.storbinary('STOR %s'%filename, open(path, 'rb',8192)) 
     print('success')
 except:
