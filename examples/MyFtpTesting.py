@@ -1,4 +1,4 @@
-
+import os
 from ftplib import FTP 
 IP = '122.116.123.236'
 user = 'uploaduser'
@@ -11,5 +11,8 @@ ftp.connect(IP)
 ftp.login(user,password)
 
 ftp.cwd('/photo')
-f = open(path, 'rb')  
-ftp.storbinary('STOR %s'%filename, f) 
+size = os.path.getsize(path)
+print(size)
+f = open(path, 'rb')
+
+ftp.storbinary('STOR %s'%filename, f, size) 
