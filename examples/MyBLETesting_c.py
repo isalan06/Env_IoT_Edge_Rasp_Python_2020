@@ -270,7 +270,7 @@ class BLEDeviceForMi():
 
 def main():
 
-    myBLEDevice = BLEDeviceForMi()
+    myBLEDevice = BLEDeviceForMi(True)
     myBLEDevice.Start()
 
     input()
