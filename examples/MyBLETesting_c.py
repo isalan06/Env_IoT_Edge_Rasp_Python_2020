@@ -247,8 +247,8 @@ class BLEDeviceForMi():
                     print("List of Mac Address: Number=>" + str(length))
                     print(mac_address_list)
 
-                    for index in range(1, length):
-                        _device = MyTest(index, mac_address_list[index-1])
+                    for index in range(length):
+                        _device = MyTest(index, mac_address_list[index])
                         _device.Connect()
                         _device.Run()
                         self.myBleDevice.append(_device)
@@ -265,8 +265,8 @@ class BLEDeviceForMi():
 
             if self.bExecuteStop:
                 self.bExecuteStop = False
-                for index in range(1, length):
-                    self.myBleDevice[index-1].Close()
+                for index in range(length):
+                    self.myBleDevice[index].Close()
                 self.bRunning = False
 
             #endregion
