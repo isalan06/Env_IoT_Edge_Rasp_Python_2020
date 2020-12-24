@@ -227,9 +227,11 @@ class BLEDeviceForMi():
 
                     print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
                     #devices = scanner.scan(arg.timeout)
-                    devices = scanner.scan(30)
+                    try:
+                        devices = scanner.scan(20)
+                    except:
+                        print("Scanning for devices happen error")
 
-                    self.bBLEDeviceExist = True
 
                 #endregion
 
@@ -240,6 +242,9 @@ class BLEDeviceForMi():
                     print("List of Mac Address:")
                     print(mac_address_list)
                     length = len(mac_address_list)
+
+                    if length > 0:
+                        self.bBLEDeviceExist = True
 
                     for index in range(1, length):
                         myBleDevice.append(MyTest(index, mac_address_list[index-1]))
@@ -275,7 +280,7 @@ def main():
 
     input()
 
-    myBLEDevice_Stop()
+    myBLEDevice.Stop()
 
  
 
