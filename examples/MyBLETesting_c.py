@@ -171,13 +171,14 @@ class MyTest():
                 self.p=None
 
 class BLEDeviceForMi():
-    sMac_Address_List = []
+    global mac_address_list
     bBLEDeviceExist = False
     bCheckBLEDeivce = False
     bExecuteConnect = False
     bExecuteStop = False
     bRunning = False
     DoWorkThread = 0
+    myBleDevice=[]
 
     def __init__(self, bScanBLE):
         self.bScanBLE = bScanBLE
@@ -194,6 +195,8 @@ class BLEDeviceForMi():
     def DoWork(self):
         while self.bRunning:
 
+            #Connect
+            #region
             if self.bExecuteConnect:
                 self.bExecuteConnect = False
 
@@ -233,60 +236,48 @@ class BLEDeviceForMi():
                 # Connect to BLE Device
                 #region Connect to BLE Device
 
+                if bBLE.DeviceExist:
+                    print("List of Mac Address:")
+                    print(mac_address_list)
+                    length = len(mac_address_list)
+
+                    for index in range(1, length):
+                        myBleDevice.append(MyTest(index, mac_address_list[index-1]))
+
+                    for index in range(1, length):
+                        myBleDevice[index-1].Connect()
+
+                    for index in range(1, length):
+                        myBleDevice[index-1].Run()
+                else:
+                    print("There is no BLE Device")
 
                 #endregion
+            #endregion
+
+            # Disconnect
+            #region
+
+            if self.bExecuteStop:
+                self.bExecuteStop = False
+                for index in range(1, length):
+                    myBleDevice[index-1].Close()
+                self.bRunning = False
+
+            #endregion
 
             time.sleep(0.5)
 
 def main():
-    #myTest2 = MyTest(2, 'a4:c1:38:0b:99:ed')
-    #myTest = MyTest(1, 'a4:c1:38:ee:b6:50')
 
-    global mac_address_list
-
-    
-
-    print("List of Mac Address:")
-    print(mac_address_list)
-    length = len(mac_address_list)
-
-    myBleDevice=[]
-
-    for index in range(1, length):
-        myBleDevice.append(MyTest(index, mac_address_list[index-1]))
-
-    for index in range(1, length):
-        myBleDevice[index-1].Connect()
-
-    for index in range(1, length):
-        myBleDevice[index-1].Run()
-        
-
-    #myBleDevice.append(MyTest(1, 'a4:c1:38:ee:b6:50'))
-    #myBleDevice.append(MyTest(2, 'a4:c1:38:0b:99:ed'))
-    
-    #myTest.Connect()
-    #myTest2.Connect()
-
-    #myBleDevice[0].Connect()
-    #myBleDevice[1].Connect()
-
-    #myTest.Run()
-    #myTest2.Run()
-
-    #myBleDevice[0].Run()
-    #myBleDevice[1].Run()
+    myBLEDevice = BLEDeviceForMi()
+    myBLEDevice.Start()
 
     input()
 
-    #myTest.Close()
-    #myTest2.Close()
+    myBLEDevice_Stop()
 
-    for index in range(1, length):
-        myBleDevice[index-1].Close()
-
-    #myBleDevice[0].Close()
-    #myBleDevice[1].Close()
+ 
 
 if __name__ == "__main__":
     main()
