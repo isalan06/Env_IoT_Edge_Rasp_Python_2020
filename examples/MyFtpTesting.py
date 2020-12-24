@@ -9,10 +9,7 @@ ftp=FTP()
 ftp.set_debuglevel(2) 
 ftp.connect(IP) 
 ftp.login(user,password)
-try:
-    ftp.cwd('/photo')
-    f = open(path, 'rb')  
-    ftp.storbinary('STOR %s'%filename, f) 
-    print('success')
-except:
-    print('fail')
+
+ftp.cwd('/photo')
+f = open(path, 'rb')  
+ftp.storbinary('STOR %s'%filename, f) 
