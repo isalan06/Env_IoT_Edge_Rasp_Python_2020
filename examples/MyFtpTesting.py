@@ -15,4 +15,4 @@ size = os.path.getsize(path)
 print(size)
 f = open(path, 'rb')
 
-ftp.storbinary('STOR %s'%filename, f, size) 
+ftp.storbinary('STOR Test3.jpg', f, size) 
