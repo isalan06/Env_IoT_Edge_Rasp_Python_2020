@@ -118,6 +118,9 @@ class MyTest():
     p=None
     bRunning=False
     DoWorkThread = 0
+    start_time=time.time()
+    ReconnectIntervalSecond = 10
+
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
@@ -144,10 +147,9 @@ class MyTest():
 
     def Run(self):
         try:
-            if self.BLE_Connected == True:
-                self.bRunning = True
-                self.DoWorkThread = threading.Thread(target=self.DoWork)
-                self.DoWorkThread.start()
+            self.bRunning = True
+            self.DoWorkThread = threading.Thread(target=self.DoWork)
+            self.DoWorkThread.start()
         except:
             print("Machine-" + str(self.index) + " Run Threading Fail")
         finally:
@@ -155,11 +157,16 @@ class MyTest():
 
     def DoWork(self):
         while self.bRunning:
-            try:
-                self.p.waitForNotifications(0.5)
-            except:
-                self.bRunning = False
-                print("Machine-" + str(self.index) + " - Wait For Notification Error")
+            if self.BLE_Connected:
+                try:
+                    self.p.waitForNotifications(0.5)
+                except:
+                    self.BLE_Connected = False
+                    print("Machine-" + str(self.index) + " - Wait For Notification Error")
+            else:
+                if (int(time.time()-self.start_time)>self.ReconnectIntervalSecond):
+                    self.start_time=time.time()
+                    self.Connect()
             time.sleep(0.5)
     
     def Close(self):
@@ -167,8 +174,10 @@ class MyTest():
         if self.BLE_Connected == True:
             try:
                 self.p.disconnect()
+                print("Machine-" + str(self.index) + " - Disconnect Success")
             except:
                 self.p=None
+                print("Machine-" + str(self.index) + " - Disconnect Fail")
 
 class BLEDeviceForMi():
     global mac_address_list
@@ -179,6 +188,7 @@ class BLEDeviceForMi():
     bRunning = False
     DoWorkThread = 0
     myBleDevice=[]
+    
 
     def __init__(self, bScanBLE):
         self.bScanBLE = bScanBLE
@@ -250,11 +260,9 @@ class BLEDeviceForMi():
                     for index in range(length):
                         _device = MyTest(index, mac_address_list[index])
                         _device.Connect()
+                        _device.Run()
                         self.myBleDevice.append(_device)
                         time.sleep(1.0)
-
-                    for index in range(length):
-                        self.myBleDevice[index].Run()
 
                 else:
                     print("There is no BLE Device")
