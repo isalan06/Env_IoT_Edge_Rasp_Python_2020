@@ -183,7 +183,7 @@ class MyTest():
 
     def DoWork(self):
         while self.bRunning:
-            if self.BLE_Connected:
+            if (self.BLE_Connected & self.bRunning):
                 try:
                     self.p.waitForNotifications(0.5)
                 except:
@@ -284,7 +284,7 @@ class BLEDeviceForMi():
                     self.bBLEDeviceExist = True
 
                 if self.bBLEDeviceExist:
-                    print("List of Mac Address: Number=>" + str(length))
+                    #print("List of Mac Address: Number=>" + str(length))
                     print(mac_address_list)
 
                     for index in range(length):
@@ -299,6 +299,7 @@ class BLEDeviceForMi():
                         time.sleep(1.0)
 
                     get_mi_device_number = length
+                    print(ANSI_YELLOW + "List of Mac Address: Number=>" + str(get_mi_device_number) + ANSI_OFF)
 
                 else:
                     print("There is no BLE Device")
