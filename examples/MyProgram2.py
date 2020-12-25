@@ -22,11 +22,33 @@ import struct
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
+from ftplib import FTP 
+
 get_mi_device_number = 0
 mac_address_list = []
 get_mi_data_flag = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
+
+ftp_IP = '122.116.123.236'
+ftp_user = 'uploaduser'
+ftp_password = 'antiupload3t6Q'
+ftp_filename = 'sn_2020-11-11_16-35-28-000.jpg'
+ftp_path = '/home/pi/download/sn_2020-11-11_16-35-28-000.jpg'
+ftp_pictureFolder = '/photo'
+ftp_videoFolder = '/video'
+ftp_Exist = False
+
+ftp=FTP() 
+ftp.set_debuglevel(2)
+ftp.set_pasv(False)
+try:
+    ftp.connect(IP) 
+    ftp.login(user,password)
+    ftp_Exist = True
+except:
+    ftp_Exist = False
+
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -858,6 +880,8 @@ def GetCommandFromCloud():
 
 
 def UpdateLocalPicture():
+    global ftp
+    global ftp_Exist
     #print("Update Local Picture Start")
     tStart = time.time()
 
@@ -868,7 +892,7 @@ def UpdateLocalPicture():
         
         if bUpdate:
             bUpdate=False
-            bconnected = os.system("ping -c 1 192.168.8.100")
+            #bconnected = os.system("ping -c 1 192.168.8.100")
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
@@ -878,7 +902,7 @@ def UpdateLocalPicture():
                 os.mkdir("Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
@@ -888,25 +912,28 @@ def UpdateLocalPicture():
 
             time.sleep(1.0)
 
-            if bconnected == 0:
+            if ftp_Exist:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                #url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                 file=open(fileString ,'rb')
-                payload=file.read()
-                file.close()
-                headers = {'Content-Type': 'image/jpeg'}
+                size = os.path.getsize(fileString)
+                #payload=file.read()
+                #file.close()
+                #headers = {'Content-Type': 'image/jpeg'}
                 try:
-                    responses = requests.request("POST", url, headers=headers, data = payload)
+                #    responses = requests.request("POST", url, headers=headers, data = payload)
                     #print(responses.text.encode('utf8'))
-                    if responses.status_code == 200:
-                        print("\033[1;34mUpdate Local Picture Success\033[0m")
-                    else:
-                        print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                    #if responses.status_code == 200:
+                    ftp.storbinary('STOR %s' %filename, file, size) 
+                    print("\033[1;34mUpdate Local Picture Success\033[0m")
+                    #else:
+                        #print("\033[1;31mUpdate Local Picture Failure\033[0m")
                     #print(responses)
                 except:
                     print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                file.close()
             else:
                 print("\033[1;31mUpdate Local Picture Failure\033[0m")
 
