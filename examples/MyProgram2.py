@@ -558,6 +558,13 @@ def GetSensorsData():
 
 def UpdateLocalSensorsInformation():
 
+    global get_mi_device_number
+    global get_mi_data_flag
+    global get_mi_data_temp
+    global get_mi_data_humidity
+    global mac_address_list
+
+
     global bRunning
     global bGetData
     global bNetConnected
@@ -612,8 +619,11 @@ def UpdateLocalSensorsInformation():
             templist["ID"]=1
             templist["Type"]="Local"
             templist["Unit"]="C"
+            templist["Address"]="NA"
             templist["Value"]=temp_c
             InformationData[SetKey][SetKey2][SetKey3].append(templist)
+            
+
     
             SetKey2="Humidity"
             InformationData[SetKey][SetKey2]={}
@@ -626,6 +636,32 @@ def UpdateLocalSensorsInformation():
             humiditylist["Value"]=humidity
             InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
+            if (get_mi_device_number > 0):
+                SetFirstFlag = False
+                Count = 0
+                SetKey2="MiTempHumidity"
+                for index in range(get_mi_device_number):
+                    if get_mi_data_flag[index]:
+                        get_mi_data_flag[index] = False
+                        Count = Count + 1
+                        if (SetFirstFlag == False):
+                            SetFirstFlag = True
+                            InformationData[SetKey][SetKey2]={}
+                            InformationData[SetKey][SetKey2]["Count"]=1
+                            InformationData[SetKey][SetKey2][SetKey3]=[]
+                        else:
+                            InformationData[SetKey][SetKey2]["Count"]=Count
+
+                        mithlist = {}
+                        mithlist["ID"]=mac_address_list[index]
+                        mithlist["Type"]="MI Remote"
+                        mithlist["TUnit"]="C"
+                        mithlist["TValue"]=get_mi_data_temp[index]
+                        mithlist["HUnit"]="%RH"
+                        mithlist["HValue"]=get_mi_data_humidity[index]
+                        InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
+
+            
             SetKey2="Vibration"
             InformationData[SetKey][SetKey2]={}
             InformationData[SetKey][SetKey2]["Count"]=1
