@@ -637,6 +637,7 @@ def UpdateLocalSensorsInformation():
             InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
             if (get_mi_device_number > 0):
+                print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
                 SetFirstFlag = False
                 Count = 0
                 SetKey2="MiTempHumidity"
