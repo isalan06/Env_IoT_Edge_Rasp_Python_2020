@@ -298,10 +298,11 @@ class BLEDeviceForMi():
                         get_mi_data_flag.append(False)
                         get_mi_data_temp.append(0.0)
                         get_mi_data_humidity.append(0)
+                        get_mi_device_number = get_mi_device_number + 1
 
                         time.sleep(1.0)
 
-                    get_mi_device_number = length
+                    #get_mi_device_number = length
                     print(ANSI_YELLOW + "List of Mac Address: Number=>" + str(get_mi_device_number) + ANSI_OFF)
 
                 else:
