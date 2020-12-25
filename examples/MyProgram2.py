@@ -39,15 +39,7 @@ ftp_pictureFolder = '/photo'
 ftp_videoFolder = '/video'
 ftp_Exist = False
 
-ftp=FTP() 
-ftp.set_debuglevel(2)
-ftp.set_pasv(False)
-try:
-    ftp.connect(IP) 
-    ftp.login(user,password)
-    ftp_Exist = True
-except:
-    ftp_Exist = False
+
 
 
 if os.getenv('C', '1') == '0':
@@ -493,6 +485,9 @@ def GetSensorsData():
     global thermalmaxValue
     global thermalminValue
 
+
+
+
     print("Get Local Sensors Thread Start")
 
     # DHT22 Attribute
@@ -926,7 +921,7 @@ def UpdateLocalPicture():
                 #    responses = requests.request("POST", url, headers=headers, data = payload)
                     #print(responses.text.encode('utf8'))
                     #if responses.status_code == 200:
-                    ftp.storbinary('STOR %s' %filename, file, size) 
+                    ftp.storbinary(('STOR ' + filename), file, size) 
                     print("\033[1;34mUpdate Local Picture Success\033[0m")
                     #else:
                         #print("\033[1;31mUpdate Local Picture Failure\033[0m")
@@ -947,6 +942,18 @@ def UpdateLocalPicture():
 
 
 print("\033[1;33mProgram Start\033[0m")
+
+ftp=FTP() 
+ftp.set_debuglevel(2)
+ftp.set_pasv(False)
+try:
+    ftp.connect(IP) 
+    ftp.login(user,password)
+    ftp_Exist = True
+except:
+    ftp_Exist = False
+
+print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
 
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
