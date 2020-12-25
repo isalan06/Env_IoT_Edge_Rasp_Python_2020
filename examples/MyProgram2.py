@@ -116,23 +116,24 @@ class ScanPrint(btle.DefaultDelegate):
         print
 
 class MyDelegate(btle.DefaultDelegate):
-    global get_mi_device_number
-    global get_mi_data_flag
-    global get_mi_data_temp
-    global get_mi_data_humidity
+    
     def __init__(self, index):
         self.index=index
         btle.DefaultDelegate.__init__(self)
         print("Delegate initial Success-" + str(self.index))
 
     def handleNotification(self, cHandle, data):
+            global get_mi_device_number
+            global get_mi_data_flag
+            global get_mi_data_temp
+            global get_mi_data_humidity
             #print(data)
             if len(data) >= 3:
                 data1 = data[0]
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
-                print("Get Notification")
+                print("Get Notification (" + str(get_mi_device_number) + ")")
                 print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
                 if (self.index < get_mi_device_number):
                     get_mi_data_temp[self.index] = data4
@@ -206,11 +207,7 @@ class MyTest():
                 print("Machine-" + str(self.index) + " - Disconnect Fail")
 
 class BLEDeviceForMi():
-    global mac_address_list
-    global get_mi_device_number
-    global get_mi_data_flag
-    global get_mi_data_temp
-    global get_mi_data_humidity
+    
     bBLEDeviceExist = False
     bCheckBLEDeivce = False
     bExecuteConnect = False
@@ -233,6 +230,12 @@ class BLEDeviceForMi():
         self.bExecuteStop = True
 
     def DoWork(self):
+        global mac_address_list
+        global get_mi_device_number
+        global get_mi_data_flag
+        global get_mi_data_temp
+        global get_mi_data_humidity
+
         while self.bRunning:
 
             #Connect
@@ -284,7 +287,7 @@ class BLEDeviceForMi():
                     self.bBLEDeviceExist = True
 
                 if self.bBLEDeviceExist:
-                    #print("List of Mac Address: Number=>" + str(length))
+                    print("List of Mac Address: Number=>" + str(length))
                     print(mac_address_list)
 
                     for index in range(length):
