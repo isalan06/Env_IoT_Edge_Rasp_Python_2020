@@ -932,20 +932,22 @@ UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
-CheckCloudExistThread.join()
-GetLocalSensorsThread.join()
-UpdateSensorsThread.join()
-UpdateLocalPictureThread.join()
-GetCommandFromCloudThread.join()
+#CheckCloudExistThread.join()
+#GetLocalSensorsThread.join()
+#UpdateSensorsThread.join()
+#UpdateLocalPictureThread.join()
+#GetCommandFromCloudThread.join()
 
 try:
-    while bRunning:
-        time.sleep(1.0)
+    #while bRunning:
+        #time.sleep(1.0)
+    input()
 except KeyboardInterrupt:
     bRunning=False
 
-myBLEDevice.Stop()
 bRunning=False
+myBLEDevice.Stop()
+
 print("\033[1;33mProgram Finish\033[0m")
 
 time.sleep(2.0)
