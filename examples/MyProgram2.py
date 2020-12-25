@@ -38,8 +38,7 @@ ftp_path = '/home/pi/download/sn_2020-11-11_16-35-28-000.jpg'
 ftp_pictureFolder = '/photo'
 ftp_videoFolder = '/video'
 ftp_Exist = False
-
-
+ftp = 0
 
 
 if os.getenv('C', '1') == '0':
@@ -947,8 +946,8 @@ ftp=FTP()
 ftp.set_debuglevel(2)
 ftp.set_pasv(False)
 try:
-    ftp.connect(IP) 
-    ftp.login(user,password)
+    ftp.connect(ftp_IP) 
+    ftp.login(ftp_user,ftp_password)
     ftp_Exist = True
 except:
     ftp_Exist = False
