@@ -642,22 +642,19 @@ def UpdateLocalSensorsInformation():
             InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
             print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
+            SetKey2="MiTempHumidity"
+            InformationData[SetKey][SetKey2]={}
+            InformationData[SetKey][SetKey2]["Count"]=0
+            InformationData[SetKey][SetKey2][SetKey3]=[]
             if (get_mi_device_number > 0):
                 print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
-                SetFirstFlag = False
                 Count = 0
-                SetKey2="MiTempHumidity"
+                
                 for index in range(get_mi_device_number):
                     if get_mi_data_flag[index]:
                         get_mi_data_flag[index] = False
                         Count = Count + 1
-                        if (SetFirstFlag == False):
-                            SetFirstFlag = True
-                            InformationData[SetKey][SetKey2]={}
-                            InformationData[SetKey][SetKey2]["Count"]=1
-                            InformationData[SetKey][SetKey2][SetKey3]=[]
-                        else:
-                            InformationData[SetKey][SetKey2]["Count"]=Count
+                        InformationData[SetKey][SetKey2]["Count"]=Count
 
                         mithlist = {}
                         mithlist["ID"]=mac_address_list[index]
