@@ -906,7 +906,7 @@ def UpdateLocalPicture():
 
             time.sleep(1.0)
 
-            if ftp_Exist:
+            if True:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
@@ -920,7 +920,11 @@ def UpdateLocalPicture():
                 #    responses = requests.request("POST", url, headers=headers, data = payload)
                     #print(responses.text.encode('utf8'))
                     #if responses.status_code == 200:
+                    ftp.connect(ftp_IP) 
+                    ftp.login(ftp_user,ftp_password)
+                    ftp.cwd('/photo')
                     ftp.storbinary(('STOR ' + filename), file, size) 
+                    ftp.close()
                     print("\033[1;34mUpdate Local Picture Success\033[0m")
                     #else:
                         #print("\033[1;31mUpdate Local Picture Failure\033[0m")
@@ -945,12 +949,12 @@ print("\033[1;33mProgram Start\033[0m")
 ftp=FTP() 
 ftp.set_debuglevel(2)
 ftp.set_pasv(False)
-try:
-    ftp.connect(ftp_IP) 
-    ftp.login(ftp_user,ftp_password)
-    ftp_Exist = True
-except:
-    ftp_Exist = False
+#try:
+#    ftp.connect(ftp_IP) 
+#    ftp.login(ftp_user,ftp_password)
+#    ftp_Exist = True
+#except:
+#    ftp_Exist = False
 
 print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
 
