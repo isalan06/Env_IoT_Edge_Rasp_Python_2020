@@ -584,7 +584,7 @@ def GetSensorsData():
                     if i >FireAlarmTempValue:
                         fireAlarmCount += 1
                     elif i > FireWarningTempValue:
-                    fireWarningCount += 1
+                        fireWarningCount += 1
                     if not bFirstFlag:
                         bFirstFlag=True
                         thermalmaxValue = i
