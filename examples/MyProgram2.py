@@ -29,6 +29,7 @@ mac_address_list = []
 get_mi_data_flag = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
+get_mi_data_battery = []
 
 ftp_IP = '122.116.123.236'
 ftp_user = 'uploaduser'
@@ -161,6 +162,9 @@ class MyTest():
     start_time=time.time()
     ReconnectIntervalSecond = 10
 
+    start_time2=time.time()
+    GetBatteryValueIntervalSecond = 30
+
     def __init__(self, index, mac_address):
         self.index=index
         self.mac_address=mac_address
@@ -200,6 +204,18 @@ class MyTest():
             if (self.BLE_Connected & self.bRunning):
                 try:
                     self.p.waitForNotifications(0.5)
+
+                    if (int(time.time()-self.start_time2)>self.GetBatteryValueIntervalSecond):
+                        self.start_time2 = time.time()
+                        try:
+                            service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
+                            char = service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
+                            batter_raw_value = char.read()
+                            batter_value = int.from_bytes(batter_raw_value, 'big')
+                            self.get_mi_data_battery[self.index] = batter_value
+                            print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
+                        except:
+                            self.BLE_Connected = False
                 except:
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
@@ -248,6 +264,7 @@ class BLEDeviceForMi():
         global get_mi_data_flag
         global get_mi_data_temp
         global get_mi_data_humidity
+        global get_mi_data_battery
 
         while self.bRunning:
 
@@ -311,6 +328,7 @@ class BLEDeviceForMi():
                         get_mi_data_flag.append(False)
                         get_mi_data_temp.append(0.0)
                         get_mi_data_humidity.append(0)
+                        get_mi_data_battery.append(99)
                         get_mi_device_number = get_mi_device_number + 1
 
                         time.sleep(1.0)
@@ -909,7 +927,7 @@ def UpdateLocalPicture():
             if True:
                 setsn=1
                 setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
                 #url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                 file=open(fileString ,'rb')
                 size = os.path.getsize(fileString)
