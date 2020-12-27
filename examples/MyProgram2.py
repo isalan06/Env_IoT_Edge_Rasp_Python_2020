@@ -603,6 +603,7 @@ def UpdateLocalSensorsInformation():
     global get_mi_data_flag
     global get_mi_data_temp
     global get_mi_data_humidity
+    global get_mi_data_battery
     global mac_address_list
 
 
@@ -699,6 +700,9 @@ def UpdateLocalSensorsInformation():
                         mithlist["TValue"]=get_mi_data_temp[index]
                         mithlist["HUnit"]="%RH"
                         mithlist["HValue"]=get_mi_data_humidity[index]
+                        mithlist["BUnit"]="%"
+                        mithlist["BValue"]=get_mi_data_battery[index]
+
                         InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
 
             
