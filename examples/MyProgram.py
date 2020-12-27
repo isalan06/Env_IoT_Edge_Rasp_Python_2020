@@ -147,8 +147,8 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
-                print("Get Notification (" + str(get_mi_device_number) + ")")
-                print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                #print("Get Notification (" + str(get_mi_device_number) + ")")
+                print("  Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
                 if (self.index < get_mi_device_number):
                     get_mi_data_temp[self.index] = data4
                     get_mi_data_humidity[self.index] = data3
@@ -561,9 +561,9 @@ def GetSensorsData():
             #print("gyro_xout:" + str(gyro_xout) + "-" + str(gyro_xout_scaled) + ";gyro_yout:" + str(gyro_yout) + "-" + str(gyro_yout_scaled) + ";gyro_zout:" + str(gyro_zout) + "-" + str(gyro_zout_scaled))
             #print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
             #print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
-            if (gyro_xout_scaled > VibrationAlarmValue) or (gyro_yout_scaled > VibrationAlarmValue) or (gyro_zout_scaled > VibrationAlarmValue):
+            if (abs(gyro_xout_scaled) > VibrationAlarmValue) or (abs(gyro_yout_scaled) > VibrationAlarmValue) or (abs(gyro_zout_scaled) > VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
-            elif (gyro_xout_scaled > VibrationWarningValue) or (gyro_yout_scaled > VibrationWarningValue) or (gyro_zout_scaled > VibrationWarningValue):
+            elif (abs(gyro_xout_scaled) > VibrationWarningValue) or (abs(gyro_yout_scaled) > VibrationWarningValue) or (abs(gyro_zout_scaled) > VibrationWarningValue):
                 sVibrationStatus = "Warning"
             else:
                 sVibrationStatus = "Normal"
@@ -799,9 +799,14 @@ def GetCommandFromCloud():
     global bCameraUsed
     global ftp
 
+    global sVibrationStatus
+    global sFireDetectStatus
+
     #flag
     bCaptureImage = False
     bCaptureVideo = False
+    bVibrationStatus = False
+    bFireDetectStatus = False
 
     #print("Get Command From Cloud")
     
@@ -836,6 +841,9 @@ def GetCommandFromCloud():
                     CapturePictureRV=data['CapturePictureRV']
                     CaptureVideoSecond=data['CaptureVideoSecond']
                     print("Set Value Completely")
+
+                #CapturePicture
+                #region
                 if _command == "CapturePicture":
                     bCaptureImage = True
                 
@@ -889,6 +897,7 @@ def GetCommandFromCloud():
                         print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
                     bCameraUsed = False
+                #endregion
 
                 if _command == "CaptureVideo":
                     bCaptureVideo = True
@@ -944,6 +953,118 @@ def GetCommandFromCloud():
             except:
                 bNetConnected = False
                 print("\033[1;31mGet Command Failure\033[0m")
+
+        print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
+        #sVibrationStatus
+        #region
+        if ((sVibrationStatus != "Alarm") and bVibrationStatus):
+            bVibrationStatus = False
+
+        if(sVibrationStatus != "Alarm"):
+            print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
+        else:
+            print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
+                
+        if ((sVibrationStatus == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
+            print("    Start To Capture Image For Vibration Alarm")
+            bCameraUsed = True
+            bVibrationStatus = True
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="VibrationAlarmPictures/" + datestring + "/"
+
+            if not os.path.isdir("VibrationAlarmPictures/"):
+                os.mkdir("VibrationAlarmPictures/")
+            if not os.path.isdir(fileString):
+                os.mkdir(fileString)
+            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
+            fileString += filename
+
+            with picamera.PiCamera() as camera:
+                camera.resolution = (CapturePictureRH,CapturePictureRV)
+                time.sleep(1.0)
+                camera.capture(fileString)
+
+                time.sleep(1.0)
+
+            if True:
+                setsn=1
+                setfilename=filename
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+                file=open(fileString ,'rb')
+                size = os.path.getsize(fileString)
+                try:
+                    ftp.connect(ftp_IP) 
+                    ftp.login(ftp_user,ftp_password)
+                    ftp.cwd('/photo')
+                    ftp.storbinary(('STOR ' + filename), file, size) 
+                    ftp.close()
+                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
+
+                except:
+                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                file.close()
+            else:
+                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+
+            bCameraUsed = False
+        #endregion
+
+        #sFireDetectStatus
+        #region
+        if ((sFireDetectStatus != "Alarm") and bFireDetectStatus):
+            bFireDetectStatus = False
+
+        if(sFireDetectStatus != "Alarm"):
+            print(ANSI_RED + "Detect Fire Alarm......................................................" + ANSI_OFF)
+        else:
+            print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
+                
+        if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False) and (bCameraUsed == False)):
+            print("    Start To Capture Image For Fire Detect Alarm")
+            bCameraUsed = True
+            bFireDetectStatus = True
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="FireDetectPictures/" + datestring + "/"
+
+            if not os.path.isdir("FireDetectPictures/"):
+                os.mkdir("FireDetectPictures/")
+            if not os.path.isdir(fileString):
+                os.mkdir(fileString)
+            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
+            fileString += filename
+
+            with picamera.PiCamera() as camera:
+                camera.resolution = (CapturePictureRH,CapturePictureRV)
+                time.sleep(1.0)
+                camera.capture(fileString)
+
+            time.sleep(1.0)
+
+            if True:
+                setsn=1
+                setfilename=filename
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
+                file=open(fileString ,'rb')
+                size = os.path.getsize(fileString)
+                try:
+                    ftp.connect(ftp_IP) 
+                    ftp.login(ftp_user,ftp_password)
+                    ftp.cwd('/photo')
+                    ftp.storbinary(('STOR ' + filename), file, size) 
+                    ftp.close()
+                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
+
+                except:
+                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                file.close()
+            else:
+                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+
+            bCameraUsed = False
+        #endregion
+
         time.sleep(1.0)
 
 
