@@ -216,6 +216,7 @@ class MyTest():
                             print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
                         except:
                             self.BLE_Connected = False
+                            print(ANSI_RED + "    Machine-" + str(self.index) + " - Get Battery Fail" + ANSI_OFF)
                 except:
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
