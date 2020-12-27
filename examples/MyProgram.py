@@ -960,7 +960,7 @@ def GetCommandFromCloud():
         if ((sVibrationStatus != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
 
-        if(sVibrationStatus != "Alarm"):
+        if(sVibrationStatus == "Alarm"):
             print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
@@ -1015,7 +1015,7 @@ def GetCommandFromCloud():
         if ((sFireDetectStatus != "Alarm") and bFireDetectStatus):
             bFireDetectStatus = False
 
-        if(sFireDetectStatus != "Alarm"):
+        if(sFireDetectStatus == "Alarm"):
             print(ANSI_RED + "Detect Fire Alarm......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
