@@ -200,6 +200,7 @@ class MyTest():
             print("Machine-" + str(self.index) + " Run Threading Success")
 
     def DoWork(self):
+        global get_mi_data_battery
         while self.bRunning:
             if (self.BLE_Connected & self.bRunning):
                 try:
@@ -208,11 +209,11 @@ class MyTest():
                     if (int(time.time()-self.start_time2)>self.GetBatteryValueIntervalSecond):
                         self.start_time2 = time.time()
                         try:
-                            service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
-                            char = service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
-                            batter_raw_value = char.read()
+                            my_service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
+                            my_char = my_service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
+                            batter_raw_value = my_char.read()
                             batter_value = int.from_bytes(batter_raw_value, 'big')
-                            self.get_mi_data_battery[self.index] = batter_value
+                            get_mi_data_battery[self.index] = batter_value
                             print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
                         except:
                             self.BLE_Connected = False
