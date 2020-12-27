@@ -364,7 +364,7 @@ bRunning = True
 bGetData = False
 bNetConnected = False
 bRebootTrigger = False
-bCameraUsed = True
+bCameraUsed = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -937,6 +937,7 @@ def GetCommandFromCloud():
 def UpdateLocalPicture():
     global ftp
     global ftp_Exist
+    global bCameraUsed
     #print("Update Local Picture Start")
     tStart = time.time()
 
