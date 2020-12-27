@@ -825,7 +825,8 @@ def GetCommandFromCloud():
                 if _command == "CapturePicture":
                     bCaptureImage = True
                 
-                if (bCaptureImage & (bCameraUsed == False)):
+                if (bCaptureImage and (bCameraUsed == False)):
+                    print("    Start To Capture Image")
                     bCameraUsed = True
                     bCaptureImage = False
                     nowtime = datetime.now()
@@ -878,7 +879,8 @@ def GetCommandFromCloud():
                 if _command == "CaptureVideo":
                     bCaptureVideo = True
 
-                if (bCaptureVideo & (bCameraUsed == False)):
+                if (bCaptureVideo and (bCameraUsed == False)):
+                    print("    Start To Capture Video")
                     bCameraUsed = True
                     bCaptureVideo = False
                     #bconnected = os.system("ping -c 1 192.168.8.100")
@@ -943,7 +945,7 @@ def UpdateLocalPicture():
     bUpdate=True
     while bRunning:
         
-        if (bUpdate & (bCameraUsed==False)):
+        if (bUpdate and (bCameraUsed==False)):
             bCameraUsed = True
             bUpdate=False
             #bconnected = os.system("ping -c 1 192.168.8.100")
