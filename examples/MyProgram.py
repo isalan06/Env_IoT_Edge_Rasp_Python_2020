@@ -1,5 +1,7 @@
 ﻿#!/usr/bin/python3
-
+import argparse
+import binascii
+import os
 import cv2
 import smbus
 import math
@@ -13,14 +15,356 @@ import ssl
 from Adafruit_AMG88xx import Adafruit_AMG88xx
 import threading
 
-import os
 import picamera
+
+import sys
+import struct
+from bluepy.btle import UUID, Peripheral
+from bluepy import btle
+
+from ftplib import FTP 
+
+get_mi_device_number = 0
+mac_address_list = []
+get_mi_data_flag = []
+get_mi_data_temp = []
+get_mi_data_humidity = []
+get_mi_data_battery = []
+
+ftp_IP = '122.116.123.236'
+ftp_user = 'uploaduser'
+ftp_password = 'antiupload3t6Q'
+ftp_filename = 'sn_2020-11-11_16-35-28-000.jpg'
+ftp_path = '/home/pi/download/sn_2020-11-11_16-35-28-000.jpg'
+ftp_pictureFolder = '/photo'
+ftp_videoFolder = '/video'
+ftp_Exist = False
+ftp = 0
+
+
+if os.getenv('C', '1') == '0':
+    ANSI_RED = ''
+    ANSI_GREEN = ''
+    ANSI_YELLOW = ''
+    ANSI_CYAN = ''
+    ANSI_WHITE = ''
+    ANSI_OFF = ''
+else:
+    ANSI_CSI = "\033["
+    ANSI_RED = ANSI_CSI + '31m'
+    ANSI_GREEN = ANSI_CSI + '32m'
+    ANSI_YELLOW = ANSI_CSI + '33m'
+    ANSI_CYAN = ANSI_CSI + '36m'
+    ANSI_WHITE = ANSI_CSI + '37m'
+    ANSI_OFF = ANSI_CSI + '0m'
+
+# BLE Program
+#region
+
+def dump_services(dev):
+    services = sorted(dev.services, key=lambda s: s.hndStart)
+    for s in services:
+        print ("\t%04x: %s" % (s.hndStart, s))
+        if s.hndStart == s.hndEnd:
+            continue
+        chars = s.getCharacteristics()
+        for i, c in enumerate(chars):
+            props = c.propertiesToString()
+            h = c.getHandle()
+            if 'READ' in props:
+                val = c.read()
+                if c.uuid == btle.AssignedNumbers.device_name:
+                    string = ANSI_CYAN + '\'' + \
+                        val.decode('utf-8') + '\'' + ANSI_OFF
+                elif c.uuid == btle.AssignedNumbers.device_information:
+                    string = repr(val)
+                else:
+                    string = '<s' + binascii.b2a_hex(val).decode('utf-8') + '>'
+            else:
+                string = ''
+            print ("\t%04x:    %-59s %-12s %s" % (h, c, props, string))
+
+            while True:
+                h += 1
+                if h > s.hndEnd or (i < len(chars) - 1 and h >= chars[i + 1].getHandle() - 1):
+                    break
+                try:
+                    val = dev.readCharacteristic(h)
+                    print ("\t%04x:     <%s>" %
+                           (h, binascii.b2a_hex(val).decode('utf-8')))
+                except btle.BTLEException:
+                    break
+
+
+class ScanPrint(btle.DefaultDelegate):
+
+    def __init__(self, opts):
+        btle.DefaultDelegate.__init__(self)
+        self.opts = opts
+
+    def handleDiscovery(self, dev, isNewDev, isNewData):
+        global mac_address_list
+
+        if isNewDev:
+            status = "new"
+        elif isNewData:
+            if self.opts.new:
+                return
+            status = "update"
+        else:
+            if not self.opts.all:
+                return
+            status = "old"
+
+        if dev.rssi < self.opts.sensitivity:
+            return
+
+        for (sdid, desc, val) in dev.getScanData():
+            if(desc == 'Complete Local Name'):
+                if(val == 'LYWSD03MMC'):
+                    print ('\t' + ANSI_RED + 'Get Sensors Address: %s' % (dev.addr) + ANSI_OFF)
+                    mac_address_list.append(dev.addr)
+
+        if not dev.scanData:
+            print ('\t(no data)')
+        print
+
+class MyDelegate(btle.DefaultDelegate):
+    
+    def __init__(self, index):
+        self.index=index
+        btle.DefaultDelegate.__init__(self)
+        print("Delegate initial Success-" + str(self.index))
+
+    def handleNotification(self, cHandle, data):
+            global get_mi_device_number
+            global get_mi_data_flag
+            global get_mi_data_temp
+            global get_mi_data_humidity
+            #print(data)
+            if len(data) >= 3:
+                data1 = data[0]
+                data2 = data[1]
+                data3 = data[2]
+                data4 = float(data2 * 256 + data1) / 100.0
+                print("Get Notification (" + str(get_mi_device_number) + ")")
+                print("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                if (self.index < get_mi_device_number):
+                    get_mi_data_temp[self.index] = data4
+                    get_mi_data_humidity[self.index] = data3
+                    get_mi_data_flag[self.index]=True
+
+class MyTest():
+    BLE_Connected=False
+    p=None
+    bRunning=False
+    DoWorkThread = 0
+    start_time=time.time()
+    ReconnectIntervalSecond = 10
+
+    start_time2=time.time()
+    GetBatteryValueIntervalSecond = 30
+
+    def __init__(self, index, mac_address):
+        self.index=index
+        self.mac_address=mac_address
+
+    def Connect(self):
+        print("Start To Connect BLE-" + str(self.index))
+        try:
+            self.p = Peripheral(self.mac_address)
+            self.p.setDelegate(MyDelegate(self.index))
+            self.BLE_Connected = True
+
+            try:
+
+                se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                ccc_desc.write(b"\x02")
+            except:
+                print("Machine-" + str(self.index) + " Set Notification Error")
+         
+        except:
+            self.BLE_Connected = False
+            print("Machine-" + str(self.index) + " Connect Error")
+
+    def Run(self):
+        try:
+            self.bRunning = True
+            self.DoWorkThread = threading.Thread(target=self.DoWork)
+            self.DoWorkThread.start()
+        except:
+            print("Machine-" + str(self.index) + " Run Threading Fail")
+        finally:
+            print("Machine-" + str(self.index) + " Run Threading Success")
+
+    def DoWork(self):
+        global get_mi_data_battery
+        while self.bRunning:
+            if (self.BLE_Connected & self.bRunning):
+                try:
+                    self.p.waitForNotifications(0.5)
+
+                    if (int(time.time()-self.start_time2)>self.GetBatteryValueIntervalSecond):
+                        self.start_time2 = time.time()
+                        try:
+                            my_service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
+                            my_char = my_service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
+                            batter_raw_value = my_char.read()
+                            batter_value = int.from_bytes(batter_raw_value, 'big')
+                            get_mi_data_battery[self.index] = batter_value
+                            print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
+                        except:
+                            self.BLE_Connected = False
+                            print(ANSI_RED + "    Machine-" + str(self.index) + " - Get Battery Fail" + ANSI_OFF)
+                except:
+                    self.BLE_Connected = False
+                    print("Machine-" + str(self.index) + " - Wait For Notification Error")
+            else:
+                if (int(time.time()-self.start_time)>self.ReconnectIntervalSecond):
+                    self.start_time=time.time()
+                    self.Connect()
+            time.sleep(0.5)
+    
+    def Close(self):
+        self.bRunning = False
+        if self.BLE_Connected == True:
+            try:
+                self.p.disconnect()
+                print("Machine-" + str(self.index) + " - Disconnect Success")
+            except:
+                self.p=None
+                print("Machine-" + str(self.index) + " - Disconnect Fail")
+
+class BLEDeviceForMi():
+    
+    bBLEDeviceExist = False
+    bCheckBLEDeivce = False
+    bExecuteConnect = False
+    bExecuteStop = False
+    bRunning = False
+    DoWorkThread = 0
+    myBleDevice=[]
+    
+
+    def __init__(self, bScanBLE):
+        self.bScanBLE = bScanBLE
+        self.bRunning = True
+        self.DoWorkThread = threading.Thread(target=self.DoWork)
+        self.DoWorkThread.start()
+
+    def Start(self):
+        self.bExecuteConnect = True
+
+    def Stop(self):
+        self.bExecuteStop = True
+
+    def DoWork(self):
+        global mac_address_list
+        global get_mi_device_number
+        global get_mi_data_flag
+        global get_mi_data_temp
+        global get_mi_data_humidity
+        global get_mi_data_battery
+
+        while self.bRunning:
+
+            #Connect
+            #region
+            if self.bExecuteConnect:
+                self.bExecuteConnect = False
+
+                # Scan BLE
+                #region Scan BLE
+
+                if self.bScanBLE:
+                    parser = argparse.ArgumentParser()
+                    parser.add_argument('-i', '--hci', action='store', type=int, default=0,
+                        help='Interface number for scan')
+                    parser.add_argument('-t', '--timeout', action='store', type=int, default=4,
+                        help='Scan delay, 0 for continuous')
+                    parser.add_argument('-s', '--sensitivity', action='store', type=int, default=-128,
+                        help='dBm value for filtering far devices')
+                    parser.add_argument('-d', '--discover', action='store_true',
+                        help='Connect and discover service to scanned devices')
+                    parser.add_argument('-a', '--all', action='store_true',
+                        help='Display duplicate adv responses, by default show new + updated')
+                    parser.add_argument('-n', '--new', action='store_true',
+                        help='Display only new adv responses, by default show new + updated')
+                    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Increase output verbosity')
+                    arg = parser.parse_args(sys.argv[1:])
+
+                    btle.Debugging = arg.verbose
+
+                    scanner = btle.Scanner(arg.hci).withDelegate(ScanPrint(arg))
+
+                    print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
+                    #devices = scanner.scan(arg.timeout)
+                    try:
+                        devices = scanner.scan(20)
+                    except:
+                        print("Scanning for devices happen error")
+
+
+                #endregion
+
+                # Connect to BLE Device
+                #region Connect to BLE Device
+
+                length = len(mac_address_list)
+
+                if length > 0:
+                    self.bBLEDeviceExist = True
+
+                if self.bBLEDeviceExist:
+                    print("List of Mac Address: Number=>" + str(length))
+                    print(mac_address_list)
+
+                    for index in range(length):
+                        _device = MyTest(index, mac_address_list[index])
+                        _device.Connect()
+                        _device.Run()
+                        self.myBleDevice.append(_device)
+                        get_mi_data_flag.append(False)
+                        get_mi_data_temp.append(0.0)
+                        get_mi_data_humidity.append(0)
+                        get_mi_data_battery.append(99)
+                        get_mi_device_number = get_mi_device_number + 1
+
+                        time.sleep(1.0)
+
+                    #get_mi_device_number = length
+                    print(ANSI_YELLOW + "List of Mac Address: Number=>" + str(get_mi_device_number) + ANSI_OFF)
+
+                else:
+                    print("There is no BLE Device")
+
+                #endregion
+            #endregion
+
+            # Disconnect
+            #region
+
+            if self.bExecuteStop:
+                self.bExecuteStop = False
+                for index in range(length):
+                    self.myBleDevice[index].Close()
+                self.bRunning = False
+
+            #endregion
+
+            time.sleep(0.5)
+
+#endregion
 
 #Flag
 bRunning = True
 bGetData = False
 bNetConnected = False
 bRebootTrigger = False
+bCameraUsed = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -161,24 +505,40 @@ def GetSensorsData():
     global thermalmaxValue
     global thermalminValue
 
+
+
+
     print("Get Local Sensors Thread Start")
 
     # DHT22 Attribute
-    dhtDevice = adafruit_dht.DHT22(board.D17)
+    dhtDevice = 0
+    try:
+        dhtDevice = adafruit_dht.DHT22(board.D17)
+        print(ANSI_GREEN + "Create DHT Device Success" + ANSI_OFF)
+    except:
+        dhtDevice = 0
+        print(ANSI_GREEN + "Create DHT Device Fail" + ANSI_OFF)
 
    
     
 
     #AMG8833 Attribute
-    thermalImage = Adafruit_AMG88xx()
+    thermalImage = 0
+    try:
+        thermalImage = Adafruit_AMG88xx()
+        print(ANSI_GREEN + "Connect to Theraml Camera Success" + ANSI_OFF)
+    except:
+        thermalImage = 0
+        print(ANSI_GREEN + "Connect to Theraml Camera Fail" + ANSI_OFF)
 
     while bRunning:
 
         #DHT22
         try:
-            temp_c = dhtDevice.temperature
-            humidity = dhtDevice.humidity
-            print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+            if dhtDevice != 0:
+                temp_c = dhtDevice.temperature
+                humidity = dhtDevice.humidity
+                print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
 
@@ -214,35 +574,36 @@ def GetSensorsData():
 
         #Thermal Image
         try:
-            thermalpixels = thermalImage.readPixels()
+            if thermalImage != 0:
+                thermalpixels = thermalImage.readPixels()
 
-            fireAlarmCount=0
-            fireWarningCount=0
-            bFirstFlag = False
-            for i in thermalpixels:
-                if i >FireAlarmTempValue:
-                    fireAlarmCount += 1
-                elif i > FireWarningTempValue:
+                fireAlarmCount=0
+                fireWarningCount=0
+                bFirstFlag = False
+                for i in thermalpixels:
+                    if i >FireAlarmTempValue:
+                        fireAlarmCount += 1
+                    elif i > FireWarningTempValue:
                     fireWarningCount += 1
-                if not bFirstFlag:
-                    bFirstFlag=True
-                    thermalmaxValue = i
-                    thermalminValue = i
+                    if not bFirstFlag:
+                        bFirstFlag=True
+                        thermalmaxValue = i
+                        thermalminValue = i
+                    else:
+                        if i > thermalmaxValue:
+                            thermalmaxValue=i
+                        if i < thermalminValue:
+                            thermalminValue=i
+
+                if fireAlarmCount > FireAlarmCountVaue:
+                    sFireDetectStatus="Alarm"
+                elif fireWarningCount > FireWarningCountValue:
+                    sFireDetectStatus="Warning"
                 else:
-                    if i > thermalmaxValue:
-                        thermalmaxValue=i
-                    if i < thermalminValue:
-                        thermalminValue=i
-
-            if fireAlarmCount > FireAlarmCountVaue:
-                sFireDetectStatus="Alarm"
-            elif fireWarningCount > FireWarningCountValue:
-                sFireDetectStatus="Warning"
-            else:
-                sFireDetectStatus="Normal"
+                    sFireDetectStatus="Normal"
 
 
-            print("Get ThermalPixels Success: " + sFireDetectStatus)
+                print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
             
@@ -252,6 +613,14 @@ def GetSensorsData():
         time.sleep(3.0)
 
 def UpdateLocalSensorsInformation():
+
+    global get_mi_device_number
+    global get_mi_data_flag
+    global get_mi_data_temp
+    global get_mi_data_humidity
+    global get_mi_data_battery
+    global mac_address_list
+
 
     global bRunning
     global bGetData
@@ -307,8 +676,11 @@ def UpdateLocalSensorsInformation():
             templist["ID"]=1
             templist["Type"]="Local"
             templist["Unit"]="C"
+            templist["Address"]="NA"
             templist["Value"]=temp_c
             InformationData[SetKey][SetKey2][SetKey3].append(templist)
+            
+
     
             SetKey2="Humidity"
             InformationData[SetKey][SetKey2]={}
@@ -321,6 +693,34 @@ def UpdateLocalSensorsInformation():
             humiditylist["Value"]=humidity
             InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
+            print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
+            SetKey2="MiTempHumidity"
+            InformationData[SetKey][SetKey2]={}
+            InformationData[SetKey][SetKey2]["Count"]=0
+            InformationData[SetKey][SetKey2][SetKey3]=[]
+            if (get_mi_device_number > 0):
+                print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
+                Count = 0
+                
+                for index in range(get_mi_device_number):
+                    if get_mi_data_flag[index]:
+                        get_mi_data_flag[index] = False
+                        Count = Count + 1
+                        InformationData[SetKey][SetKey2]["Count"]=Count
+
+                        mithlist = {}
+                        mithlist["ID"]=mac_address_list[index]
+                        mithlist["Type"]="MI Remote"
+                        mithlist["TUnit"]="C"
+                        mithlist["TValue"]=get_mi_data_temp[index]
+                        mithlist["HUnit"]="%RH"
+                        mithlist["HValue"]=get_mi_data_humidity[index]
+                        mithlist["BUnit"]="%"
+                        mithlist["BValue"]=get_mi_data_battery[index]
+
+                        InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
+
+            
             SetKey2="Vibration"
             InformationData[SetKey][SetKey2]={}
             InformationData[SetKey][SetKey2]["Count"]=1
@@ -396,6 +796,13 @@ def GetCommandFromCloud():
     global CapturePictureRV
     global CaptureVideoSecond
 
+    global bCameraUsed
+    global ftp
+
+    #flag
+    bCaptureImage = False
+    bCaptureVideo = False
+
     #print("Get Command From Cloud")
     
     while bRunning:
@@ -430,8 +837,12 @@ def GetCommandFromCloud():
                     CaptureVideoSecond=data['CaptureVideoSecond']
                     print("Set Value Completely")
                 if _command == "CapturePicture":
-                    bconnected = os.system("ping -c 1 192.168.8.100")
-
+                    bCaptureImage = True
+                
+                if (bCaptureImage and (bCameraUsed == False)):
+                    print("    Start To Capture Image")
+                    bCameraUsed = True
+                    bCaptureImage = False
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
                     fileString ="CapPictures/" + datestring + "/"
@@ -440,7 +851,7 @@ def GetCommandFromCloud():
                         os.mkdir("CapPictures/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
                     fileString += filename
 
                     with picamera.PiCamera() as camera:
@@ -450,28 +861,43 @@ def GetCommandFromCloud():
 
                     time.sleep(1.0)
 
-                    if bconnected == 0:
+                    if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                        #url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+
                         file=open(fileString ,'rb')
-                        payload=file.read()
-                        file.close()
+                        size = os.path.getsize(fileString)
+                        #payload=file.read()
+                        #file.close()
                         headers = {'Content-Type': 'image/jpeg'}
                         try:
-                            responses = requests.request("POST", url, headers=headers, data = payload)
-                            if responses.status_code == 200:
-                                print("\033[1;34mUpdate Capture Picture Success\033[0m")
-                            else:
-                                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                            #responses = requests.request("POST", url, headers=headers, data = payload)
+                            #if responses.status_code == 200:
+                            ftp.connect(ftp_IP) 
+                            ftp.login(ftp_user,ftp_password)
+                            ftp.cwd('/photo')
+                            ftp.storbinary(('STOR ' + filename), file, size) 
+                            ftp.close()
+                            print("\033[1;34mUpdate Capture Picture Success\033[0m")
+
                         except:
                             print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                        file.close()
                     else:
                         print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
+                    bCameraUsed = False
+
                 if _command == "CaptureVideo":
-                    bconnected = os.system("ping -c 1 192.168.8.100")
+                    bCaptureVideo = True
+
+                if (bCaptureVideo and (bCameraUsed == False)):
+                    print("    Start To Capture Video")
+                    bCameraUsed = True
+                    bCaptureVideo = False
+                    #bconnected = os.system("ping -c 1 192.168.8.100")
 
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
@@ -481,29 +907,39 @@ def GetCommandFromCloud():
                         os.mkdir("CapVideo/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
+                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
-                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max ObjTemp(" + str(thermalmaxValue) + "C), Min ObjTemp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
-                    if bconnected == 0:
+                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
+                    if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                        #url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                         file=open(fileString ,'rb')
-                        payload=file.read()
-                        file.close()
+                        size = os.path.getsize(fileString)
+                        #payload=file.read()
+                        #file.close()
                         headers = {'Content-Type': 'video/mp4'}
                         try:
-                            responses = requests.request("POST", url, headers=headers, data = payload)
-                            if responses.status_code == 200:
-                                print("\033[1;34mUpdate Capture Video Success\033[0m")
-                            else:
-                                print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                            #responses = requests.request("POST", url, headers=headers, data = payload)
+                            #if responses.status_code == 200:
+                            
+                            ftp.connect(ftp_IP) 
+                            ftp.login(ftp_user,ftp_password)
+                            ftp.cwd('/video')
+                            ftp.storbinary(('STOR ' + filename), file, size) 
+                            ftp.close()
+                            print("\033[1;34mUpdate Capture Video Success\033[0m")
+                            #else:
+                                #print("\033[1;31mUpdate Capture Video Failure\033[0m")
                         except:
                             print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                        file.close()
                     else:
                         print("\033[1;31mUpdate Capture Video Failure\033[0m")
+
+                    bCameraUsed = False
             
             except:
                 bNetConnected = False
@@ -513,6 +949,9 @@ def GetCommandFromCloud():
 
 
 def UpdateLocalPicture():
+    global ftp
+    global ftp_Exist
+    global bCameraUsed
     #print("Update Local Picture Start")
     tStart = time.time()
 
@@ -521,9 +960,10 @@ def UpdateLocalPicture():
     bUpdate=True
     while bRunning:
         
-        if bUpdate:
+        if (bUpdate and (bCameraUsed==False)):
+            bCameraUsed = True
             bUpdate=False
-            bconnected = os.system("ping -c 1 192.168.8.100")
+            #bconnected = os.system("ping -c 1 192.168.8.100")
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
@@ -533,7 +973,7 @@ def UpdateLocalPicture():
                 os.mkdir("Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
@@ -543,27 +983,36 @@ def UpdateLocalPicture():
 
             time.sleep(1.0)
 
-            if bconnected == 0:
+            if True:
                 setsn=1
                 setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+                #url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                 file=open(fileString ,'rb')
-                payload=file.read()
-                file.close()
-                headers = {'Content-Type': 'image/jpeg'}
+                size = os.path.getsize(fileString)
+                #payload=file.read()
+                #file.close()
+                #headers = {'Content-Type': 'image/jpeg'}
                 try:
-                    responses = requests.request("POST", url, headers=headers, data = payload)
+                #    responses = requests.request("POST", url, headers=headers, data = payload)
                     #print(responses.text.encode('utf8'))
-                    if responses.status_code == 200:
-                        print("\033[1;34mUpdate Local Picture Success\033[0m")
-                    else:
-                        print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                    #if responses.status_code == 200:
+                    ftp.connect(ftp_IP) 
+                    ftp.login(ftp_user,ftp_password)
+                    ftp.cwd('/photo')
+                    ftp.storbinary(('STOR ' + filename), file, size) 
+                    ftp.close()
+                    print("\033[1;34mUpdate Local Picture Success\033[0m")
+                    #else:
+                        #print("\033[1;31mUpdate Local Picture Failure\033[0m")
                     #print(responses)
                 except:
                     print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                file.close()
             else:
                 print("\033[1;31mUpdate Local Picture Failure\033[0m")
+
+            bCameraUsed = False
 
         tEnd = time.time()
         intervalTime = tEnd - tStart
@@ -575,6 +1024,21 @@ def UpdateLocalPicture():
 
 
 print("\033[1;33mProgram Start\033[0m")
+
+ftp=FTP() 
+ftp.set_debuglevel(2)
+ftp.set_pasv(False)
+#try:
+#    ftp.connect(ftp_IP) 
+#    ftp.login(ftp_user,ftp_password)
+#    ftp_Exist = True
+#except:
+#    ftp_Exist = False
+
+print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
+
+myBLEDevice = BLEDeviceForMi(True)
+myBLEDevice.Start()
 
 CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
@@ -588,20 +1052,22 @@ UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
-CheckCloudExistThread.join()
-GetLocalSensorsThread.join()
-UpdateSensorsThread.join()
-UpdateLocalPictureThread.join()
-GetCommandFromCloudThread.join()
+#CheckCloudExistThread.join()
+#GetLocalSensorsThread.join()
+#UpdateSensorsThread.join()
+#UpdateLocalPictureThread.join()
+#GetCommandFromCloudThread.join()
 
 try:
-    while bRunning:
-        time.sleep(1.0)
+    #while bRunning:
+        #time.sleep(1.0)
+    input()
 except KeyboardInterrupt:
     bRunning=False
 
-
 bRunning=False
+myBLEDevice.Stop()
+
 print("\033[1;33mProgram Finish\033[0m")
 
 time.sleep(2.0)

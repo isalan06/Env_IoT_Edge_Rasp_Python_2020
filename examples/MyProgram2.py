@@ -511,21 +511,34 @@ def GetSensorsData():
     print("Get Local Sensors Thread Start")
 
     # DHT22 Attribute
-    dhtDevice = adafruit_dht.DHT22(board.D17)
+    dhtDevice = 0
+    try:
+        dhtDevice = adafruit_dht.DHT22(board.D17)
+        print(ANSI_GREEN + "Create DHT Device Success" + ANSI_OFF)
+    except:
+        dhtDevice = 0
+        print(ANSI_GREEN + "Create DHT Device Fail" + ANSI_OFF)
 
    
     
 
     #AMG8833 Attribute
-    thermalImage = Adafruit_AMG88xx()
+    thermalImage = 0
+    try:
+        thermalImage = Adafruit_AMG88xx()
+        print(ANSI_GREEN + "Connect to Theraml Camera Success" + ANSI_OFF)
+    except:
+        thermalImage = 0
+        print(ANSI_GREEN + "Connect to Theraml Camera Fail" + ANSI_OFF)
 
     while bRunning:
 
         #DHT22
         try:
-            temp_c = dhtDevice.temperature
-            humidity = dhtDevice.humidity
-            print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+            if dhtDevice != 0:
+                temp_c = dhtDevice.temperature
+                humidity = dhtDevice.humidity
+                print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
 
@@ -561,35 +574,36 @@ def GetSensorsData():
 
         #Thermal Image
         try:
-            thermalpixels = thermalImage.readPixels()
+            if thermalImage != 0:
+                thermalpixels = thermalImage.readPixels()
 
-            fireAlarmCount=0
-            fireWarningCount=0
-            bFirstFlag = False
-            for i in thermalpixels:
-                if i >FireAlarmTempValue:
-                    fireAlarmCount += 1
-                elif i > FireWarningTempValue:
+                fireAlarmCount=0
+                fireWarningCount=0
+                bFirstFlag = False
+                for i in thermalpixels:
+                    if i >FireAlarmTempValue:
+                        fireAlarmCount += 1
+                    elif i > FireWarningTempValue:
                     fireWarningCount += 1
-                if not bFirstFlag:
-                    bFirstFlag=True
-                    thermalmaxValue = i
-                    thermalminValue = i
+                    if not bFirstFlag:
+                        bFirstFlag=True
+                        thermalmaxValue = i
+                        thermalminValue = i
+                    else:
+                        if i > thermalmaxValue:
+                            thermalmaxValue=i
+                        if i < thermalminValue:
+                            thermalminValue=i
+
+                if fireAlarmCount > FireAlarmCountVaue:
+                    sFireDetectStatus="Alarm"
+                elif fireWarningCount > FireWarningCountValue:
+                    sFireDetectStatus="Warning"
                 else:
-                    if i > thermalmaxValue:
-                        thermalmaxValue=i
-                    if i < thermalminValue:
-                        thermalminValue=i
-
-            if fireAlarmCount > FireAlarmCountVaue:
-                sFireDetectStatus="Alarm"
-            elif fireWarningCount > FireWarningCountValue:
-                sFireDetectStatus="Warning"
-            else:
-                sFireDetectStatus="Normal"
+                    sFireDetectStatus="Normal"
 
 
-            print("Get ThermalPixels Success: " + sFireDetectStatus)
+                print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
             
