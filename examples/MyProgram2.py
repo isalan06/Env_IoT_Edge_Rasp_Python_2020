@@ -364,6 +364,7 @@ bRunning = True
 bGetData = False
 bNetConnected = False
 bRebootTrigger = False
+bCameraUsed = True
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -781,6 +782,13 @@ def GetCommandFromCloud():
     global CapturePictureRV
     global CaptureVideoSecond
 
+    global bCameraUsed
+    global ftp
+
+    #flag
+    bCaptureImage = False
+    bCaptureVideo = False
+
     #print("Get Command From Cloud")
     
     while bRunning:
@@ -815,8 +823,11 @@ def GetCommandFromCloud():
                     CaptureVideoSecond=data['CaptureVideoSecond']
                     print("Set Value Completely")
                 if _command == "CapturePicture":
-                    bconnected = os.system("ping -c 1 192.168.8.100")
-
+                    bCaptureImage = True
+                
+                if (bCaptureImage & (bCameraUsed == False)):
+                    bCameraUsed = True
+                    bCaptureImage = False
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
                     fileString ="CapPictures/" + datestring + "/"
@@ -825,7 +836,7 @@ def GetCommandFromCloud():
                         os.mkdir("CapPictures/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('%Y%m%d%H%M%S') + ".jpg"
+                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
                     fileString += filename
 
                     with picamera.PiCamera() as camera:
@@ -835,28 +846,42 @@ def GetCommandFromCloud():
 
                     time.sleep(1.0)
 
-                    if bconnected == 0:
+                    if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                        #url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+
                         file=open(fileString ,'rb')
-                        payload=file.read()
-                        file.close()
+                        size = os.path.getsize(fileString)
+                        #payload=file.read()
+                        #file.close()
                         headers = {'Content-Type': 'image/jpeg'}
                         try:
-                            responses = requests.request("POST", url, headers=headers, data = payload)
-                            if responses.status_code == 200:
-                                print("\033[1;34mUpdate Capture Picture Success\033[0m")
-                            else:
-                                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                            #responses = requests.request("POST", url, headers=headers, data = payload)
+                            #if responses.status_code == 200:
+                            ftp.connect(ftp_IP) 
+                            ftp.login(ftp_user,ftp_password)
+                            ftp.cwd('/photo')
+                            ftp.storbinary(('STOR ' + filename), file, size) 
+                            ftp.close()
+                            print("\033[1;34mUpdate Capture Picture Success\033[0m")
+
                         except:
                             print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                        file.close()
                     else:
                         print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
+                    bCameraUsed = False
+
                 if _command == "CaptureVideo":
-                    bconnected = os.system("ping -c 1 192.168.8.100")
+                    bCaptureVideo = True
+
+                if (bCaptureVideo & (bCameraUsed == False)):
+                    bCameraUsed = True
+                    bCaptureVideo = False
+                    #bconnected = os.system("ping -c 1 192.168.8.100")
 
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
@@ -866,29 +891,39 @@ def GetCommandFromCloud():
                         os.mkdir("CapVideo/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('%Y%m%d%H%M%S') + ".mp4"
+                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
-                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max ObjTemp(" + str(thermalmaxValue) + "C), Min ObjTemp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
-                    if bconnected == 0:
+                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
+                    if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
+                        #url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                         file=open(fileString ,'rb')
-                        payload=file.read()
-                        file.close()
+                        size = os.path.getsize(fileString)
+                        #payload=file.read()
+                        #file.close()
                         headers = {'Content-Type': 'video/mp4'}
                         try:
-                            responses = requests.request("POST", url, headers=headers, data = payload)
-                            if responses.status_code == 200:
-                                print("\033[1;34mUpdate Capture Video Success\033[0m")
-                            else:
-                                print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                            #responses = requests.request("POST", url, headers=headers, data = payload)
+                            #if responses.status_code == 200:
+                            
+                            ftp.connect(ftp_IP) 
+                            ftp.login(ftp_user,ftp_password)
+                            ftp.cwd('/video')
+                            ftp.storbinary(('STOR ' + filename), file, size) 
+                            ftp.close()
+                            print("\033[1;34mUpdate Capture Video Success\033[0m")
+                            #else:
+                                #print("\033[1;31mUpdate Capture Video Failure\033[0m")
                         except:
                             print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                        file.close()
                     else:
                         print("\033[1;31mUpdate Capture Video Failure\033[0m")
+
+                    bCameraUsed = False
             
             except:
                 bNetConnected = False
@@ -908,7 +943,8 @@ def UpdateLocalPicture():
     bUpdate=True
     while bRunning:
         
-        if bUpdate:
+        if (bUpdate & (bCameraUsed==False)):
+            bCameraUsed = True
             bUpdate=False
             #bconnected = os.system("ping -c 1 192.168.8.100")
 
@@ -958,6 +994,8 @@ def UpdateLocalPicture():
                 file.close()
             else:
                 print("\033[1;31mUpdate Local Picture Failure\033[0m")
+
+            bCameraUsed = False
 
         tEnd = time.time()
         intervalTime = tEnd - tStart
