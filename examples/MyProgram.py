@@ -24,6 +24,9 @@ from bluepy import btle
 
 from ftplib import FTP 
 
+import socket
+import uuid
+
 get_mi_device_number = 0
 mac_address_list = []
 get_mi_data_flag = []
@@ -41,6 +44,9 @@ ftp_videoFolder = '/video'
 ftp_Exist = False
 ftp = 0
 
+hostname = ''
+local_mac_address = ''
+
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -57,6 +63,10 @@ else:
     ANSI_CYAN = ANSI_CSI + '36m'
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
+
+def get_mac_address():
+    mac=uuid.UUID(int = uuid.getnode()).hex[-12:]
+    return ":".join([mac[e:e+2] for e in range(0,11,2)])
 
 # BLE Program
 #region
@@ -626,6 +636,8 @@ def UpdateLocalSensorsInformation():
     global bGetData
     global bNetConnected
 
+    global local_mac_address
+
     #DHT Attribute
     global temp_c
     global humidity
@@ -651,8 +663,8 @@ def UpdateLocalSensorsInformation():
 
     #print("Update Sensors Informatnio Start")
     while bRunning:
-        time.sleep(5.0)
-        if bGetData & bNetConnected:
+        time.sleep(10.0)
+        if bGetData: # & bNetConnected:
             bGetData = False
 
             #JSON
@@ -660,7 +672,7 @@ def UpdateLocalSensorsInformation():
             SetValue="IoT Edge"
             InformationData = {}
             InformationData[SetKey]=SetValue
-            InformationData["Machine ID"]="Test ID"
+            InformationData["Machine ID"]=local_mac_address
             InformationData["Comm Type"]="Ethernet"
             InformationData["VibrationStatus"]=sVibrationStatus
             InformationData["FireDetectStatus"]=sFireDetectStatus
@@ -817,7 +829,7 @@ def GetCommandFromCloud():
         payload = {}
         headers= {}
         
-        if bNetConnected:
+        if bNetConnected or True:
             try:
                 response = requests.request("GET", url, headers=headers, data = payload)
                 #response.text.encode('utf8')
@@ -853,10 +865,10 @@ def GetCommandFromCloud():
                     bCaptureImage = False
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
-                    fileString ="CapPictures/" + datestring + "/"
+                    fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
 
-                    if not os.path.isdir("CapPictures/"):
-                        os.mkdir("CapPictures/")
+                    if not os.path.isdir("/home/pi/Pictures/CapPictures/"):
+                        os.mkdir("/home/pi/Pictures/CapPictures/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
                     filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
@@ -910,10 +922,10 @@ def GetCommandFromCloud():
 
                     nowtime = datetime.now()
                     datestring = nowtime.strftime('%Y%m%d')
-                    fileString ="CapVideo/" + datestring + "/"
+                    fileString ="/home/pi/Pictures/CapVideo/" + datestring + "/"
 
-                    if not os.path.isdir("CapVideo/"):
-                        os.mkdir("CapVideo/")
+                    if not os.path.isdir("/home/pi/Pictures/CapVideo/"):
+                        os.mkdir("/home/pi/Pictures/CapVideo/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
                     filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".mp4"
@@ -971,10 +983,10 @@ def GetCommandFromCloud():
             bVibrationStatus = True
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
-            fileString ="VibrationAlarmPictures/" + datestring + "/"
+            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
 
-            if not os.path.isdir("VibrationAlarmPictures/"):
-                os.mkdir("VibrationAlarmPictures/")
+            if not os.path.isdir("/home/pi/Pictures/VibrationAlarmPictures/"):
+                os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
             filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
@@ -1026,10 +1038,10 @@ def GetCommandFromCloud():
             bFireDetectStatus = True
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
-            fileString ="FireDetectPictures/" + datestring + "/"
+            fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
 
-            if not os.path.isdir("FireDetectPictures/"):
-                os.mkdir("FireDetectPictures/")
+            if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
+                os.mkdir("/home/pi/Pictures/FireDetectPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
             filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
@@ -1065,7 +1077,7 @@ def GetCommandFromCloud():
             bCameraUsed = False
         #endregion
 
-        time.sleep(1.0)
+        time.sleep(5.0)
 
 
 
@@ -1088,10 +1100,10 @@ def UpdateLocalPicture():
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
-            fileString ="Pictures/" + datestring + "/"
+            fileString ="/home/pi/Pictures/" + datestring + "/"
 
-            if not os.path.isdir("Pictures/"):
-                os.mkdir("Pictures/")
+            if not os.path.isdir("/home/pi/Pictures/Pictures/"):
+                os.mkdir("/home/pi/Pictures/Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
             filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".jpg"
@@ -1146,6 +1158,15 @@ def UpdateLocalPicture():
 
 print("\033[1;33mProgram Start\033[0m")
 
+#Get Mac Address
+try:
+    #hostname=socket.gethostname()
+    local_mac_address = get_mac_address()
+except:
+    local_mac_address='00:00:00:00:00:00'
+print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
+
+#FTP
 ftp=FTP() 
 ftp.set_debuglevel(2)
 ftp.set_pasv(False)
@@ -1161,13 +1182,14 @@ print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
+
+#CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 
-CheckCloudExistThread.start()
+#CheckCloudExistThread.start()
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
