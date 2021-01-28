@@ -1107,7 +1107,7 @@ def UpdateLocalPicture():
                 os.mkdir("/home/pi/Pictures/Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
