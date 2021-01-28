@@ -1085,6 +1085,7 @@ def UpdateLocalPicture():
     global ftp
     global ftp_Exist
     global bCameraUsed
+    global local_mac_address
     #print("Update Local Picture Start")
     tStart = time.time()
 
@@ -1100,13 +1101,13 @@ def UpdateLocalPicture():
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
-            fileString ="/home/pi/Pictures/" + datestring + "/"
+            fileString ="/home/pi/Pictures/Pictures/" + datestring + "/"
 
             if not os.path.isdir("/home/pi/Pictures/Pictures/"):
                 os.mkdir("/home/pi/Pictures/Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
