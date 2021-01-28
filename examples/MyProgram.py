@@ -815,6 +815,8 @@ def GetCommandFromCloud():
     global sVibrationStatus
     global sFireDetectStatus
 
+    global local_mac_address
+
     #flag
     bCaptureImage = False
     bCaptureVideo = False
@@ -872,7 +874,7 @@ def GetCommandFromCloud():
                         os.mkdir("/home/pi/Pictures/CapPictures/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
+                    filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
                     fileString += filename
 
                     with picamera.PiCamera() as camera:
@@ -1138,6 +1140,11 @@ def UpdateLocalPicture():
                     ftp.storbinary(('STOR ' + filename), file, size) 
                     ftp.close()
                     print("\033[1;34mUpdate Local Picture Success\033[0m")
+                    try:
+                        os.remove(fileString)
+                        print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
+                    except:
+                        print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
                     #else:
                         #print("\033[1;31mUpdate Local Picture Failure\033[0m")
                     #print(responses)
