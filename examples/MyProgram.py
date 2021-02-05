@@ -678,6 +678,7 @@ def UpdateLocalSensorsInformation():
             InformationData["VibrationStatus"]=sVibrationStatus
             InformationData["FireDetectStatus"]=sFireDetectStatus
             InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
+            InformationData["Command"]="UpdateStatus"
             SetKey="Data"
             InformationData[SetKey]={}
             SetKey2="Temp"
@@ -693,8 +694,6 @@ def UpdateLocalSensorsInformation():
             templist["Value"]=temp_c
             InformationData[SetKey][SetKey2][SetKey3].append(templist)
             
-
-    
             SetKey2="Humidity"
             InformationData[SetKey][SetKey2]={}
             InformationData[SetKey][SetKey2]["Count"]=1
@@ -787,7 +786,8 @@ def UpdateLocalSensorsInformation():
                 auth=('token', 'example')
                 ssl._create_default_https_context = ssl._create_unverified_context
                 headers = {'Content-Type': 'application/json'}
-                r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
+                #r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
+                r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
                 print("\033[1;32mUpdate Sensors Information Success\033[0m")
             except BaseException as error:
                 bNetConnected = False
