@@ -26,6 +26,8 @@ from ftplib import FTP
 
 import socket
 import uuid
+import psutil
+
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -66,8 +68,13 @@ else:
     ANSI_OFF = ANSI_CSI + '0m'
 
 def get_mac_address():
-    mac=uuid.UUID(int = uuid.getnode()).hex[-12:]
+    #mac=uuid.UUID(int = uuid.getnode()).hex[-12:]
     #return ":".join([mac[e:e+2] for e in range(0,11,2)])
+    mac = '000000000000'
+    nics = psutil.net_if_addrs()['eth0']
+    for interface in nics:
+        if interface.family == 17:
+            mac = interface.address.replace(':','')
     return mac
 
 # BLE Program
@@ -382,6 +389,11 @@ bCameraUsed = False
 sVibrationStatus = "Normal"
 sFireDetectStatus = "Normal"
 
+#Component Status
+sDHT22Status = "Stop"
+sAccelGaugeStatus = "Stop"
+sThermalStatus = "Stop"
+
 #Parameter
 VibrationWarningValue=30.0
 VibrationAlarmValue=50.0
@@ -507,6 +519,11 @@ def GetSensorsData():
     global sVibrationStatus
     global sFireDetectStatus
 
+    #component Status
+    global sDHT22Status
+    global sAccelGaugeStatus
+    global sThermalStatus
+
     #Parameter
     global VibrationWarningValue
     global VibrationAlarmValue
@@ -536,9 +553,11 @@ def GetSensorsData():
     try:
         dhtDevice = adafruit_dht.DHT22(board.D17)
         print(ANSI_GREEN + "Create DHT Device Success" + ANSI_OFF)
+        sDHT22Status="Running"
     except:
         dhtDevice = 0
         print(ANSI_GREEN + "Create DHT Device Fail" + ANSI_OFF)
+        sDHT22Status="Stop"
 
    
     
@@ -548,9 +567,11 @@ def GetSensorsData():
     try:
         thermalImage = Adafruit_AMG88xx()
         print(ANSI_GREEN + "Connect to Theraml Camera Success" + ANSI_OFF)
+        sThermalStatus = "Running"
     except:
         thermalImage = 0
-        print(ANSI_GREEN + "Connect to Theraml Camera Fail" + ANSI_OFF)
+        print(ANSI_RED + "Connect to Theraml Camera Fail" + ANSI_OFF)
+        sThermalStatus = "Stop"
 
     while bRunning:
 
@@ -589,8 +610,10 @@ def GetSensorsData():
             else:
                 sVibrationStatus = "Normal"
             print("Get G Sensors Success: " + sVibrationStatus)
+            sAccelGaugeStatus = "Running"
         except:
             print("Get G Sensor Failure")
+            sAccelGaugeStatus = "Stop"
             
 
         #Thermal Image
@@ -651,6 +674,10 @@ def UpdateLocalSensorsInformation():
     global local_mac_address
     global hostip
 
+    global sDHT22Status
+    global sAccelGaugeStatus
+    global sThermalStatus
+
     #DHT Attribute
     global temp_c
     global humidity
@@ -704,6 +731,9 @@ def UpdateLocalSensorsInformation():
             InformationData["Comm Type"]="Ethernet"
             InformationData["VibrationStatus"]=sVibrationStatus
             InformationData["FireDetectStatus"]=sFireDetectStatus
+            InformationData["DHT22Status"]=sDHT22Status
+            InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
+            InformationData["ThermalStatus"]=sThermalStatus
             InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
             InformationData["Command"]="UpdateStatus"
             InformationData["MachineIP"]=hostip
