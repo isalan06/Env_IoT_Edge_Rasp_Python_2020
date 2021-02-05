@@ -842,6 +842,7 @@ def GetCommandFromCloud():
         InformationData["VibrationStatus"]=sVibrationStatus
         InformationData["FireDetectStatus"]=sFireDetectStatus
         InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
+        InformationData["Command"]="GetCommand"
 
         payload = {}
         headers= {}
@@ -856,8 +857,9 @@ def GetCommandFromCloud():
                     auth=('token', 'example')
                     ssl._create_default_https_context = ssl._create_unverified_context
                     headers = {'Content-Type': 'application/json'}
-                    r = requests.post(url,headers=headers, data=TransferJSONData, auth=auth)
-                    data = r.json()
+                    #headers = {'Content-Type': 'text/plain'}
+                    response = requests.request("POST", url, headers=headers, data=TransferJSONData)
+                    data = response.json()
 
                     _command = data['Command']
                     print("\033[1;34mGet Command: " + _command + "\033[0m")
