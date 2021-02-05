@@ -388,7 +388,7 @@ VibrationAlarmValue=50.0
 FireWarningTempValue=50.0
 FireWarningCountValue=4
 FireAlarmTempValue=70.0
-FireAlarmCountVaue=1
+FireAlarmCountValue=1
 CapturePictureRH=1920
 CapturePictureRV=1080
 CaptureVideoSecond=15
@@ -513,7 +513,7 @@ def GetSensorsData():
     global FireWarningTempValue
     global FireWarningCountValue
     global FireAlarmTempValue
-    global FireAlarmCountVaue
+    global FireAlarmCountValue
     global CapturePictureRH
     global CapturePictureRV
     global CaptureVideoSecond
@@ -616,7 +616,7 @@ def GetSensorsData():
                         if i < thermalminValue:
                             thermalminValue=i
 
-                if fireAlarmCount > FireAlarmCountVaue:
+                if fireAlarmCount > FireAlarmCountValue:
                     sFireDetectStatus="Alarm"
                 elif fireWarningCount > FireWarningCountValue:
                     sFireDetectStatus="Warning"
@@ -677,7 +677,7 @@ def UpdateLocalSensorsInformation():
     global FireWarningTempValue
     global FireWarningCountValue
     global FireAlarmTempValue
-    global FireAlarmCountVaue
+    global FireAlarmCountValue
     global CapturePictureRH
     global CapturePictureRV
     global CaptureVideoSecond
@@ -714,7 +714,7 @@ def UpdateLocalSensorsInformation():
             InformationData[SetKey]['FireWarningTempValue']=FireWarningTempValue
             InformationData[SetKey]['FireWarningCountValue']=FireWarningCountValue
             InformationData[SetKey]['FireAlarmTempValue']=FireAlarmTempValue
-            InformationData[SetKey]['FireAlarmCountVaue']=FireAlarmCountVaue
+            InformationData[SetKey]['FireAlarmCountValue']=FireAlarmCountValue
             InformationData[SetKey]['CapturePictureRH']=CapturePictureRH
             InformationData[SetKey]['CapturePictureRV']=CapturePictureRV
             InformationData[SetKey]['CaptureVideoSecond']=CaptureVideoSecond
@@ -847,7 +847,7 @@ def GetCommandFromCloud():
     global FireWarningTempValue
     global FireWarningCountValue
     global FireAlarmTempValue
-    global FireAlarmCountVaue
+    global FireAlarmCountValue
     global CapturePictureRH
     global CapturePictureRV
     global CaptureVideoSecond
@@ -925,7 +925,7 @@ def GetCommandFromCloud():
                     FireWarningTempValue=data['FireWarningTempValue']
                     FireWarningCountValue=data['FireWarningCountValue']
                     FireAlarmTempValue=data['FireAlarmTempValue']
-                    FireAlarmCountVaue=data['FileAlarmCountValue']
+                    FireAlarmCountValue=data['FileAlarmCountValue']
                     CapturePictureRH=data['CapturePictureRH']
                     CapturePictureRV=data['CapturePictureRV']
                     CaptureVideoSecond=data['CaptureVideoSecond']
