@@ -46,6 +46,7 @@ ftp = 0
 
 hostname = ''
 local_mac_address = ''
+hostip = ''
 
 
 if os.getenv('C', '1') == '0':
@@ -391,6 +392,9 @@ FireAlarmCountVaue=1
 CapturePictureRH=1920
 CapturePictureRV=1080
 CaptureVideoSecond=15
+SensorsFValue=3.0
+CameraFValue=300.0
+UpdateFValue=10.0
 
 #Vibration Attribute
 gyro_xout = 0
@@ -510,6 +514,12 @@ def GetSensorsData():
     global FireWarningCountValue
     global FireAlarmTempValue
     global FireAlarmCountVaue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
 
     #AMG8833 Attribute
     global thermalpixels
@@ -621,7 +631,8 @@ def GetSensorsData():
 
         bGetData = True
 
-        time.sleep(3.0)
+        #time.sleep(3.0)
+        time.sleep(SensorsFValue)
 
 def UpdateLocalSensorsInformation():
 
@@ -638,6 +649,7 @@ def UpdateLocalSensorsInformation():
     global bNetConnected
 
     global local_mac_address
+    global hostip
 
     #DHT Attribute
     global temp_c
@@ -659,12 +671,27 @@ def UpdateLocalSensorsInformation():
     global x_rotation
     global y_rotation
 
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountVaue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
+
     #AMG8833 Attribute
     global thermalpixels
 
     #print("Update Sensors Informatnio Start")
     while bRunning:
-        time.sleep(10.0)
+        #time.sleep(10.0)
+        time.sleep(UpdateValue)
         if bGetData: # & bNetConnected:
             bGetData = False
 
@@ -679,6 +706,22 @@ def UpdateLocalSensorsInformation():
             InformationData["FireDetectStatus"]=sFireDetectStatus
             InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
             InformationData["Command"]="UpdateStatus"
+            InformationData["MachineIP"]=hostip
+            SetKey="Parameter"
+            InformationData[SetKey]={}
+            InformationData[SetKey]['VibrationWarningValue']=VibrationWarningValue
+            InformationData[SetKey]['VibrationAlarmValue']=VibrationAlarmValue
+            InformationData[SetKey]['FireWarningTempValue']=FireWarningTempValue
+            InformationData[SetKey]['FireWarningCountValue']=FireWarningCountValue
+            InformationData[SetKey]['FireAlarmTempValue']=FireAlarmTempValue
+            InformationData[SetKey]['FireAlarmCountVaue']=FireAlarmCountVaue
+            InformationData[SetKey]['CapturePictureRH']=CapturePictureRH
+            InformationData[SetKey]['CapturePictureRV']=CapturePictureRV
+            InformationData[SetKey]['CaptureVideoSecond']=CaptureVideoSecond
+            InformationData[SetKey]['SensorsFValue']=SensorsFValue
+            InformationData[SetKey]['CameraFValue']=CameraFValue
+            InformationData[SetKey]['UpdateFValue']=UpdateFValue
+
             SetKey="Data"
             InformationData[SetKey]={}
             SetKey2="Temp"
@@ -808,6 +851,9 @@ def GetCommandFromCloud():
     global CapturePictureRH
     global CapturePictureRV
     global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
 
     global bCameraUsed
     global ftp
@@ -883,6 +929,10 @@ def GetCommandFromCloud():
                     CapturePictureRH=data['CapturePictureRH']
                     CapturePictureRV=data['CapturePictureRV']
                     CaptureVideoSecond=data['CaptureVideoSecond']
+                    SensorsFValue=data['SensorsFValue']
+                    CameraFValue=data['CameraFValue']
+                    UpdateFValue=data['UpdateFValue']
+
                     print("Set Value Completely")
 
                 #CapturePicture
@@ -1186,7 +1236,7 @@ def UpdateLocalPicture():
 
         tEnd = time.time()
         intervalTime = tEnd - tStart
-        if intervalTime >= 300.0:
+        if intervalTime >= CameraFValue:#300.0:
             tStart=time.time()
             bUpdate=True
 
@@ -1196,11 +1246,16 @@ def UpdateLocalPicture():
 print("\033[1;33mProgram Start\033[0m")
 
 #Get Mac Address
+hostname=socket.gethostname()
 try:
-    #hostname=socket.gethostname()
     local_mac_address = get_mac_address()
 except:
     local_mac_address='00:00:00:00:00:00'
+try:
+    hostip = socket.gethostbyname(hostname)
+except:
+    hostip = '0.0.0.0'
+
 print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 
 #FTP
