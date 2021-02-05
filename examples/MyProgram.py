@@ -925,7 +925,7 @@ def GetCommandFromCloud():
                     FireWarningTempValue=data['FireWarningTempValue']
                     FireWarningCountValue=data['FireWarningCountValue']
                     FireAlarmTempValue=data['FireAlarmTempValue']
-                    FireAlarmCountValue=data['FileAlarmCountValue']
+                    FireAlarmCountValue=data['FireAlarmCountValue']
                     CapturePictureRH=data['CapturePictureRH']
                     CapturePictureRV=data['CapturePictureRV']
                     CaptureVideoSecond=data['CaptureVideoSecond']
