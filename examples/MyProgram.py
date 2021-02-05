@@ -823,23 +823,49 @@ def GetCommandFromCloud():
     bVibrationStatus = False
     bFireDetectStatus = False
 
+    _Command = ""
+
     #print("Get Command From Cloud")
     
     while bRunning:
 
-        url = "https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec"
+        #url = "https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec"
+        url = "https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec"
+
+        #JSON
+        SetKey="Machine"
+        SetValue="IoT Edge"
+        InformationData = {}
+        InformationData[SetKey]=SetValue
+        InformationData["Machine ID"]=local_mac_address
+        InformationData["Comm Type"]="Ethernet"
+        InformationData["VibrationStatus"]=sVibrationStatus
+        InformationData["FireDetectStatus"]=sFireDetectStatus
+        InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
 
         payload = {}
         headers= {}
         
         if bNetConnected or True:
             try:
-                response = requests.request("GET", url, headers=headers, data = payload)
+                #response = requests.request("GET", url, headers=headers, data = payload)
                 #response.text.encode('utf8')
-                data = response.json()
+                TransferJSONData=json.dumps(InformationData)
 
-                _command = data['Command']
-                print("\033[1;34mGet Command: " + _command + "\033[0m")
+                try:
+                    auth=('token', 'example')
+                    ssl._create_default_https_context = ssl._create_unverified_context
+                    headers = {'Content-Type': 'application/json'}
+                    r = requests.post(url,headers=headers, data=TransferJSONData, auth=auth)
+                    data = r.json()
+
+                    _command = data['Command']
+                    print("\033[1;34mGet Command: " + _command + "\033[0m")
+                except BaseException as error:
+                    bNetConnected = False
+                    print("\033[1;31mGet Command Failure\033[0m")
+
+                
 
                 if _command == "Reboot":
                     bRebootTrigger = True
@@ -931,7 +957,7 @@ def GetCommandFromCloud():
                         os.mkdir("/home/pi/Pictures/CapVideo/")
                     if not os.path.isdir(fileString):
                         os.mkdir(fileString)
-                    filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S') + ".mp4"
+                    filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
                     cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
@@ -992,7 +1018,7 @@ def GetCommandFromCloud():
                 os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
+            filename = sn + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
@@ -1047,7 +1073,7 @@ def GetCommandFromCloud():
                 os.mkdir("/home/pi/Pictures/FireDetectPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = nowtime.strftime('sn_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
+            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
             fileString += filename
 
             with picamera.PiCamera() as camera:
