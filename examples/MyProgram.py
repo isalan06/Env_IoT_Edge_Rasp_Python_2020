@@ -691,7 +691,7 @@ def UpdateLocalSensorsInformation():
     #print("Update Sensors Informatnio Start")
     while bRunning:
         #time.sleep(10.0)
-        time.sleep(UpdateValue)
+        time.sleep(UpdateFValue)
         if bGetData: # & bNetConnected:
             bGetData = False
 
