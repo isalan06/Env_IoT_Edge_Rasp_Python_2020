@@ -717,143 +717,149 @@ def UpdateLocalSensorsInformation():
 
     #print("Update Sensors Informatnio Start")
     while bRunning:
-        #time.sleep(10.0)
-        time.sleep(UpdateFValue)
+        try:
+            time.sleep(UpdateFValue)
+        except:
+            time.sleep(10.0)
         if bGetData: # & bNetConnected:
             bGetData = False
 
-            #JSON
-            SetKey="Machine"
-            SetValue="IoT Edge"
-            InformationData = {}
-            InformationData[SetKey]=SetValue
-            InformationData["Machine ID"]=local_mac_address
-            InformationData["Comm Type"]="Ethernet"
-            InformationData["VibrationStatus"]=sVibrationStatus
-            InformationData["FireDetectStatus"]=sFireDetectStatus
-            InformationData["DHT22Status"]=sDHT22Status
-            InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
-            InformationData["ThermalStatus"]=sThermalStatus
-            InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
-            InformationData["Command"]="UpdateStatus"
-            InformationData["MachineIP"]=hostip
-            SetKey="Parameter"
-            InformationData[SetKey]={}
-            InformationData[SetKey]['VibrationWarningValue']=VibrationWarningValue
-            InformationData[SetKey]['VibrationAlarmValue']=VibrationAlarmValue
-            InformationData[SetKey]['FireWarningTempValue']=FireWarningTempValue
-            InformationData[SetKey]['FireWarningCountValue']=FireWarningCountValue
-            InformationData[SetKey]['FireAlarmTempValue']=FireAlarmTempValue
-            InformationData[SetKey]['FireAlarmCountValue']=FireAlarmCountValue
-            InformationData[SetKey]['CapturePictureRH']=CapturePictureRH
-            InformationData[SetKey]['CapturePictureRV']=CapturePictureRV
-            InformationData[SetKey]['CaptureVideoSecond']=CaptureVideoSecond
-            InformationData[SetKey]['SensorsFValue']=SensorsFValue
-            InformationData[SetKey]['CameraFValue']=CameraFValue
-            InformationData[SetKey]['UpdateFValue']=UpdateFValue
+            try:
+                #JSON
+                SetKey="Machine"
+                SetValue="IoT Edge"
+                InformationData = {}
+                InformationData[SetKey]=SetValue
+                InformationData["Machine ID"]=local_mac_address
+                InformationData["Comm Type"]="Ethernet"
+                InformationData["VibrationStatus"]=sVibrationStatus
+                InformationData["FireDetectStatus"]=sFireDetectStatus
+                InformationData["DHT22Status"]=sDHT22Status
+                InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
+                InformationData["ThermalStatus"]=sThermalStatus
+                InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
+                InformationData["Command"]="UpdateStatus"
+                InformationData["MachineIP"]=hostip
+                SetKey="Parameter"
+                InformationData[SetKey]={}
+                InformationData[SetKey]['VibrationWarningValue']=VibrationWarningValue
+                InformationData[SetKey]['VibrationAlarmValue']=VibrationAlarmValue
+                InformationData[SetKey]['FireWarningTempValue']=FireWarningTempValue
+                InformationData[SetKey]['FireWarningCountValue']=FireWarningCountValue
+                InformationData[SetKey]['FireAlarmTempValue']=FireAlarmTempValue
+                InformationData[SetKey]['FireAlarmCountValue']=FireAlarmCountValue
+                InformationData[SetKey]['CapturePictureRH']=CapturePictureRH
+                InformationData[SetKey]['CapturePictureRV']=CapturePictureRV
+                InformationData[SetKey]['CaptureVideoSecond']=CaptureVideoSecond
+                InformationData[SetKey]['SensorsFValue']=SensorsFValue
+                InformationData[SetKey]['CameraFValue']=CameraFValue
+                InformationData[SetKey]['UpdateFValue']=UpdateFValue
 
-            SetKey="Data"
-            InformationData[SetKey]={}
-            SetKey2="Temp"
-            SetKey3="Data"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            templist = {}
-            templist["ID"]=1
-            templist["Type"]="Local"
-            templist["Unit"]="C"
-            templist["Address"]="NA"
-            templist["Value"]=temp_c
-            InformationData[SetKey][SetKey2][SetKey3].append(templist)
-            
-            SetKey2="Humidity"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            humiditylist = {}
-            humiditylist["ID"]=1
-            humiditylist["Type"]="Local"
-            humiditylist["Unit"]="%RH"
-            humiditylist["Value"]=humidity
-            InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
-
-            print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
-            SetKey2="MiTempHumidity"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=0
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            if (get_mi_device_number > 0):
-                print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
-                Count = 0
+                SetKey="Data"
+                InformationData[SetKey]={}
+                SetKey2="Temp"
+                SetKey3="Data"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                templist = {}
+                templist["ID"]=1
+                templist["Type"]="Local"
+                templist["Unit"]="C"
+                templist["Address"]="NA"
+                templist["Value"]=temp_c
+                InformationData[SetKey][SetKey2][SetKey3].append(templist)
                 
-                for index in range(get_mi_device_number):
-                    if get_mi_data_flag[index]:
-                        get_mi_data_flag[index] = False
-                        Count = Count + 1
-                        InformationData[SetKey][SetKey2]["Count"]=Count
+                SetKey2="Humidity"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                humiditylist = {}
+                humiditylist["ID"]=1
+                humiditylist["Type"]="Local"
+                humiditylist["Unit"]="%RH"
+                humiditylist["Value"]=humidity
+                InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
-                        mithlist = {}
-                        mithlist["ID"]=mac_address_list[index]
-                        mithlist["Type"]="MI Remote"
-                        mithlist["TUnit"]="C"
-                        mithlist["TValue"]=get_mi_data_temp[index]
-                        mithlist["HUnit"]="%RH"
-                        mithlist["HValue"]=get_mi_data_humidity[index]
-                        mithlist["BUnit"]="%"
-                        mithlist["BValue"]=get_mi_data_battery[index]
+                print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
+                SetKey2="MiTempHumidity"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=0
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                if (get_mi_device_number > 0):
+                    print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
+                    Count = 0
+                
+                    for index in range(get_mi_device_number):
+                        if get_mi_data_flag[index]:
+                            get_mi_data_flag[index] = False
+                            Count = Count + 1
+                            InformationData[SetKey][SetKey2]["Count"]=Count
 
-                        InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
+                            mithlist = {}
+                            mithlist["ID"]=mac_address_list[index]
+                            mithlist["Type"]="MI Remote"
+                            mithlist["TUnit"]="C"
+                            mithlist["TValue"]=get_mi_data_temp[index]
+                            mithlist["HUnit"]="%RH"
+                            mithlist["HValue"]=get_mi_data_humidity[index]
+                            mithlist["BUnit"]="%"
+                            mithlist["BValue"]=get_mi_data_battery[index]
+
+                            InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
 
             
-            SetKey2="Vibration"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            VibrationList={}
-            VibrationList["ID"]=1
-            VibrationList["Type"]="Local"
-            VibrationList["GyroUnit"]="DegreePerSecond"
-            VibrationList["GyroX"]=gyro_xout
-            VibrationList["GyroXScaled"]=gyro_xout_scaled
-            VibrationList["GyroY"]=gyro_yout
-            VibrationList["GyroYScaled"]=gyro_yout_scaled
-            VibrationList["GyroZ"]=gyro_zout
-            VibrationList["GyroZScaled"]=gyro_zout_scaled
-            VibrationList["AccelUnit"]="g"
-            VibrationList["AccelX"]=accel_xout
-            VibrationList["AccelXScaled"]=accel_xout_scaled
-            VibrationList["AccelY"]=accel_yout
-            VibrationList["AccelYScaled"]=accel_yout_scaled
-            VibrationList["AccelZ"]=accel_zout
-            VibrationList["AccelZScaled"]=accel_zout_scaled
-            VibrationList["RotationUnit"]="Degree"
-            VibrationList["RotationX"]=x_rotation
-            VibrationList["RotationY"]=y_rotation
-            InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
+                SetKey2="Vibration"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                VibrationList={}
+                VibrationList["ID"]=1
+                VibrationList["Type"]="Local"
+                VibrationList["GyroUnit"]="DegreePerSecond"
+                VibrationList["GyroX"]=gyro_xout
+                VibrationList["GyroXScaled"]=gyro_xout_scaled
+                VibrationList["GyroY"]=gyro_yout
+                VibrationList["GyroYScaled"]=gyro_yout_scaled
+                VibrationList["GyroZ"]=gyro_zout
+                VibrationList["GyroZScaled"]=gyro_zout_scaled
+                VibrationList["AccelUnit"]="g"
+                VibrationList["AccelX"]=accel_xout
+                VibrationList["AccelXScaled"]=accel_xout_scaled
+                VibrationList["AccelY"]=accel_yout
+                VibrationList["AccelYScaled"]=accel_yout_scaled
+                VibrationList["AccelZ"]=accel_zout
+                VibrationList["AccelZScaled"]=accel_zout_scaled
+                VibrationList["RotationUnit"]="Degree"
+                VibrationList["RotationX"]=x_rotation
+                VibrationList["RotationY"]=y_rotation
+                InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
 
-            SetKey2="ThermalCamera"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            thermalDataLength=len(thermalpixels)
-            ThermalDataList={}
-            ThermalDataList["ID"]=1
-            ThermalDataList["Type"]="Local"
-            ThermalDataList["Unit"]="C"
-            ThermalDataList["Length"]=thermalDataLength
-            ThermalDataList["Value"]=[]
-            setIDIndex=1
-            for thermalpoint in thermalpixels:
-                ThermalDataValue={}
-                ThermalDataValue["ID"]=setIDIndex
-                ThermalDataValue["Value"]=thermalpoint
-                setIDIndex = setIDIndex + 1
-                ThermalDataList["Value"].append(ThermalDataValue)
-            InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
+                SetKey2="ThermalCamera"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                thermalDataLength=len(thermalpixels)
+                ThermalDataList={}
+                ThermalDataList["ID"]=1
+                ThermalDataList["Type"]="Local"
+                ThermalDataList["Unit"]="C"
+                ThermalDataList["Length"]=thermalDataLength
+                ThermalDataList["Value"]=[]
+                setIDIndex=1
+                for thermalpoint in thermalpixels:
+                    ThermalDataValue={}
+                    ThermalDataValue["ID"]=setIDIndex
+                    ThermalDataValue["Value"]=thermalpoint
+                    setIDIndex = setIDIndex + 1
+                    ThermalDataList["Value"].append(ThermalDataValue)
+                InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
 
-            TransferJSONData=json.dumps(InformationData)
-            #print(TransferJSONData)
+                TransferJSONData=json.dumps(InformationData)
+                #print(TransferJSONData)
+                print(ANSI_GREEN + "Create JSON File Success" + ANSI_OFF) 
+            except:
+                print(ANSI_RED + "Create JSON File Failure" + ANSI_OFF) 
 
             try:
                 auth=('token', 'example')
