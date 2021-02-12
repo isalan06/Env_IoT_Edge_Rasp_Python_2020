@@ -6,6 +6,6 @@ gauth.CommandLineAuth()
 drive = GoogleDrive(gauth)
 
 file1 = drive.CreateFile({'title': 'Hello.txt','parents':[{'kind': 'drive#fileLink',
-                                     'id': 'Alan_Update_Picture_Test'}]}) 
+                                     'id': '1eHnor5HRg9eTAlpvcwGigBw74Inkb4eL'}]}) 
 file1.SetContentString('Hello World!')
 file1.Upload() 
