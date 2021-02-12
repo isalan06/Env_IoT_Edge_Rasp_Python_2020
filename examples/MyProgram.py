@@ -1255,7 +1255,7 @@ def UpdateLocalPicture():
                     drive = GoogleDrive(gauth)
 
                     file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': '1eHnor5HRg9eTAlpvcwGigBw74Inkb4eL'}]}) 
+                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
 
                     file1.SetContentFile(fileString)
                     file1.Upload() 
