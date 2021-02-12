@@ -28,6 +28,10 @@ import socket
 import uuid
 import psutil
 
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from PIL import Image
+
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1244,6 +1248,20 @@ def UpdateLocalPicture():
                 #payload=file.read()
                 #file.close()
                 #headers = {'Content-Type': 'image/jpeg'}
+
+                try:
+                    gauth = GoogleAuth()
+                    gauth.CommandLineAuth() 
+                    drive = GoogleDrive(gauth)
+
+                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': '1eHnor5HRg9eTAlpvcwGigBw74Inkb4eL'}]}) 
+
+                    file1.SetContentFile(fileString)
+                    file1.Upload() 
+                except:
+                    print("\033[1;31mUpdate Local Picture Failure\033[0m")
+
                 try:
                 #    responses = requests.request("POST", url, headers=headers, data = payload)
                     #print(responses.text.encode('utf8'))
