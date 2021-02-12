@@ -1260,29 +1260,14 @@ def UpdateLocalPicture():
                     file1.SetContentFile(fileString)
                     file1.Upload() 
                     print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
-                except:
-                    print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
-
-                try:
-                #    responses = requests.request("POST", url, headers=headers, data = payload)
-                    #print(responses.text.encode('utf8'))
-                    #if responses.status_code == 200:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
-                    print("\033[1;34mUpdate Local Picture Success\033[0m")
                     try:
                         os.remove(fileString)
                         print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
                     except:
                         print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
-                    #else:
-                        #print("\033[1;31mUpdate Local Picture Failure\033[0m")
-                    #print(responses)
                 except:
-                    print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                    print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
+
                 file.close()
             else:
                 print("\033[1;31mUpdate Local Picture Failure\033[0m")
