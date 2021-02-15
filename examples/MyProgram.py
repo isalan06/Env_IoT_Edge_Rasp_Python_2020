@@ -450,6 +450,7 @@ power_mgmt_2 = 0x6c
 vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
 #Vibration Function
+#region Vibration Function
 def read_byte(adr):
     return vib_bus.read_byte_data(vib_address, adr)
 
@@ -477,6 +478,10 @@ def get_x_rotation(x, y, z):
     radians = math.atan2(y, dist(x, z))
     return math.degrees(radians)
 
+#endregion
+
+#Check Function
+#region Check Function
 def CheckCloudExist():
     global bNetConnected
 
@@ -490,8 +495,9 @@ def CheckCloudExist():
         except:
             print("\033[1;31mConnect to cloud failure\033[0m")
         time.sleep(30.0)
+#endregion
 
-            
+#Parameter function           
 #region Parameter function
 
 def CreateParameter():
@@ -583,9 +589,31 @@ def SaveParameter():
     global UpdateFValue
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
+    if os.path.isfile(filePathString):
+        config = configparser.ConfigParser()
+        config.read(filePathString)
+        config['Parameter']['VibrationWarningValue'] = str(VibrationWarningValue)
+        config['Parameter']['VibrationAlarmValue'] = str(VibrationAlarmValue)
+        config['Parameter']['FireWarningTempValue'] = str(FireWarningTempValue)
+        config['Parameter']['FireWarningCountValue'] = str(FireWarningCountValue)
+        config['Parameter']['FireAlarmTempValue'] = str(FireAlarmTempValue)
+        config['Parameter']['FireAlarmCountValue'] = str(FireAlarmCountValue)
+        config['Parameter']['CapturePictureRH'] = str(CapturePictureRH)
+        config['Parameter']['CapturePictureRV'] = str(CapturePictureRV)
+        config['Parameter']['CaptureVideoSecond'] = str(CaptureVideoSecond)
+        config['Parameter']['SensorsFValue'] = str(SensorsFValue)
+        config['Parameter']['CameraFValue'] = str(CameraFValue)
+        config['Parameter']['UpdateFValue'] = str(UpdateFValue)
+
+        with open(filePathString, 'w') as configfile:
+            config.write(configfile)
+    else:
+        CreateParameter()
 
 #endregion
 
+#Get Sensors Data
+#region Get Sensors Data
 def GetSensorsData():
 
     global bRunning
@@ -753,6 +781,10 @@ def GetSensorsData():
 
         #time.sleep(3.0)
         time.sleep(SensorsFValue)
+#endregion
+
+#Update Local Sensors Information
+#region Update Local Sensors Information
 
 def UpdateLocalSensorsInformation():
 
@@ -969,6 +1001,10 @@ def UpdateLocalSensorsInformation():
                 bNetConnected = False
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
 
+#endregion
+
+#Get Command From Cloud
+#region Get Command From Cloud
 def GetCommandFromCloud():
     global bRunning
     global bNetConnected
@@ -1065,6 +1101,8 @@ def GetCommandFromCloud():
                     SensorsFValue=data['SensorsFValue']
                     CameraFValue=data['CameraFValue']
                     UpdateFValue=data['UpdateFValue']
+
+                    SaveParameter()
 
                     print("Set Value Completely")
 
@@ -1293,8 +1331,10 @@ def GetCommandFromCloud():
 
         time.sleep(5.0)
 
+#endregion
 
-
+#Update Local Picture
+#region Update Local Picture
 def UpdateLocalPicture():
     global ftp
     global ftp_Exist
@@ -1374,7 +1414,7 @@ def UpdateLocalPicture():
             bUpdate=True
 
         time.sleep(1.0)
-
+#endregion
 
 print("\033[1;33mProgram Start\033[0m")
 
