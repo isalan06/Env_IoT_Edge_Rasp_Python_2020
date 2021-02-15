@@ -32,6 +32,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
+import configparser
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -491,7 +492,99 @@ def CheckCloudExist():
         time.sleep(30.0)
 
             
+#region Parameter function
 
+def CreateParameter():
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountValue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
+
+    if not os.path.isdir("/home/pi/Parameter/"):
+        os.mkdir("/home/pi/Parameter/")
+    filePathString = "/home/pi/Parameter/Parameter.ini"
+
+    config = configparser.ConfigParser()
+    config['Parameter'] = {} 
+    config['Parameter']['VibrationWarningValue'] = VibrationWarningValue
+    config['Parameter']['VibrationAlarmValue'] = VibrationAlarmValue
+    config['Parameter']['FireWarningTempValue'] = FireWarningTempValue
+    config['Parameter']['FireWarningCountValue'] = FireWarningCountValue
+    config['Parameter']['FireAlarmTempValue'] = FireAlarmTempValue
+    config['Parameter']['FireAlarmCountValue'] = FireAlarmCountValue
+    config['Parameter']['CapturePictureRH'] = CapturePictureRH
+    config['Parameter']['CapturePictureRV'] = CapturePictureRV
+    config['Parameter']['CaptureVideoSecond'] = CaptureVideoSecond
+    config['Parameter']['SensorsFValue'] = SensorsFValue
+    config['Parameter']['CameraFValue'] = CameraFValue
+    config['Parameter']['UpdateFValue'] = UpdateFValue
+
+    with open(filePathString, 'w') as configfile:
+        config.write(configfile)
+
+
+def LoadParameter():
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountValue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
+
+    filePathString = "/home/pi/Parameter/Parameter.ini"
+
+    if os.path.isfile(filePathString):
+        config = configparser.ConfigParser()
+        config.read(filePathString)
+        VibrationWarningValue = config['Parameter'].getfloat('VibrationWarningValue')
+        VibrationAlarmValue = config['Parameter'].getfloat('VibrationAlarmValue')
+        FireWarningTempValue = config['Parameter'].getfloat('FireWarningTempValue')
+        FireWarningCountValue = config['Parameter'].getint('FireWarningCountValue')
+        FireAlarmTempValue = config['Parameter'].getfloat('FireAlarmTempValue')
+        FireAlarmCountValue = config['Parameter'].getint('FireAlarmCountValue')
+        CapturePictureRH = config['Parameter'].getint('CapturePictureRH')
+        CapturePictureRV = config['Parameter'].getint('CapturePictureRV')
+        CaptureVideoSecond = config['Parameter'].getint('CaptureVideoSecond')
+        SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
+        CameraFValue = config['Parameter'].getfloat('CameraFValue')
+        UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
+    else:
+        CreateParameter()
+
+def SaveParameter():
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountValue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
+
+    filePathString = "/home/pi/Parameter/Parameter.ini"
+
+#endregion
 
 def GetSensorsData():
 
@@ -1284,6 +1377,9 @@ def UpdateLocalPicture():
 
 
 print("\033[1;33mProgram Start\033[0m")
+
+#Load Parameter
+LoadParameter()
 
 #Get Mac Address
 hostname=socket.gethostname()
