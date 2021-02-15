@@ -515,18 +515,18 @@ def CreateParameter():
 
     config = configparser.ConfigParser()
     config['Parameter'] = {} 
-    config['Parameter']['VibrationWarningValue'] = VibrationWarningValue
-    config['Parameter']['VibrationAlarmValue'] = VibrationAlarmValue
-    config['Parameter']['FireWarningTempValue'] = FireWarningTempValue
-    config['Parameter']['FireWarningCountValue'] = FireWarningCountValue
-    config['Parameter']['FireAlarmTempValue'] = FireAlarmTempValue
-    config['Parameter']['FireAlarmCountValue'] = FireAlarmCountValue
-    config['Parameter']['CapturePictureRH'] = CapturePictureRH
-    config['Parameter']['CapturePictureRV'] = CapturePictureRV
-    config['Parameter']['CaptureVideoSecond'] = CaptureVideoSecond
-    config['Parameter']['SensorsFValue'] = SensorsFValue
-    config['Parameter']['CameraFValue'] = CameraFValue
-    config['Parameter']['UpdateFValue'] = UpdateFValue
+    config['Parameter']['VibrationWarningValue'] = str(VibrationWarningValue)
+    config['Parameter']['VibrationAlarmValue'] = str(VibrationAlarmValue)
+    config['Parameter']['FireWarningTempValue'] = str(FireWarningTempValue)
+    config['Parameter']['FireWarningCountValue'] = str(FireWarningCountValue)
+    config['Parameter']['FireAlarmTempValue'] = str(FireAlarmTempValue)
+    config['Parameter']['FireAlarmCountValue'] = str(FireAlarmCountValue)
+    config['Parameter']['CapturePictureRH'] = str(CapturePictureRH)
+    config['Parameter']['CapturePictureRV'] = str(CapturePictureRV)
+    config['Parameter']['CaptureVideoSecond'] = str(CaptureVideoSecond)
+    config['Parameter']['SensorsFValue'] = str(SensorsFValue)
+    config['Parameter']['CameraFValue'] = str(CameraFValue)
+    config['Parameter']['UpdateFValue'] = str(UpdateFValue)
 
     with open(filePathString, 'w') as configfile:
         config.write(configfile)
