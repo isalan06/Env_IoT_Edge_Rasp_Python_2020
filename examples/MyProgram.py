@@ -775,14 +775,15 @@ def GetSensorsData():
                     bRecordVibration = False
                     calCount_RecordVibration = 0
                     TransferJSONData=json.dumps(RecordVibrationData)
-                    #try:
-                    auth=('token', 'example')
-                    ssl._create_default_https_context = ssl._create_unverified_context
-                    headers = {'Content-Type': 'application/json'}
-                    r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-                    print(ANSI_Green + "--Update Record Vibration Success" + ANSI_OFF)
-                    #except BaseException as error:
-                        #print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
+                    try:
+                        auth=('token', 'example')
+                        ssl._create_default_https_context = ssl._create_unverified_context
+                        headers = {'Content-Type': 'application/json'}
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                        print(ANSI_Green + "--Update Record Vibration Success" + ANSI_OFF)
+                    except BaseException as error:
+                        print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
+                        print(error)
 
             sAccelGaugeStatus = "Running"
         except:
