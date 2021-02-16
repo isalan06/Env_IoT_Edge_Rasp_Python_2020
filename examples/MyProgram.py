@@ -389,6 +389,7 @@ bGetData = False
 bNetConnected = False
 bRebootTrigger = False
 bCameraUsed = False
+bRecordVibration = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -668,6 +669,11 @@ def GetSensorsData():
     global thermalmaxValue
     global thermalminValue
 
+    #Record Vibration
+    global bRecordVibration
+    calCount_RecordVibration = 0
+    RecordVibrationData = {}
+
     #Capture Delay
     tStartTime_DHT22 = time.time()
     tStartTime_Thermal = time.time()
@@ -748,7 +754,36 @@ def GetSensorsData():
                 sVibrationStatus = "Warning"
             else:
                 sVibrationStatus = "Normal"
-            #print("Get G Sensors Success: " + sVibrationStatus)
+            if bRecordVibration:
+                if calCount_RecordVibration == 0:
+                    RecordVibrationData = {}
+                    RecordVibrationData["Machine ID"]=local_mac_address
+                    RecordVibrationData["Command"]="UpdateRecordVibration"
+                    RecordVibrationData["Data"] = []
+
+                datalist = {}
+                datalist['Gx']=gyro_xout_scaled
+                datalist['Gy']=gyro_yout_scaled
+                datalist['Gz']=gyro_zout_scaled
+                datalist['Ax']=accel_xout_scaled
+                datalist['Ay']=accel_yout_scaled
+                datalist['Az']=accel_zout_scaled
+                RecordVibrationData["Data"].append(datalist)
+
+                calCount_RecordVibration = calCount_RecordVibration + 1
+                if calCount_RecordVibration >= 100:
+                    bRecordVibration = False
+                    calCount_RecordVibration = 0
+                    TransferJSONData=json.dumps(RecordVibrationData)
+                    try:
+                        auth=('token', 'example')
+                        ssl._create_default_https_context = ssl._create_unverified_context
+                        headers = {'Content-Type': 'application/json'}
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                        print(ANSI_Green + "--Update Record Vibration Success" + ANSI_OFF)
+                    except BaseException as error:
+                        print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
+
             sAccelGaugeStatus = "Running"
         except:
             print("Get G Sensor Failure")
@@ -1027,6 +1062,7 @@ def GetCommandFromCloud():
     global bRunning
     global bNetConnected
     global bRebootTrigger
+    global bRecordVibration
 
     #Parameter
     global VibrationWarningValue
@@ -1082,15 +1118,12 @@ def GetCommandFromCloud():
         
         if bNetConnected or True:
             try:
-                #response = requests.request("GET", url, headers=headers, data = payload)
-                #response.text.encode('utf8')
                 TransferJSONData=json.dumps(InformationData)
 
                 try:
                     auth=('token', 'example')
                     ssl._create_default_https_context = ssl._create_unverified_context
                     headers = {'Content-Type': 'application/json'}
-                    #headers = {'Content-Type': 'text/plain'}
                     response = requests.request("POST", url, headers=headers, data=TransferJSONData)
                     data = response.json()
 
@@ -1100,7 +1133,8 @@ def GetCommandFromCloud():
                     bNetConnected = False
                     print("\033[1;31mGet Command Failure\033[0m")
 
-                
+                if _command == "RecordVibration":
+                    bRecordVibration = True
 
                 if _command == "Reboot":
                     bRebootTrigger = True
