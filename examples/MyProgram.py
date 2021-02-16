@@ -668,8 +668,13 @@ def GetSensorsData():
     global thermalmaxValue
     global thermalminValue
 
-
-
+    #Capture Delay
+    tStartTime_DHT22 = time.time()
+    tStartTime_Thermal = time.time()
+    fIntervalTime_Thermal = 1.0
+    tEndTime = time.time()
+    tStartTime_ShowInformation = time.time()
+    fIntervalTime_ShowInformation = 10.0
 
     print("Get Local Sensors Thread Start")
 
@@ -681,7 +686,7 @@ def GetSensorsData():
         sDHT22Status="Running"
     except:
         dhtDevice = 0
-        print(ANSI_GREEN + "Create DHT Device Fail" + ANSI_OFF)
+        print(ANSI_RED + "Create DHT Device Fail" + ANSI_OFF)
         sDHT22Status="Stop"
 
    
@@ -699,13 +704,24 @@ def GetSensorsData():
         sThermalStatus = "Stop"
 
     while bRunning:
+        tEndTime = time.time()
+
+        if (tEndTime - tStartTime_ShowInformation) >= fIntervalTime_ShowInformation:
+            tStartTime_ShowInformation = time.time()
+            print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
+            print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+            print("     Get G Sensors Success: " + sVibrationStatus)
+            print("     Get ThermalPixels Success: " + sFireDetectStatus)
+            print("------------------------------------------------------------------" + ANSI_OFF)
 
         #DHT22
         try:
             if dhtDevice != 0:
-                temp_c = dhtDevice.temperature
-                humidity = dhtDevice.humidity
-                print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+                if (tEndTime - tStartTime_DHT22) >= SensorsFValue:
+                    tStartTime_DHT22 = time.time()
+                    temp_c = dhtDevice.temperature
+                    humidity = dhtDevice.humidity
+                    #print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
 
@@ -725,16 +741,14 @@ def GetSensorsData():
             accel_zout_scaled = accel_zout / 16384.0
             x_rotation = get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
             y_rotation = get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            #print("gyro_xout:" + str(gyro_xout) + "-" + str(gyro_xout_scaled) + ";gyro_yout:" + str(gyro_yout) + "-" + str(gyro_yout_scaled) + ";gyro_zout:" + str(gyro_zout) + "-" + str(gyro_zout_scaled))
-            #print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
-            #print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
+
             if (abs(gyro_xout_scaled) > VibrationAlarmValue) or (abs(gyro_yout_scaled) > VibrationAlarmValue) or (abs(gyro_zout_scaled) > VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
             elif (abs(gyro_xout_scaled) > VibrationWarningValue) or (abs(gyro_yout_scaled) > VibrationWarningValue) or (abs(gyro_zout_scaled) > VibrationWarningValue):
                 sVibrationStatus = "Warning"
             else:
                 sVibrationStatus = "Normal"
-            print("Get G Sensors Success: " + sVibrationStatus)
+            #print("Get G Sensors Success: " + sVibrationStatus)
             sAccelGaugeStatus = "Running"
         except:
             print("Get G Sensor Failure")
@@ -744,43 +758,44 @@ def GetSensorsData():
         #Thermal Image
         try:
             if thermalImage != 0:
-                thermalpixels = thermalImage.readPixels()
+                if (tEndTime - tStartTime_Thermal) >= fIntervalTime_Thermal:
+                    tStartTime_Thermal = time.time()
+                    thermalpixels = thermalImage.readPixels()
 
-                fireAlarmCount=0
-                fireWarningCount=0
-                bFirstFlag = False
-                for i in thermalpixels:
-                    if i >FireAlarmTempValue:
-                        fireAlarmCount += 1
-                    elif i > FireWarningTempValue:
-                        fireWarningCount += 1
-                    if not bFirstFlag:
-                        bFirstFlag=True
-                        thermalmaxValue = i
-                        thermalminValue = i
+                    fireAlarmCount=0
+                    fireWarningCount=0
+                    bFirstFlag = False
+                    for i in thermalpixels:
+                        if i >FireAlarmTempValue:
+                            fireAlarmCount += 1
+                        elif i > FireWarningTempValue:
+                            fireWarningCount += 1
+                        if not bFirstFlag:
+                            bFirstFlag=True
+                            thermalmaxValue = i
+                            thermalminValue = i
+                        else:
+                            if i > thermalmaxValue:
+                                thermalmaxValue=i
+                            if i < thermalminValue:
+                                thermalminValue=i
+
+                    if fireAlarmCount > FireAlarmCountValue:
+                        sFireDetectStatus="Alarm"
+                    elif fireWarningCount > FireWarningCountValue:
+                        sFireDetectStatus="Warning"
                     else:
-                        if i > thermalmaxValue:
-                            thermalmaxValue=i
-                        if i < thermalminValue:
-                            thermalminValue=i
-
-                if fireAlarmCount > FireAlarmCountValue:
-                    sFireDetectStatus="Alarm"
-                elif fireWarningCount > FireWarningCountValue:
-                    sFireDetectStatus="Warning"
-                else:
-                    sFireDetectStatus="Normal"
-
-
-                print("Get ThermalPixels Success: " + sFireDetectStatus)
+                        sFireDetectStatus="Normal"
+                    #print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
             
 
         bGetData = True
 
-        #time.sleep(3.0)
-        time.sleep(SensorsFValue)
+        # Delay for getting Vibration Sensors (0.1 sec)
+        time.sleep(0.1)
+        #time.sleep(SensorsFValue)
 #endregion
 
 #Update Local Sensors Information
@@ -843,6 +858,9 @@ def UpdateLocalSensorsInformation():
 
     #AMG8833 Attribute
     global thermalpixels
+
+    
+
 
     #print("Update Sensors Informatnio Start")
     while bRunning:
