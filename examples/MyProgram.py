@@ -1461,7 +1461,8 @@ def UpdateLocalPicture():
                 os.mkdir("/home/pi/Pictures/Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = "sn_" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
+            #filename = "sn_" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             bCaptureFromCamera = True
@@ -1486,7 +1487,7 @@ def UpdateLocalPicture():
                     drive = GoogleDrive(gauth)
 
                     file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
+                                     'id': PhotoFolderID }]}) 
 
                     file1.SetContentFile(fileString)
                     file1.Upload() 
