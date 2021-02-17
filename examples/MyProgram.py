@@ -414,8 +414,8 @@ CaptureVideoSecond=15
 SensorsFValue=3.0
 CameraFValue=300.0
 UpdateFValue=10.0
-PhotoFolderID='NA'
-VideoFolderID='NA'
+PhotoFolderID="NA"
+VideoFolderID="NA"
 
 #Vibration Attribute
 gyro_xout = 0
@@ -580,8 +580,8 @@ def LoadParameter():
         SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
         CameraFValue = config['Parameter'].getfloat('CameraFValue')
         UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
-        PhotoFolderID = config['Parameter'].get('PhotoFolderID')
-        VideoFolderID = config['Parameter'].get('VideoFolderID')
+        PhotoFolderID = config['Parameter']['PhotoFolderID']
+        VideoFolderID = config['Parameter']['VideoFolderID']
     else:
         CreateParameter()
 
