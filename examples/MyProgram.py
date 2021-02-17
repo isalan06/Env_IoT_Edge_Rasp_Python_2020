@@ -1341,7 +1341,6 @@ def GetCommandFromCloud():
 
                 except:
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                file.close()
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
@@ -1403,7 +1402,6 @@ def GetCommandFromCloud():
 
                 except:
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                file.close()
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
@@ -1478,8 +1476,6 @@ def UpdateLocalPicture():
                         print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
                 except:
                     print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
-
-                file.close()
             else:
                 print("\033[1;31mUpdate Local Picture Failure\033[0m")
 
