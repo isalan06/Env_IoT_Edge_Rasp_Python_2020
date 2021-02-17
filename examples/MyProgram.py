@@ -393,6 +393,7 @@ bRecordVibration = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
+sVibrationStatus_Keep = "Normal"
 sFireDetectStatus = "Normal"
 
 #Component Status
@@ -644,6 +645,7 @@ def GetSensorsData():
     #Alarm Status
     global sVibrationStatus
     global sFireDetectStatus
+    global sVibrationStatus_Keep
 
     #component Status
     global sDHT22Status
@@ -673,6 +675,9 @@ def GetSensorsData():
     global bRecordVibration
     calCount_RecordVibration = 0
     RecordVibrationData = {}
+    tKeepVibrationStatusTimer = time.time()
+    iKeepVibrationStatus_IntervalTime = 10.0
+
 
     #Capture Delay
     tStartTime_DHT22 = time.time()
@@ -694,9 +699,6 @@ def GetSensorsData():
         dhtDevice = 0
         print(ANSI_RED + "Create DHT Device Fail" + ANSI_OFF)
         sDHT22Status="Stop"
-
-   
-    
 
     #AMG8833 Attribute
     thermalImage = 0
@@ -723,13 +725,20 @@ def GetSensorsData():
         #DHT22
         try:
             if dhtDevice != 0:
-                if (tEndTime - tStartTime_DHT22) >= SensorsFValue:
+                checkvalue = tEndTime - tStartTime_DHT22
+                if (checkvalue >= SensorsFValue) or (checkvalue < 0):
                     tStartTime_DHT22 = time.time()
                     temp_c = dhtDevice.temperature
                     humidity = dhtDevice.humidity
-                    #print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
+
+        #Vibration Status Return Normal Check
+        if sVibrationStatus == "Normal":
+            if sVibrationStatus_Keep != "Normal":
+                intervaltime = time.time() - tKeepVibrationStatusTimer
+                if (intervaltime >= iKeepVibrationStatus_IntervalTime) or (intervaltime < 0):
+                    sVibrationStatus_Keep = "Normal"
 
         #Vibration
         try:
@@ -750,8 +759,13 @@ def GetSensorsData():
 
             if (abs(gyro_xout_scaled) > VibrationAlarmValue) or (abs(gyro_yout_scaled) > VibrationAlarmValue) or (abs(gyro_zout_scaled) > VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
+                sVibrationStatus_Keep = "Alarm"
+                tKeepVibrationStatusTimer = time.time()
             elif (abs(gyro_xout_scaled) > VibrationWarningValue) or (abs(gyro_yout_scaled) > VibrationWarningValue) or (abs(gyro_zout_scaled) > VibrationWarningValue):
                 sVibrationStatus = "Warning"
+                if sVibrationStatus_Keep == "Normal":
+                    sVibrationStatus_Keep = "Alarm"
+                tKeepVibrationStatusTimer = time.time()
             else:
                 sVibrationStatus = "Normal"
             if bRecordVibration:
@@ -793,7 +807,8 @@ def GetSensorsData():
         #Thermal Image
         try:
             if thermalImage != 0:
-                if (tEndTime - tStartTime_Thermal) >= fIntervalTime_Thermal:
+                checkvalue = tEndTime - tStartTime_Thermal
+                if (checkvalue >= fIntervalTime_Thermal) or (checkvalue < 0):
                     tStartTime_Thermal = time.time()
                     thermalpixels = thermalImage.readPixels()
 
@@ -856,6 +871,7 @@ def UpdateLocalSensorsInformation():
     global sDHT22Status
     global sAccelGaugeStatus
     global sThermalStatus
+    
 
     #DHT Attribute
     global temp_c
@@ -894,7 +910,7 @@ def UpdateLocalSensorsInformation():
     #AMG8833 Attribute
     global thermalpixels
 
-    
+    global sVibrationStatus_Keep
 
 
     #print("Update Sensors Informatnio Start")
@@ -914,7 +930,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]=SetValue
                 InformationData["Machine ID"]=local_mac_address
                 InformationData["Comm Type"]="Ethernet"
-                InformationData["VibrationStatus"]=sVibrationStatus
+                InformationData["VibrationStatus"]=sVibrationStatus_Keep
                 InformationData["FireDetectStatus"]=sFireDetectStatus
                 InformationData["DHT22Status"]=sDHT22Status
                 InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
@@ -1083,6 +1099,7 @@ def GetCommandFromCloud():
 
     global sVibrationStatus
     global sFireDetectStatus
+    global sVibrationStatus_Keep
 
     global local_mac_address
 
@@ -1108,7 +1125,7 @@ def GetCommandFromCloud():
         InformationData[SetKey]=SetValue
         InformationData["Machine ID"]=local_mac_address
         InformationData["Comm Type"]="Ethernet"
-        InformationData["VibrationStatus"]=sVibrationStatus
+        InformationData["VibrationStatus"]=sVibrationStatus_Keep
         InformationData["FireDetectStatus"]=sFireDetectStatus
         InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
         InformationData["Command"]="GetCommand"
@@ -1395,7 +1412,7 @@ def UpdateLocalPicture():
     #print("Update Local Picture Start")
     tStart = time.time()
 
-    time.sleep(2.0)
+    time.sleep(3.0)
 
     bUpdate=True
     while bRunning:
@@ -1403,7 +1420,6 @@ def UpdateLocalPicture():
         if (bUpdate and (bCameraUsed==False)):
             bCameraUsed = True
             bUpdate=False
-            #bconnected = os.system("ping -c 1 192.168.8.100")
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
@@ -1418,21 +1434,17 @@ def UpdateLocalPicture():
 
             with picamera.PiCamera() as camera:
                 camera.resolution = (1024,768)
-                time.sleep(1.0)
+                time.sleep(0.1)
                 camera.capture(fileString)
 
-            time.sleep(1.0)
+            time.sleep(0.1)
 
             if True:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
-                #url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
                 file=open(fileString ,'rb')
                 size = os.path.getsize(fileString)
-                #payload=file.read()
-                #file.close()
-                #headers = {'Content-Type': 'image/jpeg'}
 
                 try:
                     gauth = GoogleAuth()
@@ -1465,7 +1477,7 @@ def UpdateLocalPicture():
             tStart=time.time()
             bUpdate=True
 
-        time.sleep(1.0)
+        time.sleep(0.1)
 #endregion
 
 print("\033[1;33mProgram Start\033[0m")
