@@ -580,8 +580,8 @@ def LoadParameter():
         SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
         CameraFValue = config['Parameter'].getfloat('CameraFValue')
         UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
-        PhotoFolderID = config['Parameter']['PhotoFolderID']
-        VideoFolderID = config['Parameter']['VideoFolderID']
+        PhotoFolderID = config['Parameter'].get('PhotoFolderID')
+        VideoFolderID = config['Parameter'].get('VideoFolderID')
     else:
         CreateParameter()
 
