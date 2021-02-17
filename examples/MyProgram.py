@@ -1206,16 +1206,12 @@ def GetCommandFromCloud():
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        #url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
 
                         file=open(fileString ,'rb')
                         size = os.path.getsize(fileString)
-                        #payload=file.read()
-                        #file.close()
                         headers = {'Content-Type': 'image/jpeg'}
                         try:
-                            #responses = requests.request("POST", url, headers=headers, data = payload)
-                            #if responses.status_code == 200:
+
                             ftp.connect(ftp_IP) 
                             ftp.login(ftp_user,ftp_password)
                             ftp.cwd('/photo')
@@ -1290,15 +1286,17 @@ def GetCommandFromCloud():
         print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
         #sVibrationStatus
         #region
-        if ((sVibrationStatus != "Alarm") and bVibrationStatus):
+        if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
 
-        if(sVibrationStatus == "Alarm"):
+        if(sVibrationStatus_Keep == "Alarm"):
             print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
+        elif(sVibrationStatus_Keep == "Warning"):
+            print(ANSI_YELLOW + "Detect Vibration Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
                 
-        if ((sVibrationStatus == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
+        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Vibration Alarm")
             bCameraUsed = True
             bVibrationStatus = True
@@ -1313,25 +1311,32 @@ def GetCommandFromCloud():
             filename = sn + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
             fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (CapturePictureRH,CapturePictureRV)
-                time.sleep(1.0)
-                camera.capture(fileString)
+            bCaptureFromCamera = True
+            try:
+                with picamera.PiCamera() as camera:
+                    camera.resolution = (CapturePictureRH,CapturePictureRV)
+                    time.sleep(1.0)
+                    camera.capture(fileString)
+                    time.sleep(0.1)
+            except:
+                bCaptureFromCamera = False
 
-                time.sleep(1.0)
-
-            if True:
+            if bCaptureFromCamera:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
+                #file=open(fileString ,'rb')
+                #size = os.path.getsize(fileString)
                 try:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
+                    gauth = GoogleAuth()
+                    gauth.CommandLineAuth() 
+                    drive = GoogleDrive(gauth)
+
+                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
+
+                    file1.SetContentFile(fileString)
+                    file1.Upload() 
                     print("\033[1;34mUpdate Capture Picture Success\033[0m")
 
                 except:
@@ -1350,6 +1355,8 @@ def GetCommandFromCloud():
 
         if(sFireDetectStatus == "Alarm"):
             print(ANSI_RED + "Detect Fire Alarm......................................................" + ANSI_OFF)
+        elif(sFireDetectStatus == "Warning"):
+            print(ANSI_RED + "Detect Fire Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
                 
@@ -1368,25 +1375,30 @@ def GetCommandFromCloud():
             filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
             fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (CapturePictureRH,CapturePictureRV)
-                time.sleep(1.0)
-                camera.capture(fileString)
+            bCaptureFromCamera = True
+            try:
+                with picamera.PiCamera() as camera:
+                    camera.resolution = (CapturePictureRH,CapturePictureRV)
+                    time.sleep(1.0)
+                    camera.capture(fileString)
+                    time.sleep(0.1)
+            except:
+                bCaptureFromCamera = False
 
-            time.sleep(1.0)
-
-            if True:
+            if bCaptureFromCamera:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
                 try:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
+                    gauth = GoogleAuth()
+                    gauth.CommandLineAuth() 
+                    drive = GoogleDrive(gauth)
+
+                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
+
+                    file1.SetContentFile(fileString)
+                    file1.Upload() 
                     print("\033[1;34mUpdate Capture Picture Success\033[0m")
 
                 except:
@@ -1432,19 +1444,21 @@ def UpdateLocalPicture():
             filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (1024,768)
+            bCaptureFromCamera = True
+            try:
+                with picamera.PiCamera() as camera:
+                    camera.resolution = (1024,768)
+                    time.sleep(0.1)
+                    camera.capture(fileString)
                 time.sleep(0.1)
-                camera.capture(fileString)
+            except:
+                bCaptureFromCamera = False
+                bUpdate = True
 
-            time.sleep(0.1)
-
-            if True:
+            if bCaptureFromCamera:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
 
                 try:
                     gauth = GoogleAuth()
