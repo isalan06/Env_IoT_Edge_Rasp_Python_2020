@@ -1308,7 +1308,7 @@ def GetCommandFromCloud():
                 os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = sn + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
+            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
             fileString += filename
 
             bCaptureFromCamera = True
