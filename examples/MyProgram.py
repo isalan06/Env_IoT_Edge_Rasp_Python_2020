@@ -414,6 +414,8 @@ CaptureVideoSecond=15
 SensorsFValue=3.0
 CameraFValue=300.0
 UpdateFValue=10.0
+PhotoFolderID='NA'
+VideoFolderID='NA'
 
 #Vibration Attribute
 gyro_xout = 0
@@ -516,6 +518,8 @@ def CreateParameter():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
@@ -535,6 +539,8 @@ def CreateParameter():
     config['Parameter']['SensorsFValue'] = str(SensorsFValue)
     config['Parameter']['CameraFValue'] = str(CameraFValue)
     config['Parameter']['UpdateFValue'] = str(UpdateFValue)
+    config['Parameter']['PhotoFolderID'] = PhotoFolderID
+    config['Parameter']['VideoFolderID'] = VideoFolderID
 
     with open(filePathString, 'w') as configfile:
         config.write(configfile)
@@ -554,6 +560,8 @@ def LoadParameter():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
 
@@ -572,6 +580,8 @@ def LoadParameter():
         SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
         CameraFValue = config['Parameter'].getfloat('CameraFValue')
         UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
+        PhotoFolderID = config['Parameter']['PhotoFolderID']
+        VideoFolderID = config['Parameter']['VideoFolderID']
     else:
         CreateParameter()
 
@@ -589,6 +599,8 @@ def SaveParameter():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
     if os.path.isfile(filePathString):
@@ -606,6 +618,8 @@ def SaveParameter():
         config['Parameter']['SensorsFValue'] = str(SensorsFValue)
         config['Parameter']['CameraFValue'] = str(CameraFValue)
         config['Parameter']['UpdateFValue'] = str(UpdateFValue)
+        config['Parameter']['PhotoFolderID'] = PhotoFolderID
+        config['Parameter']['VideoFolderID'] = VideoFolderID
 
         with open(filePathString, 'w') as configfile:
             config.write(configfile)
@@ -906,6 +920,8 @@ def UpdateLocalSensorsInformation():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     #AMG8833 Attribute
     global thermalpixels
@@ -952,6 +968,8 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['SensorsFValue']=SensorsFValue
                 InformationData[SetKey]['CameraFValue']=CameraFValue
                 InformationData[SetKey]['UpdateFValue']=UpdateFValue
+                InformationData[SetKey]['PhotoFolderID']=PhotoFolderID
+                InformationData[SetKey]['VideoFolderID']=VideoFolderID
 
                 SetKey="Data"
                 InformationData[SetKey]={}
@@ -1093,6 +1111,8 @@ def GetCommandFromCloud():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     global bCameraUsed
     global ftp
@@ -1170,6 +1190,8 @@ def GetCommandFromCloud():
                     SensorsFValue=data['SensorsFValue']
                     CameraFValue=data['CameraFValue']
                     UpdateFValue=data['UpdateFValue']
+                    PhotoFolderID=data['PhotoFolderID']
+                    VideoFolderID=data['VideoFolderID']
 
                     SaveParameter()
 
@@ -1439,7 +1461,7 @@ def UpdateLocalPicture():
                 os.mkdir("/home/pi/Pictures/Pictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = "sn_" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             bCaptureFromCamera = True
