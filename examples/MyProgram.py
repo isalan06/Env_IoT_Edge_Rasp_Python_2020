@@ -1348,7 +1348,7 @@ def GetCommandFromCloud():
                 os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
+            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             bCaptureFromCamera = True
@@ -1365,22 +1365,38 @@ def GetCommandFromCloud():
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                #file=open(fileString ,'rb')
-                #size = os.path.getsize(fileString)
                 try:
-                    gauth = GoogleAuth()
-                    gauth.CommandLineAuth() 
-                    drive = GoogleDrive(gauth)
+                    if PhotoFolderID != 'NA':
+                        gauth = GoogleAuth()
+                        gauth.CommandLineAuth() 
+                        drive = GoogleDrive(gauth)
 
-                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
+                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': PhotoFolderID }]}) 
 
-                    file1.SetContentFile(fileString)
-                    file1.Upload() 
-                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                        file1.SetContentFile(fileString)
+                        file1.Upload() 
+                        print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                        VibrationAlarmData = {}
+                        VibrationAlarmData["Machine ID"]=local_mac_address
+                        VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
+                        VibrationAlarmData["PhotoFileName"]=filename
+                        VibrationAlarmData["VideoFileName"]="NA"
+                        TransferJSONData=json.dumps(VibrationAlarmData)
+                        try:
+                            auth=('token', 'example')
+                            ssl._create_default_https_context = ssl._create_unverified_context
+                            headers = {'Content-Type': 'application/json'}
+                            r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                            print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
+                        except BaseException as error:
+                            print(ANSI_RED + "--Update Vibration Alarm Trigger Failure" + ANSI_OFF)
+                    else:
+                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
 
                 except:
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+                    
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
@@ -1411,7 +1427,7 @@ def GetCommandFromCloud():
                 os.mkdir("/home/pi/Pictures/FireDetectPictures/")
             if not os.path.isdir(fileString):
                 os.mkdir(fileString)
-            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
+            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
             fileString += filename
 
             bCaptureFromCamera = True
@@ -1429,16 +1445,33 @@ def GetCommandFromCloud():
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
                 try:
-                    gauth = GoogleAuth()
-                    gauth.CommandLineAuth() 
-                    drive = GoogleDrive(gauth)
+                    if PhotoFolderID != 'NA':
+                        gauth = GoogleAuth()
+                        gauth.CommandLineAuth() 
+                        drive = GoogleDrive(gauth)
 
-                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': '1RQ42xioItskNx58rLIeqy_61GEgOv5eK'}]}) 
+                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': PhotoFolderID }]}) 
 
-                    file1.SetContentFile(fileString)
-                    file1.Upload() 
-                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                        file1.SetContentFile(fileString)
+                        file1.Upload() 
+                        print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                        FireAlarmData = {}
+                        FireAlarmData["Machine ID"]=local_mac_address
+                        FireAlarmData["Command"]="UpdateFireAlarmTrigger"
+                        FireAlarmData["PhotoFileName"]=filename
+                        FireAlarmData["VideoFileName"]="NA"
+                        TransferJSONData=json.dumps(FireAlarmData)
+                        try:
+                            auth=('token', 'example')
+                            ssl._create_default_https_context = ssl._create_unverified_context
+                            headers = {'Content-Type': 'application/json'}
+                            r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                            print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
+                        except BaseException as error:
+                            print(ANSI_RED + "--Update Fire Alarm Trigger Failure" + ANSI_OFF)
+                    else:
+                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
 
                 except:
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
@@ -1500,21 +1533,24 @@ def UpdateLocalPicture():
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
                 try:
-                    gauth = GoogleAuth()
-                    gauth.CommandLineAuth() 
-                    drive = GoogleDrive(gauth)
+                    if PhotoFolderID != 'NA':
+                        gauth = GoogleAuth()
+                        gauth.CommandLineAuth() 
+                        drive = GoogleDrive(gauth)
 
-                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
                                      'id': PhotoFolderID }]}) 
 
-                    file1.SetContentFile(fileString)
-                    file1.Upload() 
-                    print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
-                    try:
-                        os.remove(fileString)
-                        print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
-                    except:
-                        print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
+                        file1.SetContentFile(fileString)
+                        file1.Upload() 
+                        print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
+                        try:
+                            os.remove(fileString)
+                            print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
+                        except:
+                            print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
+                    else:
+                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
                 except:
                     print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
             else:
