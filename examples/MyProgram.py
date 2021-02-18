@@ -692,6 +692,11 @@ def GetSensorsData():
     tKeepVibrationStatusTimer = time.time()
     iKeepVibrationStatus_IntervalTime = 10.0
 
+    #Vibration
+    bVibration_FirstFlag = False
+    gyro_xout_pre = 0.0
+    gyro_yout_pre = 0.0
+    gyro_zout_pre = 0.0
 
     #Capture Delay
     tStartTime_DHT22 = time.time()
@@ -771,11 +776,24 @@ def GetSensorsData():
             x_rotation = get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
             y_rotation = get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
 
-            if (abs(gyro_xout_scaled) > VibrationAlarmValue) or (abs(gyro_yout_scaled) > VibrationAlarmValue) or (abs(gyro_zout_scaled) > VibrationAlarmValue):
+            gyro_xout_amp = 0.0
+            gyro_yout_amp = 0.0
+            gyro_zout_amp = 0.0
+
+            if bVibration_FirstFlag == True :
+                gyro_xout_amp = gyro_xout_scaled - gyro_xout_pre
+                gyro_yout_amp = gyro_yout_scaled - gyro_yout_pre
+                gyro_zout_amp = gyro_zout_scaled - gyro_zout_pre
+            gyro_xout_pre = gyro_xout_scaled
+            gyro_yout_pre = gyro_yout_scaled
+            gyro_zout_pre = gyro_zout_scaled
+            bVibration_FirstFlag = True
+
+            if (abs(gyro_xout_amp) > VibrationAlarmValue) or (abs(gyro_yout_amp) > VibrationAlarmValue) or (abs(gyro_zout_amp) > VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
                 sVibrationStatus_Keep = "Alarm"
                 tKeepVibrationStatusTimer = time.time()
-            elif (abs(gyro_xout_scaled) > VibrationWarningValue) or (abs(gyro_yout_scaled) > VibrationWarningValue) or (abs(gyro_zout_scaled) > VibrationWarningValue):
+            elif (abs(gyro_xout_amp) > VibrationWarningValue) or (abs(gyro_yout_amp) > VibrationWarningValue) or (abs(gyro_zout_amp) > VibrationWarningValue):
                 sVibrationStatus = "Warning"
                 if sVibrationStatus_Keep == "Normal":
                     sVibrationStatus_Keep = "Alarm"
