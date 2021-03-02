@@ -240,6 +240,7 @@ class MyTest():
                 timer = time.time()-self.start_time3
                 print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time3))
                 if ((timer>self.ReconnectIntervalSecond) or (timer < 0)):
+                    print("#############--Reset---")
                     self.start_time3=time.time()
                     self.Connect()
             time.sleep(0.5)
