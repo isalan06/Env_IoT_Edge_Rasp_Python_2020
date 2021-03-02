@@ -244,6 +244,7 @@ class MyTest():
     def Disconnect(self):
         self.start_time=time.time()
         if self.BLE_Connected == True:
+            self.BLE_Connected = False
             try:
                 self.p.disconnect()
                 print(ANSI_GREEN + "@@@@Machine-" + str(self.index) + " - Disconnect Success" + ANSI_OFF)
