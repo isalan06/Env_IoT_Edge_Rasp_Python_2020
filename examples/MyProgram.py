@@ -237,7 +237,7 @@ class MyTest():
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
                 timer = time.time()-self.start_time
-                print("###############----" + str(timer))
+                print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time))
                 if ((timer>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time=time.time()
                     self.Connect()
