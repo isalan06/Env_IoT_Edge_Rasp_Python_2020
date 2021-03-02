@@ -239,15 +239,14 @@ class MyTest():
             else:
                 timer = time.time()-self.start_time3
                 print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time3))
-                if ((timer>self.ReconnectIntervalSecond) or (timer < 0)):
-                    print("#############--Reset---")
+                if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time3=time.time()
                     self.Connect()
             time.sleep(0.5)
 
     def Disconnect(self):
-        self.start_time3=time.time()
         if self.BLE_Connected == True:
+            self.start_time3=time.time()
             self.BLE_Connected = False
             try:
                 self.p.disconnect()
@@ -381,7 +380,7 @@ class BLEDeviceForMi():
             if length > 0:
                 for index in range(length):
                     if get_mi_data_flag2[index] == True:
-                        get_mi_data_flag2[index] == False
+                        get_mi_data_flag2[index] = False
                         self.myBleDevice[index].Disconnect()
 
             #endregion
