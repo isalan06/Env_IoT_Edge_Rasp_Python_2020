@@ -1137,7 +1137,7 @@ def TriggerAlarmToCloud():
     headers = {'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    print("Trigger Alarm To Cloud Result: " + response.text)
+    print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
 
 #endregion
 
