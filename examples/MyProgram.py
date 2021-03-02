@@ -190,6 +190,7 @@ class MyTest():
     ReconnectIntervalSecond = 10
 
     start_time2=time.time()
+    start_time3=time.time()
     GetBatteryValueIntervalSecond = 30
 
     def __init__(self, index, mac_address):
@@ -236,15 +237,15 @@ class MyTest():
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
-                timer = time.time()-self.start_time
-                print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time))
+                timer = time.time()-self.start_time3
+                print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time3))
                 if ((timer>self.ReconnectIntervalSecond) or (timer < 0)):
-                    self.start_time=time.time()
+                    self.start_time3=time.time()
                     self.Connect()
             time.sleep(0.5)
 
     def Disconnect(self):
-        self.start_time=time.time()
+        self.start_time3=time.time()
         if self.BLE_Connected == True:
             self.BLE_Connected = False
             try:
