@@ -192,7 +192,7 @@ class MyTest():
 
     start_time2=time.time()
     start_time3=time.time()
-    GetBatteryValueIntervalSecond = 30
+    GetBatteryValueIntervalSecond = 1800
 
     def __init__(self, index, mac_address):
         self.index=index
@@ -1127,6 +1127,20 @@ def UpdateLocalSensorsInformation():
 
 #endregion
 
+#Trigger Alarm to Cloud
+#region
+
+def TriggerAlarmToCloud():
+    url = "http://122.116.123.236/Antiquities/API/WebService1.asmx/IotGWNotify"
+
+    payload="{\"machineId\":\"" + local_mac_address + "\"}"
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    print("Trigger Alarm To Cloud Result: " + response.text)
+
+#endregion
+
 #Get Command From Cloud
 #region Get Command From Cloud
 def GetCommandFromCloud():
@@ -1419,6 +1433,8 @@ def GetCommandFromCloud():
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
 
+            TriggerAlarmToCloud()
+
             bCameraUsed = False
         #endregion
 
@@ -1496,6 +1512,8 @@ def GetCommandFromCloud():
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+
+            TriggerAlarmToCloud()
 
             bCameraUsed = False
         #endregion
