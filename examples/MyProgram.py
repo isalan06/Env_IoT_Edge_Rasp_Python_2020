@@ -173,11 +173,13 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
+                data5 = int.from_bytes(data[3:5],byteorder='little') / 1000.
                 #print("Get Notification (" + str(get_mi_device_number) + ")")
-                print("  Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                print("  Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH; Voltage:" + str(data5))
                 if (self.index < get_mi_device_number):
                     get_mi_data_temp[self.index] = data4
                     get_mi_data_humidity[self.index] = data3
+                    get_mi_data_battery[self.index] = data5
                     get_mi_data_flag[self.index]=True
                     get_mi_data_flag2[self.index]=True
 
@@ -361,7 +363,7 @@ class BLEDeviceForMi():
                         get_mi_data_flag2.append(False)
                         get_mi_data_temp.append(0.0)
                         get_mi_data_humidity.append(0)
-                        get_mi_data_battery.append(99)
+                        get_mi_data_battery.append(0)
                         get_mi_device_number = get_mi_device_number + 1
 
                         time.sleep(1.0)
