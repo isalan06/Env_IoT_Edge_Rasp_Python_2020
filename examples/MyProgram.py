@@ -37,6 +37,7 @@ import configparser
 get_mi_device_number = 0
 mac_address_list = []
 get_mi_data_flag = []
+get_mi_data_flag2 = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
 get_mi_data_battery = []
@@ -163,6 +164,7 @@ class MyDelegate(btle.DefaultDelegate):
     def handleNotification(self, cHandle, data):
             global get_mi_device_number
             global get_mi_data_flag
+            global get_mi_data_flag2
             global get_mi_data_temp
             global get_mi_data_humidity
             #print(data)
@@ -177,6 +179,7 @@ class MyDelegate(btle.DefaultDelegate):
                     get_mi_data_temp[self.index] = data4
                     get_mi_data_humidity[self.index] = data3
                     get_mi_data_flag[self.index]=True
+                    get_mi_data_flag2[self.index]=True
 
 class MyTest():
     BLE_Connected=False
@@ -229,19 +232,6 @@ class MyTest():
             if (self.BLE_Connected & self.bRunning):
                 try:
                     self.p.waitForNotifications(0.5)
-
-                    if (int(time.time()-self.start_time2)>self.GetBatteryValueIntervalSecond):
-                        self.start_time2 = time.time()
-                        try:
-                            my_service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
-                            my_char = my_service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
-                            batter_raw_value = my_char.read()
-                            batter_value = int.from_bytes(batter_raw_value, 'big')
-                            get_mi_data_battery[self.index] = batter_value
-                            print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
-                        except:
-                            self.BLE_Connected = False
-                            print(ANSI_RED + "    Machine-" + str(self.index) + " - Get Battery Fail" + ANSI_OFF)
                 except:
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
@@ -250,6 +240,16 @@ class MyTest():
                     self.start_time=time.time()
                     self.Connect()
             time.sleep(0.5)
+
+    def Disconnect(self):
+        self.start_time=time.time()
+        if self.BLE_Connected == True:
+            try:
+                self.p.disconnect()
+                print(ANSI_GREEN + "@@@@Machine-" + str(self.index) + " - Disconnect Success" + ANSI_OFF)
+            except:
+                self.p=None
+                print(ANSI_RED + "@@@@Machine-" + str(self.index) + " - Disconnect Fail" + ANSI_OFF)
     
     def Close(self):
         self.bRunning = False
@@ -288,6 +288,7 @@ class BLEDeviceForMi():
         global mac_address_list
         global get_mi_device_number
         global get_mi_data_flag
+        global get_mi_data_flag2
         global get_mi_data_temp
         global get_mi_data_humidity
         global get_mi_data_battery
@@ -352,6 +353,7 @@ class BLEDeviceForMi():
                         _device.Run()
                         self.myBleDevice.append(_device)
                         get_mi_data_flag.append(False)
+                        get_mi_data_flag2.append(False)
                         get_mi_data_temp.append(0.0)
                         get_mi_data_humidity.append(0)
                         get_mi_data_battery.append(99)
@@ -369,6 +371,17 @@ class BLEDeviceForMi():
             #endregion
 
             # Disconnect
+            #region
+
+            if length > 0:
+                for index in range(length):
+                    if get_mi_data_flag2[index] == True:
+                        get_mi_data_flag2[index] == False
+                        self.myBleDevice[index].Disconnect()
+
+            #endregion
+
+            # Close
             #region
 
             if self.bExecuteStop:
@@ -887,6 +900,7 @@ def UpdateLocalSensorsInformation():
 
     global get_mi_device_number
     global get_mi_data_flag
+    global get_mi_data_flag2
     global get_mi_data_temp
     global get_mi_data_humidity
     global get_mi_data_battery
