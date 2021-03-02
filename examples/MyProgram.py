@@ -1134,6 +1134,7 @@ def TriggerAlarmToCloud():
     url = "http://122.116.123.236/Antiquities/API/WebService1.asmx/IotGWNotify"
 
     payload="{\"machineId\":\"" + local_mac_address + "\"}"
+    print(payload)
     headers = {'Content-Type': 'application/json'}
 
     response = requests.request("POST", url, headers=headers, data=payload)
