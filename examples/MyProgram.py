@@ -187,7 +187,8 @@ class MyTest():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 10
+    ReconnectIntervalSecond = 30
+    bFirstOneFlag=False
 
     start_time2=time.time()
     start_time3=time.time()
@@ -205,11 +206,12 @@ class MyTest():
             self.BLE_Connected = True
 
             try:
-
-                se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
-                ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
-                ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
-                ccc_desc.write(b"\x02")
+                if self.bFirstOneFlag == False:
+                    se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                    ccc_desc.write(b"\x02")
+                    self.bFirstOneFlag = True
             except:
                 print("Machine-" + str(self.index) + " Set Notification Error")
          
@@ -238,7 +240,6 @@ class MyTest():
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
                 timer = time.time()-self.start_time3
-                print("###############----" + str(timer) + "$$$$" + str(time.time()) + "&&&&" + str(self.start_time3))
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time3=time.time()
                     self.Connect()
