@@ -372,7 +372,7 @@ class BLEDeviceForMi():
 
             # Disconnect
             #region
-
+            length = len(mac_address_list)
             if length > 0:
                 for index in range(length):
                     if get_mi_data_flag2[index] == True:
