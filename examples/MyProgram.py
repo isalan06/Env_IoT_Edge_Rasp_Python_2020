@@ -236,7 +236,7 @@ class MyTest():
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
-                timer = int(time.time()-self.start_time)
+                timer = time.time()-self.start_time
                 print("###############----" + str(timer))
                 if ((timer>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time=time.time()
