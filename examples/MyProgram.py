@@ -189,12 +189,12 @@ class MyTest():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 30
+    ReconnectIntervalSecond = 1800
     bFirstOneFlag=False
 
     start_time2=time.time()
     start_time3=time.time()
-    GetBatteryValueIntervalSecond = 1800
+    GetBatteryValueIntervalSecond = 30
 
     def __init__(self, index, mac_address):
         self.index=index
