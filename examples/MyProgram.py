@@ -1360,6 +1360,7 @@ def GetCommandFromCloud():
             
             except:
                 bNetConnected = False
+                bCameraUsed = False
                 print("\033[1;31mGet Command Failure\033[0m")
 
         print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
