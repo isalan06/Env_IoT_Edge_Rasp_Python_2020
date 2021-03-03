@@ -1285,17 +1285,21 @@ def GetCommandFromCloud():
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
 
-                        file=open(fileString ,'rb')
-                        size = os.path.getsize(fileString)
-                        headers = {'Content-Type': 'image/jpeg'}
                         try:
 
-                            ftp.connect(ftp_IP) 
-                            ftp.login(ftp_user,ftp_password)
-                            ftp.cwd('/photo')
-                            ftp.storbinary(('STOR ' + filename), file, size) 
-                            ftp.close()
-                            print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                            if PhotoFolderID != 'NA':
+                                gauth = GoogleAuth()
+                                gauth.CommandLineAuth() 
+                                drive = GoogleDrive(gauth)
+
+                                file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': PhotoFolderID }]}) 
+
+                                file1.SetContentFile(fileString)
+                                file1.Upload() 
+                                print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                            else:
+                                print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
 
                         except:
                             print("\033[1;31mUpdate Capture Picture Failure\033[0m")
@@ -1331,24 +1335,21 @@ def GetCommandFromCloud():
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        #url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
-                        file=open(fileString ,'rb')
-                        size = os.path.getsize(fileString)
-                        #payload=file.read()
-                        #file.close()
-                        headers = {'Content-Type': 'video/mp4'}
+
                         try:
-                            #responses = requests.request("POST", url, headers=headers, data = payload)
-                            #if responses.status_code == 200:
-                            
-                            ftp.connect(ftp_IP) 
-                            ftp.login(ftp_user,ftp_password)
-                            ftp.cwd('/video')
-                            ftp.storbinary(('STOR ' + filename), file, size) 
-                            ftp.close()
-                            print("\033[1;34mUpdate Capture Video Success\033[0m")
-                            #else:
-                                #print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                            if VideoFolderID != 'NA':
+                                gauth = GoogleAuth()
+                                gauth.CommandLineAuth() 
+                                drive = GoogleDrive(gauth)
+
+                                file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': VideoFolderID }]}) 
+
+                                file1.SetContentFile(fileString)
+                                file1.Upload() 
+                                print("\033[1;34mUpdate Capture Video Success\033[0m")
+                            else:
+                                print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
                         except:
                             print("\033[1;31mUpdate Capture Video Failure\033[0m")
                         file.close()
