@@ -1374,11 +1374,12 @@ def GetCommandFromCloud():
             print(ANSI_YELLOW + "Detect Vibration Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
-                
+        
+        bCaptureFromCamera = False
         if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Vibration Alarm")
             try:
-                bCaptureFromCamera = False
+                
                 bCameraUsed = True
                 bVibrationStatus = True
                 nowtime = datetime.now()
@@ -1459,11 +1460,11 @@ def GetCommandFromCloud():
             print(ANSI_RED + "Detect Fire Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
-                
+        
+        bCaptureFromCamera = False
         if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Fire Detect Alarm")
             try:
-                bCaptureFromCamera = False
                 bCameraUsed = True
                 bFireDetectStatus = True
                 nowtime = datetime.now()
