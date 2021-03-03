@@ -710,7 +710,7 @@ def GetSensorsData():
     calCount_RecordVibration = 0
     RecordVibrationData = {}
     tKeepVibrationStatusTimer = time.time()
-    iKeepVibrationStatus_IntervalTime = 10.0
+    iKeepVibrationStatus_IntervalTime = 60.0
 
     #Vibration
     bVibration_FirstFlag = False
@@ -1461,28 +1461,32 @@ def GetCommandFromCloud():
                 
         if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Fire Detect Alarm")
-            bCameraUsed = True
-            bFireDetectStatus = True
-            nowtime = datetime.now()
-            datestring = nowtime.strftime('%Y%m%d')
-            fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
-
-            if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
-                os.mkdir("/home/pi/Pictures/FireDetectPictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
-            fileString += filename
-
-            bCaptureFromCamera = True
             try:
-                with picamera.PiCamera() as camera:
-                    camera.resolution = (CapturePictureRH,CapturePictureRV)
-                    time.sleep(1.0)
-                    camera.capture(fileString)
-                    time.sleep(0.1)
-            except:
                 bCaptureFromCamera = False
+                bCameraUsed = True
+                bFireDetectStatus = True
+                nowtime = datetime.now()
+                datestring = nowtime.strftime('%Y%m%d')
+                fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
+
+                if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
+                    os.mkdir("/home/pi/Pictures/FireDetectPictures/")
+                if not os.path.isdir(fileString):
+                    os.mkdir(fileString)
+                filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
+                fileString += filename
+
+                bCaptureFromCamera = True
+                try:
+                    with picamera.PiCamera() as camera:
+                        camera.resolution = (CapturePictureRH,CapturePictureRV)
+                        time.sleep(1.0)
+                        camera.capture(fileString)
+                        time.sleep(0.1)
+                except:
+                    bCaptureFromCamera = False
+            except:
+                print(ANSI_RED + "    Capture Image For Fire Alarm Error" + ANSI_OFF)
 
             if bCaptureFromCamera:
                 setsn=1
