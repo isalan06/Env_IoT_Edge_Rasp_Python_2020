@@ -710,7 +710,7 @@ def GetSensorsData():
     calCount_RecordVibration = 0
     RecordVibrationData = {}
     tKeepVibrationStatusTimer = time.time()
-    iKeepVibrationStatus_IntervalTime = 60.0
+    iKeepVibrationStatus_IntervalTime = 5.0
 
     #Vibration
     bVibration_FirstFlag = False
