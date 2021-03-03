@@ -1133,14 +1133,16 @@ def UpdateLocalSensorsInformation():
 #region
 
 def TriggerAlarmToCloud():
-    url = "http://122.116.123.236/Antiquities/API/WebService1.asmx/IotGWNotify"
+    try:
+        url = "http://122.116.123.236/Antiquities/API/WebService1.asmx/IotGWNotify"
 
-    payload="{\"machineId\":\"" + local_mac_address + "\"}"
-    print(payload)
-    headers = {'Content-Type': 'application/json'}
+        payload="{\"machineId\":\"" + local_mac_address + "\"}"
+        headers = {'Content-Type': 'application/json'}
 
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
+    except:
+        print(ANSI_RED + "--Trigger Alarm To Cloud Happen Error!" + ANSI_OFF)
 
 #endregion
 
@@ -1374,29 +1376,33 @@ def GetCommandFromCloud():
                 
         if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Vibration Alarm")
-            bCameraUsed = True
-            bVibrationStatus = True
-            nowtime = datetime.now()
-            datestring = nowtime.strftime('%Y%m%d')
-            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
-
-            if not os.path.isdir("/home/pi/Pictures/VibrationAlarmPictures/"):
-                os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
-            fileString += filename
-
-            bCaptureFromCamera = True
             try:
-                with picamera.PiCamera() as camera:
-                    camera.resolution = (CapturePictureRH,CapturePictureRV)
-                    time.sleep(1.0)
-                    camera.capture(fileString)
-                    time.sleep(0.1)
-            except:
                 bCaptureFromCamera = False
+                bCameraUsed = True
+                bVibrationStatus = True
+                nowtime = datetime.now()
+                datestring = nowtime.strftime('%Y%m%d')
+                fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
 
+                if not os.path.isdir("/home/pi/Pictures/VibrationAlarmPictures/"):
+                    os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
+                if not os.path.isdir(fileString):
+                    os.mkdir(fileString)
+                filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
+                fileString += filename
+
+                bCaptureFromCamera = True
+                try:
+                    with picamera.PiCamera() as camera:
+                        camera.resolution = (CapturePictureRH,CapturePictureRV)
+                        time.sleep(1.0)
+                        camera.capture(fileString)
+                        time.sleep(0.1)
+                except:
+                    bCaptureFromCamera = False
+            except:
+                print(ANSI_RED + "    Capture Image For Vibration Alarm Error" + ANSI_OFF)
+                
             if bCaptureFromCamera:
                 setsn=1
                 setfilename=filename
