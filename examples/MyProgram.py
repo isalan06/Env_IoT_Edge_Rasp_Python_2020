@@ -1353,11 +1353,14 @@ def UpdateLocalPicture():
     time.sleep(3.0)
 
     bUpdate=True
+    bUpdateKeep = False
+    bUpdateRetry = False
+    filename=''
     while bRunning:
         
-        if (bUpdate and (bCameraUsed==False)):
-            bCameraUsed = True
+        if (bUpdate and MyCamera.CheckCameraIdle()):
             bUpdate=False
+            bUpdateKeep = True
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
@@ -1365,48 +1368,49 @@ def UpdateLocalPicture():
             filename = MyCamera.CreateImageFileName(fileString, nowtime)
             fileString += filename
 
-            bCaptureFromCamera = True
+        if (bUpdateKeep and MyCamera.bCapturePictureError):
+            bUpdateKeep = False
+            if bUpdateRetry:
+                bUpdateRetry = True
+            else:
+                bUpdateRetry = False
+            MyCamera.bCapturePictureError = False
+            print("\033[1;31mCapture Local Picture Failure\033[0m")
+
+        if (bUpdateKeep and MyCamera.bCapturePictureDone):
+            bUpdateKeep = False
+            setsn=1
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+
             try:
-                with picamera.PiCamera() as camera:
-                    camera.resolution = (1024,768)
-                    time.sleep(0.1)
-                    camera.capture(fileString)
-                time.sleep(0.1)
-            except:
-                bCaptureFromCamera = False
-                bUpdate = True
+                if MyParameter.PhotoFolderID != 'NA':
+                    gauth = GoogleAuth()
+                    gauth.CommandLineAuth() 
+                    drive = GoogleDrive(gauth)
 
-            if bCaptureFromCamera:
-                setsn=1
-                setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
-
-                try:
-                    if MyParameter.PhotoFolderID != 'NA':
-                        gauth = GoogleAuth()
-                        gauth.CommandLineAuth() 
-                        drive = GoogleDrive(gauth)
-
-                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
                                      'id': MyParameter.PhotoFolderID }]}) 
 
-                        file1.SetContentFile(fileString)
-                        file1.Upload() 
-                        print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
-                        try:
-                            os.remove(fileString)
-                            print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
-                        except:
-                            print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
-                    else:
-                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-                except:
-                    print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
-            else:
-                print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                    file1.SetContentFile(fileString)
+                    file1.Upload() 
+                    print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
+                    try:
+                        os.remove(fileString)
+                        print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
+                    except:
+                        print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
+                else:
+                    print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+            except:
+                print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
+            MyCamera.bCapturePictureDone = False
+            
+            
 
-            bCameraUsed = False
-
+        checktime = MyParameter.CameraFValue
+        if bUpdateRetry:
+            checktime = 30.0
         tEnd = time.time()
         intervalTime = tEnd - tStart
         if intervalTime >= MyParameter.CameraFValue:
@@ -1414,6 +1418,17 @@ def UpdateLocalPicture():
             bUpdate=True
 
         time.sleep(0.1)
+#endregion
+
+#CameraFunction
+#region
+
+def CameraFunction():
+    while bRunning:
+        MyCamera.DoWork()
+
+        time.sleep(0.1)
+
 #endregion
 
 print("\033[1;33mProgram Start\033[0m")
@@ -1438,13 +1453,14 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-
+CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 
-#CheckCloudExistThread.start()
+
+CameraThread.start()
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
