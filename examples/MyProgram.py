@@ -18,6 +18,7 @@ import threading
 import picamera
 
 import MyParameter
+import MyCamera
 
 import sys
 import struct
@@ -1361,13 +1362,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/Pictures/" + datestring + "/"
-
-            if not os.path.isdir("/home/pi/Pictures/Pictures/"):
-                os.mkdir("/home/pi/Pictures/Pictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            #filename = "sn_" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
-            filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = MyCamera.CreateImageFileName(fileString)
             fileString += filename
 
             bCaptureFromCamera = True
