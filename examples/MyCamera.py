@@ -23,6 +23,12 @@ def CheckCameraIdle():
     return bResult
 
 def CreateImageFileName(folderString, nowtime):
+    global bCameraUsed
+    global sImageFileName
+    global bCapturePictureTrigger
+    global bCapturePictureDone
+    global bCapturePictureError
+
     bCapturePictureDone = False
     bCapturePictureError = False
     if not os.path.isdir("/home/pi/Pictures/Pictures/"):
@@ -35,14 +41,19 @@ def CreateImageFileName(folderString, nowtime):
     return filename
 
 def DoWork():
+    global bCameraUsed
+    global sImageFileName
+    global bCapturePictureTrigger
+    global bCapturePictureDone
+    global bCapturePictureError
     if bCapturePictureTrigger == True:
         bCapturePictureTrigger = False
 
         try:
             with picamera.PiCamera() as camera:
-                camera.resolution = (1024,768)
+                camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                 time.sleep(0.1)
-                camera.capture(fileString)
+                camera.capture(sImageFileName)
                 time.sleep(0.1)
                 bCapturePictureDone = True
         except:
