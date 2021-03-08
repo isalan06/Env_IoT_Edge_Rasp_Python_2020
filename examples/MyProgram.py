@@ -17,12 +17,12 @@ import threading
 
 import picamera
 
+import MyParameter
+
 import sys
 import struct
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
-
-from ftplib import FTP 
 
 import socket
 import uuid
@@ -32,7 +32,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-import configparser
+
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -41,16 +41,6 @@ get_mi_data_flag2 = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
 get_mi_data_battery = []
-
-ftp_IP = '122.116.123.236'
-ftp_user = 'uploaduser'
-ftp_password = 'antiupload3t6Q'
-ftp_filename = 'sn_2020-11-11_16-35-28-000.jpg'
-ftp_path = '/home/pi/download/sn_2020-11-11_16-35-28-000.jpg'
-ftp_pictureFolder = '/photo'
-ftp_videoFolder = '/video'
-ftp_Exist = False
-ftp = 0
 
 hostname = ''
 local_mac_address = ''
@@ -421,22 +411,6 @@ sDHT22Status = "Stop"
 sAccelGaugeStatus = "Stop"
 sThermalStatus = "Stop"
 
-#Parameter
-VibrationWarningValue=30.0
-VibrationAlarmValue=50.0
-FireWarningTempValue=50.0
-FireWarningCountValue=4
-FireAlarmTempValue=70.0
-FireAlarmCountValue=1
-CapturePictureRH=1920
-CapturePictureRV=1080
-CaptureVideoSecond=15
-SensorsFValue=3.0
-CameraFValue=300.0
-UpdateFValue=10.0
-PhotoFolderID="NA"
-VideoFolderID="NA"
-
 #Vibration Attribute
 gyro_xout = 0
 gyro_yout = 0
@@ -504,150 +478,6 @@ def get_x_rotation(x, y, z):
 
 #endregion
 
-#Check Function
-#region Check Function
-def CheckCloudExist():
-    global bNetConnected
-
-    while bRunning:
-        try:
-            if not bNetConnected:
-                bconnected = os.system("ping -c 1 8.8.8.8")
-                if bconnected == 0:
-                    bNetConnected = True
-                    print("\033[1;32mConnect to cloud success\033[0m")
-        except:
-            print("\033[1;31mConnect to cloud failure\033[0m")
-        time.sleep(30.0)
-#endregion
-
-#Parameter function           
-#region Parameter function
-
-def CreateParameter():
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
-    global PhotoFolderID
-    global VideoFolderID
-
-    if not os.path.isdir("/home/pi/Parameter/"):
-        os.mkdir("/home/pi/Parameter/")
-    filePathString = "/home/pi/Parameter/Parameter.ini"
-
-    config = configparser.ConfigParser()
-    config['Parameter'] = {} 
-    config['Parameter']['VibrationWarningValue'] = str(VibrationWarningValue)
-    config['Parameter']['VibrationAlarmValue'] = str(VibrationAlarmValue)
-    config['Parameter']['FireWarningTempValue'] = str(FireWarningTempValue)
-    config['Parameter']['FireWarningCountValue'] = str(FireWarningCountValue)
-    config['Parameter']['FireAlarmTempValue'] = str(FireAlarmTempValue)
-    config['Parameter']['FireAlarmCountValue'] = str(FireAlarmCountValue)
-    config['Parameter']['CapturePictureRH'] = str(CapturePictureRH)
-    config['Parameter']['CapturePictureRV'] = str(CapturePictureRV)
-    config['Parameter']['CaptureVideoSecond'] = str(CaptureVideoSecond)
-    config['Parameter']['SensorsFValue'] = str(SensorsFValue)
-    config['Parameter']['CameraFValue'] = str(CameraFValue)
-    config['Parameter']['UpdateFValue'] = str(UpdateFValue)
-    config['Parameter']['PhotoFolderID'] = PhotoFolderID
-    config['Parameter']['VideoFolderID'] = VideoFolderID
-
-    with open(filePathString, 'w') as configfile:
-        config.write(configfile)
-
-
-def LoadParameter():
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
-    global PhotoFolderID
-    global VideoFolderID
-
-    filePathString = "/home/pi/Parameter/Parameter.ini"
-
-    if os.path.isfile(filePathString):
-        config = configparser.ConfigParser()
-        config.read(filePathString)
-        VibrationWarningValue = config['Parameter'].getfloat('VibrationWarningValue')
-        VibrationAlarmValue = config['Parameter'].getfloat('VibrationAlarmValue')
-        FireWarningTempValue = config['Parameter'].getfloat('FireWarningTempValue')
-        FireWarningCountValue = config['Parameter'].getint('FireWarningCountValue')
-        FireAlarmTempValue = config['Parameter'].getfloat('FireAlarmTempValue')
-        FireAlarmCountValue = config['Parameter'].getint('FireAlarmCountValue')
-        CapturePictureRH = config['Parameter'].getint('CapturePictureRH')
-        CapturePictureRV = config['Parameter'].getint('CapturePictureRV')
-        CaptureVideoSecond = config['Parameter'].getint('CaptureVideoSecond')
-        SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
-        CameraFValue = config['Parameter'].getfloat('CameraFValue')
-        UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
-        PhotoFolderID = config['Parameter']['PhotoFolderID']
-        VideoFolderID = config['Parameter']['VideoFolderID']
-    else:
-        CreateParameter()
-
-def SaveParameter():
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
-    global PhotoFolderID
-    global VideoFolderID
-
-    filePathString = "/home/pi/Parameter/Parameter.ini"
-    if os.path.isfile(filePathString):
-        config = configparser.ConfigParser()
-        config.read(filePathString)
-        config['Parameter']['VibrationWarningValue'] = str(VibrationWarningValue)
-        config['Parameter']['VibrationAlarmValue'] = str(VibrationAlarmValue)
-        config['Parameter']['FireWarningTempValue'] = str(FireWarningTempValue)
-        config['Parameter']['FireWarningCountValue'] = str(FireWarningCountValue)
-        config['Parameter']['FireAlarmTempValue'] = str(FireAlarmTempValue)
-        config['Parameter']['FireAlarmCountValue'] = str(FireAlarmCountValue)
-        config['Parameter']['CapturePictureRH'] = str(CapturePictureRH)
-        config['Parameter']['CapturePictureRV'] = str(CapturePictureRV)
-        config['Parameter']['CaptureVideoSecond'] = str(CaptureVideoSecond)
-        config['Parameter']['SensorsFValue'] = str(SensorsFValue)
-        config['Parameter']['CameraFValue'] = str(CameraFValue)
-        config['Parameter']['UpdateFValue'] = str(UpdateFValue)
-        config['Parameter']['PhotoFolderID'] = PhotoFolderID
-        config['Parameter']['VideoFolderID'] = VideoFolderID
-
-        with open(filePathString, 'w') as configfile:
-            config.write(configfile)
-    else:
-        CreateParameter()
-
-#endregion
-
 #Get Sensors Data
 #region Get Sensors Data
 def GetSensorsData():
@@ -685,20 +515,6 @@ def GetSensorsData():
     global sDHT22Status
     global sAccelGaugeStatus
     global sThermalStatus
-
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
 
     #AMG8833 Attribute
     global thermalpixels
@@ -765,7 +581,7 @@ def GetSensorsData():
         try:
             if dhtDevice != 0:
                 checkvalue = tEndTime - tStartTime_DHT22
-                if (checkvalue >= SensorsFValue) or (checkvalue < 0):
+                if (checkvalue >= MyParameter.SensorsFValue) or (checkvalue < 0):
                     tStartTime_DHT22 = time.time()
                     temp_c = dhtDevice.temperature
                     humidity = dhtDevice.humidity
@@ -809,11 +625,11 @@ def GetSensorsData():
             gyro_zout_pre = gyro_zout_scaled
             bVibration_FirstFlag = True
 
-            if (abs(gyro_xout_amp) > VibrationAlarmValue) or (abs(gyro_yout_amp) > VibrationAlarmValue) or (abs(gyro_zout_amp) > VibrationAlarmValue):
+            if (abs(gyro_xout_amp) > MyParameter.VibrationAlarmValue) or (abs(gyro_yout_amp) > MyParameter.VibrationAlarmValue) or (abs(gyro_zout_amp) > MyParameter.VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
                 sVibrationStatus_Keep = "Alarm"
                 tKeepVibrationStatusTimer = time.time()
-            elif (abs(gyro_xout_amp) > VibrationWarningValue) or (abs(gyro_yout_amp) > VibrationWarningValue) or (abs(gyro_zout_amp) > VibrationWarningValue):
+            elif (abs(gyro_xout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_yout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_zout_amp) > MyParameter.VibrationWarningValue):
                 sVibrationStatus = "Warning"
                 if sVibrationStatus_Keep == "Normal":
                     sVibrationStatus_Keep = "Alarm"
@@ -868,9 +684,9 @@ def GetSensorsData():
                     fireWarningCount=0
                     bFirstFlag = False
                     for i in thermalpixels:
-                        if i >FireAlarmTempValue:
+                        if i > MyParameter.FireAlarmTempValue:
                             fireAlarmCount += 1
-                        elif i > FireWarningTempValue:
+                        elif i > MyParameter.FireWarningTempValue:
                             fireWarningCount += 1
                         if not bFirstFlag:
                             bFirstFlag=True
@@ -882,9 +698,9 @@ def GetSensorsData():
                             if i < thermalminValue:
                                 thermalminValue=i
 
-                    if fireAlarmCount > FireAlarmCountValue:
+                    if fireAlarmCount > MyParameter.FireAlarmCountValue:
                         sFireDetectStatus="Alarm"
-                    elif fireWarningCount > FireWarningCountValue:
+                    elif fireWarningCount > MyParameter.FireWarningCountValue:
                         sFireDetectStatus="Warning"
                     else:
                         sFireDetectStatus="Normal"
@@ -946,22 +762,6 @@ def UpdateLocalSensorsInformation():
     global x_rotation
     global y_rotation
 
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
-    global PhotoFolderID
-    global VideoFolderID
-
     #AMG8833 Attribute
     global thermalpixels
 
@@ -971,7 +771,7 @@ def UpdateLocalSensorsInformation():
     #print("Update Sensors Informatnio Start")
     while bRunning:
         try:
-            time.sleep(UpdateFValue)
+            time.sleep(MyParameter.UpdateFValue)
         except:
             time.sleep(10.0)
         if bGetData: # & bNetConnected:
@@ -1234,22 +1034,22 @@ def GetCommandFromCloud():
                     bRunning = False
 
                 if _command == "SetValue":
-                    VibrationWarningValue=data['VibrationWarningValue']
-                    VibrationAlarmValue=data['VibrationAlarmValue']
-                    FireWarningTempValue=data['FireWarningTempValue']
-                    FireWarningCountValue=data['FireWarningCountValue']
-                    FireAlarmTempValue=data['FireAlarmTempValue']
-                    FireAlarmCountValue=data['FireAlarmCountValue']
-                    CapturePictureRH=data['CapturePictureRH']
-                    CapturePictureRV=data['CapturePictureRV']
-                    CaptureVideoSecond=data['CaptureVideoSecond']
-                    SensorsFValue=data['SensorsFValue']
-                    CameraFValue=data['CameraFValue']
-                    UpdateFValue=data['UpdateFValue']
-                    PhotoFolderID=data['PhotoFolderID']
-                    VideoFolderID=data['VideoFolderID']
+                    MyParameter.VibrationWarningValue=data['VibrationWarningValue']
+                    MyParameter.VibrationAlarmValue=data['VibrationAlarmValue']
+                    MyParameter.FireWarningTempValue=data['FireWarningTempValue']
+                    MyParameter.FireWarningCountValue=data['FireWarningCountValue']
+                    MyParameter.FireAlarmTempValue=data['FireAlarmTempValue']
+                    MyParameter.FireAlarmCountValue=data['FireAlarmCountValue']
+                    MyParameter.CapturePictureRH=data['CapturePictureRH']
+                    MyParameter.CapturePictureRV=data['CapturePictureRV']
+                    MyParameter.CaptureVideoSecond=data['CaptureVideoSecond']
+                    MyParameter.SensorsFValue=data['SensorsFValue']
+                    MyParameter.CameraFValue=data['CameraFValue']
+                    MyParameter.UpdateFValue=data['UpdateFValue']
+                    MyParameter.PhotoFolderID=data['PhotoFolderID']
+                    MyParameter.VideoFolderID=data['VideoFolderID']
 
-                    SaveParameter()
+                    MyParameter.SaveParameter()
 
                     print("Set Value Completely")
 
@@ -1274,7 +1074,7 @@ def GetCommandFromCloud():
                     fileString += filename
 
                     with picamera.PiCamera() as camera:
-                        camera.resolution = (CapturePictureRH,CapturePictureRV)
+                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                         time.sleep(1.0)
                         camera.capture(fileString)
 
@@ -1287,13 +1087,13 @@ def GetCommandFromCloud():
 
                         try:
 
-                            if PhotoFolderID != 'NA':
+                            if MyParameter.PhotoFolderID != 'NA':
                                 gauth = GoogleAuth()
                                 gauth.CommandLineAuth() 
                                 drive = GoogleDrive(gauth)
 
                                 file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': PhotoFolderID }]}) 
+                                     'id': MyParameter.PhotoFolderID }]}) 
 
                                 file1.SetContentFile(fileString)
                                 file1.Upload() 
@@ -1330,20 +1130,20 @@ def GetCommandFromCloud():
                     filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
-                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
+                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
                     if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
 
                         try:
-                            if VideoFolderID != 'NA':
+                            if MyParameter.VideoFolderID != 'NA':
                                 gauth = GoogleAuth()
                                 gauth.CommandLineAuth() 
                                 drive = GoogleDrive(gauth)
 
                                 file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': VideoFolderID }]}) 
+                                     'id': MyParameter.VideoFolderID }]}) 
 
                                 file1.SetContentFile(fileString)
                                 file1.Upload() 
@@ -1397,7 +1197,7 @@ def GetCommandFromCloud():
                 bCaptureFromCamera = True
                 try:
                     with picamera.PiCamera() as camera:
-                        camera.resolution = (CapturePictureRH,CapturePictureRV)
+                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                         time.sleep(1.0)
                         camera.capture(fileString)
                         time.sleep(0.1)
@@ -1411,13 +1211,13 @@ def GetCommandFromCloud():
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
                 try:
-                    if PhotoFolderID != 'NA':
+                    if MyParameter.PhotoFolderID != 'NA':
                         gauth = GoogleAuth()
                         gauth.CommandLineAuth() 
                         drive = GoogleDrive(gauth)
 
                         file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': PhotoFolderID }]}) 
+                                     'id': MyParameter.PhotoFolderID }]}) 
 
                         file1.SetContentFile(fileString)
                         file1.Upload() 
@@ -1482,7 +1282,7 @@ def GetCommandFromCloud():
                 bCaptureFromCamera = True
                 try:
                     with picamera.PiCamera() as camera:
-                        camera.resolution = (CapturePictureRH,CapturePictureRV)
+                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                         time.sleep(1.0)
                         camera.capture(fileString)
                         time.sleep(0.1)
@@ -1496,13 +1296,13 @@ def GetCommandFromCloud():
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
                 try:
-                    if PhotoFolderID != 'NA':
+                    if MyParameter.PhotoFolderID != 'NA':
                         gauth = GoogleAuth()
                         gauth.CommandLineAuth() 
                         drive = GoogleDrive(gauth)
 
                         file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': PhotoFolderID }]}) 
+                                     'id': MyParameter.PhotoFolderID }]}) 
 
                         file1.SetContentFile(fileString)
                         file1.Upload() 
@@ -1586,13 +1386,13 @@ def UpdateLocalPicture():
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
                 try:
-                    if PhotoFolderID != 'NA':
+                    if MyParameter.PhotoFolderID != 'NA':
                         gauth = GoogleAuth()
                         gauth.CommandLineAuth() 
                         drive = GoogleDrive(gauth)
 
                         file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': PhotoFolderID }]}) 
+                                     'id': MyParameter.PhotoFolderID }]}) 
 
                         file1.SetContentFile(fileString)
                         file1.Upload() 
@@ -1623,7 +1423,7 @@ def UpdateLocalPicture():
 print("\033[1;33mProgram Start\033[0m")
 
 #Load Parameter
-LoadParameter()
+MyParameter.LoadParameter()
 
 #Get Mac Address
 hostname=socket.gethostname()
@@ -1638,24 +1438,11 @@ except:
 
 print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 
-#FTP
-ftp=FTP() 
-ftp.set_debuglevel(2)
-ftp.set_pasv(False)
-#try:
-#    ftp.connect(ftp_IP) 
-#    ftp.login(ftp_user,ftp_password)
-#    ftp_Exist = True
-#except:
-#    ftp_Exist = False
-
-print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
 
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
 
-#CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
@@ -1666,12 +1453,6 @@ GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
-
-#CheckCloudExistThread.join()
-#GetLocalSensorsThread.join()
-#UpdateSensorsThread.join()
-#UpdateLocalPictureThread.join()
-#GetCommandFromCloudThread.join()
 
 try:
     #while bRunning:
