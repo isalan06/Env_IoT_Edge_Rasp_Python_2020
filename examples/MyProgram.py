@@ -1362,7 +1362,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/Pictures/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString)
+            filename = MyCamera.CreateImageFileName(fileString, nowtime)
             fileString += filename
 
             bCaptureFromCamera = True

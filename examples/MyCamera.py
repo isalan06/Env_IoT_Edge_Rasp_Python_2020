@@ -4,11 +4,13 @@
 import os
 import cv2
 import picamera
+import time
+import datetime
 
 bCameraUsed = False
 
 
-def CreateImageFileName(folderString):
+def CreateImageFileName(folderString, nowtime):
     if not os.path.isdir("/home/pi/Pictures/Pictures/"):
         os.mkdir("/home/pi/Pictures/Pictures/")
     if not os.path.isdir(folderString):
