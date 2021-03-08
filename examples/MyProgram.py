@@ -1413,7 +1413,7 @@ def UpdateLocalPicture():
 
         tEnd = time.time()
         intervalTime = tEnd - tStart
-        if intervalTime >= CameraFValue:#300.0:
+        if intervalTime >= MyParameter.CameraFValue:
             tStart=time.time()
             bUpdate=True
 
