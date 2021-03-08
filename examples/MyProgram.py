@@ -32,7 +32,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-
+sSoftwareVersion='1.0.5.1'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -784,6 +784,7 @@ def UpdateLocalSensorsInformation():
                 InformationData = {}
                 InformationData[SetKey]=SetValue
                 InformationData["Machine ID"]=local_mac_address
+                InformationData["SoftwareVersion"]=sSoftwareVersion
                 InformationData["Comm Type"]="Ethernet"
                 InformationData["VibrationStatus"]=sVibrationStatus_Keep
                 InformationData["FireDetectStatus"]=sFireDetectStatus
