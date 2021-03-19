@@ -72,8 +72,8 @@ def CreateVideoFileName(folderString, nowtime, baseFolderString="/home/pi/Pictur
     bCaptureVideoError = False
     if not os.path.isdir(baseFolderString):
         os.mkdir(baseFolderString)
-    if not os.path.isdir(fileString):
-        os.mkdir(fileString)
+    if not os.path.isdir(folderString):
+        os.mkdir(folderString)
     filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S')  + ".mp4"
     sVideoFileName = folderString +  filename
     bCaptureVideoTrigger = True
