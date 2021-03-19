@@ -776,15 +776,9 @@ def UpdateLocalSensorsInformation():
 
 
     #print("Update Sensors Informatnio Start")
-    while bRunning:
-        try:
-            if ((MyParameter.UpdateFValue > 0.0) or (MyParameter.UpdateFValue < 60.0)):
-                time.sleep(MyParameter.UpdateFValue)
-            else:
-                time.sleep(10.0)
-        except:
-            time.sleep(10.0)
-        if bGetData: # & bNetConnected:
+    #while bRunning:
+    if True:
+        if bGetData:
             bGetData = False
 
             try:
@@ -963,6 +957,9 @@ def TriggerAlarmToCloud():
 
 #Get Command From Cloud
 #region Get Command From Cloud
+
+
+
 def GetCommandFromCloud():
     global bRunning
     global bNetConnected
@@ -1008,12 +1005,16 @@ def GetCommandFromCloud():
 
     _Command = ""
 
+    #Update Sensors Information Timer
+    start_UpdateSensors_time=time.time()
+
     #print("Get Command From Cloud")
     
     while bRunning:
 
-        #url = "https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec"
         url = "https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec"
+
+        
 
         #JSON
         SetKey="Machine"
@@ -1030,7 +1031,13 @@ def GetCommandFromCloud():
         payload = {}
         headers= {}
         
-        if bNetConnected or True:
+        #Update Local Sensors Information Timer Check
+        end_time = time.time()
+        update_intervalTime = end_time - start_UpdateSensors_time
+        if ((update_intervalTime < 0.0) or (update_intervalTime >= MyParameter.UpdateFValue)):
+            start_UpdateSensors_time=time.time()
+            UpdateLocalSensorsInformation()
+        else:
             try:
                 TransferJSONData=json.dumps(InformationData)
 
@@ -1189,78 +1196,13 @@ def GetCommandFromCloud():
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
         
         bCaptureFromCamera = False
-        if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False) and (bCameraUsed == False)):
-            print("    Start To Capture Image For Fire Detect Alarm")
-            try:
-                bCameraUsed = True
-                bFireDetectStatus = True
-                nowtime = datetime.now()
-                datestring = nowtime.strftime('%Y%m%d')
-                fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
+        if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False):
+            bFireDetectStatus = True
+            bManualFireDetectStatus = True
 
-                if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
-                    os.mkdir("/home/pi/Pictures/FireDetectPictures/")
-                if not os.path.isdir(fileString):
-                    os.mkdir(fileString)
-                filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
-                fileString += filename
-
-                bCaptureFromCamera = True
-                try:
-                    with picamera.PiCamera() as camera:
-                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
-                        time.sleep(1.0)
-                        camera.capture(fileString)
-                        time.sleep(0.1)
-                except:
-                    bCaptureFromCamera = False
-            except:
-                print(ANSI_RED + "    Capture Image For Fire Alarm Error" + ANSI_OFF)
-
-            if bCaptureFromCamera:
-                setsn=1
-                setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                try:
-                    if MyParameter.PhotoFolderID != 'NA':
-                        gauth = GoogleAuth()
-                        gauth.CommandLineAuth() 
-                        drive = GoogleDrive(gauth)
-
-                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.PhotoFolderID }]}) 
-
-                        file1.SetContentFile(fileString)
-                        file1.Upload() 
-                        print("\033[1;34mUpdate Capture Picture Success\033[0m")
-                        FireAlarmData = {}
-                        FireAlarmData["Machine ID"]=local_mac_address
-                        FireAlarmData["Command"]="UpdateFireAlarmTrigger"
-                        FireAlarmData["PhotoFileName"]=filename
-                        FireAlarmData["VideoFileName"]="NA"
-                        TransferJSONData=json.dumps(FireAlarmData)
-                        try:
-                            auth=('token', 'example')
-                            ssl._create_default_https_context = ssl._create_unverified_context
-                            headers = {'Content-Type': 'application/json'}
-                            r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-                            print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
-                        except BaseException as error:
-                            print(ANSI_RED + "--Update Fire Alarm Trigger Failure" + ANSI_OFF)
-                    else:
-                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-
-                except:
-                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-            else:
-                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-
-            TriggerAlarmToCloud()
-
-            bCameraUsed = False
         #endregion
 
-        time.sleep(5.0)
+        time.sleep(3.0)
 
 #endregion
 
@@ -1318,6 +1260,25 @@ def VibrationAlarmTrigger():
 
     except BaseException as error:
         print(ANSI_RED + "--Update Vibration Alarm Trigger Failure" + ANSI_OFF)
+
+def FireAlarmTrigger():
+    global FireAlarmData
+    global VibrationAlarmData
+
+    TransferJSONData=json.dumps(FireAlarmData)
+    try:
+        auth=('token', 'example')
+        ssl._create_default_https_context = ssl._create_unverified_context
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+        print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
+
+        time.sleep(0.5)
+
+        TriggerAlarmToCloud()
+
+    except BaseException as error:
+        print(ANSI_RED + "--Update Fire Alarm Trigger Failure" + ANSI_OFF)
 
 def UpdateLocalPicture():
     global bCameraUsed
@@ -1460,6 +1421,47 @@ def UpdateLocalPicture():
 
         #endregion
 
+        # Fire Alarm Picture
+        #region
+
+        if (bManualFireDetectStatus and MyCamera.CheckCameraIdle() and (bUsed==False)):
+            print("    Start To Capture Image For Fire Alarm")
+            bUsed = True
+            bManualFireDetectStatus=False
+            bManualFireDetectStatusKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
+            fileString += filename
+            
+
+        if (bManualFireDetectStatusKeep and MyCamera.bCapturePictureError):
+            bManualFireDetectStatusKeep = False
+
+            MyCamera.bCapturePictureError = False
+            bUsed = False
+
+
+        if (bManualFireDetectStatusKeep and MyCamera.bCapturePictureDone):
+            bManualFireDetectStatusKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+            FireAlarmData = {}
+            FireAlarmData["Machine ID"]=local_mac_address
+            FireAlarmData["Command"]="UpdateFireAlarmTrigger"
+            FireAlarmData["PhotoFileName"]=filename
+            FireAlarmData["VideoFileName"]="NA"
+            UpdateImageToGoogleDrive(filename, fileString, True)
+            FireAlarmTriggerThread = threading.Thread(target=FireAlarmTrigger)
+            FireAlarmTriggerThread.start()
+            MyCamera.bCapturePictureDone = False  
+            bUsed = False
+
+
+        #endregion
+
         #Check Update Local Picture Timer      
         #region
 
@@ -1512,14 +1514,14 @@ myBLEDevice.Start()
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
-UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
+#UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 
 
 CameraThread.start()
 GetLocalSensorsThread.start()
-UpdateSensorsThread.start()
+#UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
