@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.1'
+sSoftwareVersion='1.0.5.2'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -401,6 +401,12 @@ bNetConnected = False
 bRebootTrigger = False
 bCameraUsed = False
 bRecordVibration = False
+
+#Manual Flag
+bManualCaptureImage = False
+bManualCaptureVideo = False
+bManualVibrationStatus = False
+bManualFireDetectStatus = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
@@ -1132,7 +1138,29 @@ def GetCommandFromCloud():
                     filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
-                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
+                    cap = cv2.VideoCapture(0)
+                    encode = cv2.VideoWriter_fourcc(*'mp4v')
+                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))
+
+                    start_time=time.time()
+                    while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
+                        ret, frame = cap.read()
+                        if ret == True:
+                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
+                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
+                            showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
+                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            out.write(frame)
+                        else:
+                            break
+                    cap.release()
+                    out.release()
+                    cv2.destroyAllWindows()
+
+                    time.sleep(5.0)
+
                     if True:
                         setsn=1
                         setfilename=filename
@@ -1343,8 +1371,6 @@ def GetCommandFromCloud():
 #Update Local Picture
 #region Update Local Picture
 def UpdateLocalPicture():
-    global ftp
-    global ftp_Exist
     global bCameraUsed
     global local_mac_address
     #print("Update Local Picture Start")
@@ -1358,6 +1384,8 @@ def UpdateLocalPicture():
     filename=''
     while bRunning:
         
+        # Update Regular Image
+        #region
         if (bUpdate and MyCamera.CheckCameraIdle()):
             bUpdate=False
             bUpdateKeep = True
@@ -1404,9 +1432,7 @@ def UpdateLocalPicture():
                     print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
             except:
                 print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
-            MyCamera.bCapturePictureDone = False
-            
-            
+            MyCamera.bCapturePictureDone = False         
 
         checktime = MyParameter.CameraFValue
         if bUpdateRetry:
@@ -1416,6 +1442,13 @@ def UpdateLocalPicture():
         if intervalTime >= MyParameter.CameraFValue:
             tStart=time.time()
             bUpdate=True
+        #endregion
+
+        # Manual Capture Image
+        #region
+
+
+        #endregion
 
         time.sleep(0.1)
 #endregion
@@ -1441,7 +1474,7 @@ hostname=socket.gethostname()
 try:
     local_mac_address = get_mac_address()
 except:
-    local_mac_address='00:00:00:00:00:00'
+    local_mac_address='000000000000'
 try:
     hostip = socket.gethostbyname(hostname)
 except:
@@ -1469,6 +1502,7 @@ GetCommandFromCloudThread.start()
 try:
     #while bRunning:
         #time.sleep(1.0)
+    print("Waiting for Finished!!")
     input()
 except KeyboardInterrupt:
     bRunning=False

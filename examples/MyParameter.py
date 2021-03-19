@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #MyParameter.py
 import os
 import configparser
