@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.8'
+sSoftwareVersion='1.0.5.9'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -958,7 +958,8 @@ def TriggerAlarmToCloud():
 #Get Command From Cloud
 #region Get Command From Cloud
 
-
+bFireAlarmUpdateTrigger = False
+bVibrationAlarmUpdateTrigger = False
 
 def GetCommandFromCloud():
     global bRunning
@@ -996,6 +997,9 @@ def GetCommandFromCloud():
     global bManualCaptureVideo
     global bManualVibrationStatus
     global bManualFireDetectStatus
+
+    global bFireAlarmUpdateTrigger
+    global bVibrationAlarmUpdateTrigger
 
     #flag
     bCaptureImage = False
@@ -1181,6 +1185,10 @@ def GetCommandFromCloud():
             bVibrationStatus = True
             bManualVibrationStatus = True
 
+        if bVibrationAlarmUpdateTrigger:
+            bVibrationAlarmUpdateTrigger = False
+            VibrationAlarmTrigger()
+
         #endregion
 
         #sFireDetectStatus
@@ -1195,10 +1203,13 @@ def GetCommandFromCloud():
         else:
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
         
-        bCaptureFromCamera = False
         if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False)):
             bFireDetectStatus = True
             bManualFireDetectStatus = True
+
+        if bFireAlarmUpdateTrigger:
+            bFireAlarmUpdateTrigger = False
+            FireAlarmTrigger()
 
         #endregion
 
@@ -1292,6 +1303,9 @@ def UpdateLocalPicture():
 
     global FireAlarmData
     global VibrationAlarmData
+
+    global bFireAlarmUpdateTrigger
+    global bVibrationAlarmUpdateTrigger
 
     bManualCaptureImageKeep = False
     bManualCaptureVideoKeep = False
@@ -1413,8 +1427,9 @@ def UpdateLocalPicture():
             VibrationAlarmData["PhotoFileName"]=filename
             VibrationAlarmData["VideoFileName"]="NA"
             UpdateImageToGoogleDrive(filename, fileString, True)
-            VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
-            VibrationAlarmTriggerThread.start()
+            #VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
+            #VibrationAlarmTriggerThread.start()
+            bVibrationAlarmUpdateTrigger = True
             MyCamera.bCapturePictureDone = False  
             bUsed = False
 
@@ -1454,8 +1469,9 @@ def UpdateLocalPicture():
             FireAlarmData["PhotoFileName"]=filename
             FireAlarmData["VideoFileName"]="NA"
             UpdateImageToGoogleDrive(filename, fileString, True)
-            FireAlarmTriggerThread = threading.Thread(target=FireAlarmTrigger)
-            FireAlarmTriggerThread.start()
+            #FireAlarmTriggerThread = threading.Thread(target=FireAlarmTrigger)
+            #FireAlarmTriggerThread.start()
+            bFireAlarmUpdateTrigger = True
             MyCamera.bCapturePictureDone = False  
             bUsed = False
 
@@ -1512,16 +1528,16 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
+time.sleep(10.0)
+
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
-#UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 
 
 CameraThread.start()
 GetLocalSensorsThread.start()
-#UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
