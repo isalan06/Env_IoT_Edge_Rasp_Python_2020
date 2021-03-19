@@ -1457,7 +1457,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateImageToGoogleDrive(filename, filestring, True)
+            UpdateImageToGoogleDrive(filename, fileString, True)
             MyCamera.bCapturePictureDone = False         
 
         checktime = MyParameter.CameraFValue
