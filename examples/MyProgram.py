@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.4'
+sSoftwareVersion='1.0.5.5'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1156,6 +1156,7 @@ def GetCommandFromCloud():
         print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
         #sVibrationStatus
         #region
+        
         if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
 
@@ -1167,77 +1168,9 @@ def GetCommandFromCloud():
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
         
         bCaptureFromCamera = False
-        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
-            print("    Start To Capture Image For Vibration Alarm")
-            try:
-                
-                bCameraUsed = True
-                bVibrationStatus = True
-                nowtime = datetime.now()
-                datestring = nowtime.strftime('%Y%m%d')
-                fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
+        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False):
+            bManualVibrationStatus = True
 
-                if not os.path.isdir("/home/pi/Pictures/VibrationAlarmPictures/"):
-                    os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
-                if not os.path.isdir(fileString):
-                    os.mkdir(fileString)
-                filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
-                fileString += filename
-
-                bCaptureFromCamera = True
-                try:
-                    with picamera.PiCamera() as camera:
-                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
-                        time.sleep(1.0)
-                        camera.capture(fileString)
-                        time.sleep(0.1)
-                except:
-                    bCaptureFromCamera = False
-            except:
-                print(ANSI_RED + "    Capture Image For Vibration Alarm Error" + ANSI_OFF)
-                
-            if bCaptureFromCamera:
-                setsn=1
-                setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                try:
-                    if MyParameter.PhotoFolderID != 'NA':
-                        gauth = GoogleAuth()
-                        gauth.CommandLineAuth() 
-                        drive = GoogleDrive(gauth)
-
-                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.PhotoFolderID }]}) 
-
-                        file1.SetContentFile(fileString)
-                        file1.Upload() 
-                        print("\033[1;34mUpdate Capture Picture Success\033[0m")
-                        VibrationAlarmData = {}
-                        VibrationAlarmData["Machine ID"]=local_mac_address
-                        VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
-                        VibrationAlarmData["PhotoFileName"]=filename
-                        VibrationAlarmData["VideoFileName"]="NA"
-                        TransferJSONData=json.dumps(VibrationAlarmData)
-                        try:
-                            auth=('token', 'example')
-                            ssl._create_default_https_context = ssl._create_unverified_context
-                            headers = {'Content-Type': 'application/json'}
-                            r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-                            print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
-                        except BaseException as error:
-                            print(ANSI_RED + "--Update Vibration Alarm Trigger Failure" + ANSI_OFF)
-                    else:
-                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-
-                except:
-                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                    
-            else:
-                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-
-            TriggerAlarmToCloud()
-
-            bCameraUsed = False
         #endregion
 
         #sFireDetectStatus
@@ -1331,6 +1264,9 @@ def GetCommandFromCloud():
 #Update File To Google Drive
 #region Update File To Google Drive
 
+FireAlarmData={}
+VibrationAlarmData = {}
+
 def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
         if MyParameter.PhotoFolderID != 'NA':
@@ -1360,6 +1296,26 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
 
 #Update Local Picture
 #region Update Local Picture
+
+def VibrationAlarmTrigger():
+    global FireAlarmData
+    global VibrationAlarmData
+
+    TransferJSONData=json.dumps(VibrationAlarmData)
+    try:
+        auth=('token', 'example')
+        ssl._create_default_https_context = ssl._create_unverified_context
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+        print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
+
+        Thread.sleep(0.5)
+
+        TriggerAlarmToCloud()
+
+    except BaseException as error:
+        print(ANSI_RED + "--Update Vibration Alarm Trigger Failure" + ANSI_OFF)
+
 def UpdateLocalPicture():
     global bCameraUsed
     global local_mac_address
@@ -1370,7 +1326,13 @@ def UpdateLocalPicture():
     global bManualVibrationStatus
     global bManualFireDetectStatus
 
+    global FireAlarmData
+    global VibrationAlarmData
+
     bManualCaptureImageKeep = False
+    bManualCaptureVideoKeep = False
+    bManualVibrationStatusKeep = False
+    bManualFireDetectStatusKeep = False
 
     #print("Update Local Picture Start")
     tStart = time.time()
@@ -1402,7 +1364,6 @@ def UpdateLocalPicture():
             else:
                 bUpdateRetry = False
             MyCamera.bCapturePictureError = False
-            print("\033[1;31mCapture Picture Failure\033[0m")
 
         if (bUpdateKeep and MyCamera.bCapturePictureDone):
             bUpdateKeep = False
@@ -1431,14 +1392,48 @@ def UpdateLocalPicture():
             bManualCaptureImageKeep = False
 
             MyCamera.bCapturePictureError = False
-            print("\033[1;31mCapture Picture Failure\033[0m")
+
 
         if (bManualCaptureImageKeep and MyCamera.bCapturePictureDone):
             bManualCaptureImageKeep = False
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
+            UpdateImageToGoogleDrive(filename, fileString, False)
+            MyCamera.bCapturePictureDone = False  
+
+        #endregion
+
+        # Vibaration Alarm Picture
+        #region
+
+        if (bManualVibrationStatus and MyCamera.CheckCameraIdle()):
+            print("    Start To Capture Image For Vibration Alarm")
+            bManualVibrationStatus=False
+            bManualVibrationStatusKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
+            fileString += filename
+
+        if (bManualVibrationStatusKeep and MyCamera.bCapturePictureError):
+            bManualVibrationStatusKeep = False
+
+            MyCamera.bCapturePictureError = False
+
+        if (bManualVibrationStatusKeep and MyCamera.bCapturePictureDone):
+            bManualVibrationStatusKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+            VibrationAlarmData = {}
+            VibrationAlarmData["Machine ID"]=local_mac_address
+            VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
+            VibrationAlarmData["PhotoFileName"]=filename
+            VibrationAlarmData["VideoFileName"]="NA"
             UpdateImageToGoogleDrive(filename, fileString, True)
+            VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
             MyCamera.bCapturePictureDone = False  
 
         #endregion
