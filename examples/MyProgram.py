@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.6'
+sSoftwareVersion='1.0.5.7'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -639,7 +639,7 @@ def GetSensorsData():
             elif (abs(gyro_xout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_yout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_zout_amp) > MyParameter.VibrationWarningValue):
                 sVibrationStatus = "Warning"
                 if sVibrationStatus_Keep == "Normal":
-                    sVibrationStatus_Keep = "Alarm"
+                    sVibrationStatus_Keep = "Warning"
                 tKeepVibrationStatusTimer = time.time()
             else:
                 sVibrationStatus = "Normal"
@@ -778,6 +778,7 @@ def UpdateLocalSensorsInformation():
     #print("Update Sensors Informatnio Start")
     while bRunning:
         try:
+            if ((MyParameter.UpdateFValue > 0.0) or (MyParameter.UpdateFValue < 60.0)):
             time.sleep(MyParameter.UpdateFValue)
         except:
             time.sleep(10.0)
@@ -1309,7 +1310,7 @@ def VibrationAlarmTrigger():
         r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
         print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
 
-        Thread.sleep(0.5)
+        time.sleep(0.5)
 
         TriggerAlarmToCloud()
 
