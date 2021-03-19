@@ -25,7 +25,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.0.2'
+sSoftwareVersion='1.0.0.3'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -106,26 +106,32 @@ def DoWork():
 
     if bCaptureVideoTrigger == True:
         bCaptureVideoTrigger = False
-        cap = cv2.VideoCapture(0)
-        encode = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(sVideoFileName, encode, 15.0, (640, 480))
+        try:
+            cap = cv2.VideoCapture(0)
+            encode = cv2.VideoWriter_fourcc(*'mp4v')
+            out = cv2.VideoWriter(sVideoFileName, encode, 15.0, (640, 480))
 
-        start_time=time.time()
-        while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
-            ret, frame = cap.read()
-            if ret == True:
-                #showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
-                #showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
-                #showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
-                #cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                #cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                #cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                out.write(frame)
-            else:
-                break
+            start_time=time.time()
+            while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
+                ret, frame = cap.read()
+                if ret == True:
+                    #showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
+                    #showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
+                    #showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
+                    #cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                    #cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                    #cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                    out.write(frame)
+                else:
+                    break
 
-        cap.release()
-        out.release()
-        cv2.destroyAllWindows()
+            cap.release()
+            out.release()
+            cv2.destroyAllWindows()
+            bCaptureVideoDone = True
+            print(ANSI_GREEN + "Capture Video Success!" + ANSI_OFF)
+        except:
+            bCaptureVideoError = True
+            print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
 
     time.sleep(0.1)

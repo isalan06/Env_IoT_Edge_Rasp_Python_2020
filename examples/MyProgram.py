@@ -1364,7 +1364,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/CapVideo/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/CapVideo/")
+            filename = MyCamera.CreateVideoFileName(fileString, nowtime, "/home/pi/Pictures/CapVideo/")
             fileString += filename
 
         if (bManualCaptureVideoKeep and MyCamera.bCaptureVideoError):
