@@ -1342,6 +1342,8 @@ def UpdateLocalPicture():
 
     time.sleep(3.0)
 
+    bUsed = False
+
     bUpdate=True
     bUpdateKeep = False
     bUpdateRetry = False
@@ -1350,7 +1352,9 @@ def UpdateLocalPicture():
         
         # Update Regular Image
         #region
-        if (bUpdate and MyCamera.CheckCameraIdle()):
+        if (bUpdate and MyCamera.CheckCameraIdle() and (bUsed==False)):
+            print("    Start To Regular Capture Image")
+            bUsed = True
             bUpdate=False
             bUpdateKeep = True
 
@@ -1367,6 +1371,7 @@ def UpdateLocalPicture():
             else:
                 bUpdateRetry = False
             MyCamera.bCapturePictureError = False
+            bUsed = False
 
         if (bUpdateKeep and MyCamera.bCapturePictureDone):
             bUpdateKeep = False
@@ -1375,13 +1380,16 @@ def UpdateLocalPicture():
 
             UpdateImageToGoogleDrive(filename, fileString, True)
             MyCamera.bCapturePictureDone = False   
+            bUsed = False
 
         #endregion
 
         # Manual Capture Image
         #region
 
-        if (bManualCaptureImage and MyCamera.CheckCameraIdle()):
+        if (bManualCaptureImage and MyCamera.CheckCameraIdle() and (bUsed==False)):
+            print("    Start To Manual Capture Image")
+            bUsed = True
             bManualCaptureImage=False
             bManualCaptureImageKeep = True
 
@@ -1395,6 +1403,8 @@ def UpdateLocalPicture():
             bManualCaptureImageKeep = False
 
             MyCamera.bCapturePictureError = False
+            bUsed = False
+
 
 
         if (bManualCaptureImageKeep and MyCamera.bCapturePictureDone):
@@ -1404,14 +1414,17 @@ def UpdateLocalPicture():
 
             UpdateImageToGoogleDrive(filename, fileString, False)
             MyCamera.bCapturePictureDone = False  
+            bUsed = False
+
 
         #endregion
 
         # Vibaration Alarm Picture
         #region
 
-        if (bManualVibrationStatus and MyCamera.CheckCameraIdle()):
+        if (bManualVibrationStatus and MyCamera.CheckCameraIdle() and (bUsed==False)):
             print("    Start To Capture Image For Vibration Alarm")
+            bUsed = True
             bManualVibrationStatus=False
             bManualVibrationStatusKeep = True
 
@@ -1420,11 +1433,14 @@ def UpdateLocalPicture():
             fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
             filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
             fileString += filename
+            
 
         if (bManualVibrationStatusKeep and MyCamera.bCapturePictureError):
             bManualVibrationStatusKeep = False
 
             MyCamera.bCapturePictureError = False
+            bUsed = False
+
 
         if (bManualVibrationStatusKeep and MyCamera.bCapturePictureDone):
             bManualVibrationStatusKeep = False
@@ -1439,6 +1455,8 @@ def UpdateLocalPicture():
             VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
             VibrationAlarmTriggerThread.start()
             MyCamera.bCapturePictureDone = False  
+            bUsed = False
+
 
         #endregion
 
