@@ -779,7 +779,9 @@ def UpdateLocalSensorsInformation():
     while bRunning:
         try:
             if ((MyParameter.UpdateFValue > 0.0) or (MyParameter.UpdateFValue < 60.0)):
-            time.sleep(MyParameter.UpdateFValue)
+                time.sleep(MyParameter.UpdateFValue)
+            else:
+                time.sleep(10.0)
         except:
             time.sleep(10.0)
         if bGetData: # & bNetConnected:
