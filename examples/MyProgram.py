@@ -1156,7 +1156,7 @@ def GetCommandFromCloud():
         print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
         #sVibrationStatus
         #region
-        
+
         if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
 
@@ -1168,7 +1168,7 @@ def GetCommandFromCloud():
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
         
         bCaptureFromCamera = False
-        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False):
+        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False)):
             bManualVibrationStatus = True
 
         #endregion
