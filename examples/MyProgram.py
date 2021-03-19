@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.10'
+sSoftwareVersion='1.0.5.11'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1093,74 +1093,7 @@ def GetCommandFromCloud():
                 #endregion
 
                 if _command == "CaptureVideo":
-                    bCaptureVideo = True
-
-                if (bCaptureVideo and (bCameraUsed == False)):
-                    print("    Start To Capture Video")
-                    bCameraUsed = True
-                    bCaptureVideo = False
-                    #bconnected = os.system("ping -c 1 192.168.8.100")
-
-                    nowtime = datetime.now()
-                    datestring = nowtime.strftime('%Y%m%d')
-                    fileString ="/home/pi/Pictures/CapVideo/" + datestring + "/"
-
-                    if not os.path.isdir("/home/pi/Pictures/CapVideo/"):
-                        os.mkdir("/home/pi/Pictures/CapVideo/")
-                    if not os.path.isdir(fileString):
-                        os.mkdir(fileString)
-                    filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".mp4"
-                    fileString += filename
-
-                    cap = cv2.VideoCapture(0)
-                    encode = cv2.VideoWriter_fourcc(*'mp4v')
-                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))
-
-                    start_time=time.time()
-                    while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
-                        ret, frame = cap.read()
-                        if ret == True:
-                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
-                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
-                            showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
-                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                            out.write(frame)
-                        else:
-                            break
-                    cap.release()
-                    out.release()
-                    cv2.destroyAllWindows()
-
-                    time.sleep(5.0)
-
-                    if True:
-                        setsn=1
-                        setfilename=filename
-                        setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-
-                        try:
-                            if MyParameter.VideoFolderID != 'NA':
-                                gauth = GoogleAuth()
-                                gauth.CommandLineAuth() 
-                                drive = GoogleDrive(gauth)
-
-                                file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.VideoFolderID }]}) 
-
-                                file1.SetContentFile(fileString)
-                                file1.Upload() 
-                                print("\033[1;34mUpdate Capture Video Success\033[0m")
-                            else:
-                                print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-                        except:
-                            print("\033[1;31mUpdate Capture Video Failure\033[0m")
-                        file.close()
-                    else:
-                        print("\033[1;31mUpdate Capture Video Failure\033[0m")
-
-                    bCameraUsed = False
+                    bManualCaptureVideo = True
             
             except:
                 bNetConnected = False
@@ -1247,6 +1180,31 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
     except:
         print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
+
+def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
+    try:
+        if MyParameter.VideoFolderID != 'NA':
+            gauth = GoogleAuth()
+            gauth.CommandLineAuth() 
+            drive = GoogleDrive(gauth)
+
+            file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': MyParameter.VideoFolderID }]}) 
+
+            file1.SetContentFile(fileString)
+            file1.Upload() 
+            print("\033[1;34mUpdate Video To Google Drive Success\033[0m")
+            
+            if deletefile == True:
+                try: 
+                    os.remove(fileString)
+                    print(ANSI_GREEN + "    Delete Video Success" + ANSI_OFF)
+                except:
+                    print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
+        else:
+            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+    except:
+        print("\033[1;31mUpdate Video To Google Drive Failure\033[0m")
 
 #endregion
 
@@ -1394,6 +1352,41 @@ def UpdateLocalPicture():
 
         #endregion
 
+        # Manual Capture Video
+        #region
+
+        if (bManualCaptureVideo and MyCamera.CheckCameraIdle() and (bUsed==False)):
+            print("    Start To Manual Capture Video")
+            bUsed = True
+            bManualCaptureVideo=False
+            bManualCaptureVideoKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/CapVideo/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/CapVideo/")
+            fileString += filename
+
+        if (bManualCaptureVideoKeep and MyCamera.bCaptureVideoError):
+            bManualCaptureVideoKeep = False
+
+            MyCamera.bCaptureVideoError = False
+            bUsed = False
+
+
+
+        if (bManualCaptureVideoKeep and MyCamera.bCaptureVideoDone):
+            bManualCaptureVideoKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+
+            UpdateVideoToGoogleDrive(filename, fileString, False)
+            MyCamera.bCaptureVideoDone = False  
+            bUsed = False
+
+
+        #endregion
+
         # Vibaration Alarm Picture
         #region
 
@@ -1528,7 +1521,7 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-time.sleep(20.0)
+time.sleep(30.0)
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
