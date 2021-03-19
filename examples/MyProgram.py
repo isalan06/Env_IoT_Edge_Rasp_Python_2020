@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.3'
+sSoftwareVersion='1.0.5.4'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1074,58 +1074,8 @@ def GetCommandFromCloud():
                 #CapturePicture
                 #region
                 if _command == "CapturePicture":
-                    bCaptureImage = True
+                    bManualCaptureImage = True
                 
-                if (bCaptureImage and (bCameraUsed == False)):
-                    print("    Start To Capture Image")
-                    bCameraUsed = True
-                    bCaptureImage = False
-                    nowtime = datetime.now()
-                    datestring = nowtime.strftime('%Y%m%d')
-                    fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
-
-                    if not os.path.isdir("/home/pi/Pictures/CapPictures/"):
-                        os.mkdir("/home/pi/Pictures/CapPictures/")
-                    if not os.path.isdir(fileString):
-                        os.mkdir(fileString)
-                    filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
-                    fileString += filename
-
-                    with picamera.PiCamera() as camera:
-                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
-                        time.sleep(1.0)
-                        camera.capture(fileString)
-
-                    time.sleep(1.0)
-
-                    if True:
-                        setsn=1
-                        setfilename=filename
-                        setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-
-                        try:
-
-                            if MyParameter.PhotoFolderID != 'NA':
-                                gauth = GoogleAuth()
-                                gauth.CommandLineAuth() 
-                                drive = GoogleDrive(gauth)
-
-                                file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.PhotoFolderID }]}) 
-
-                                file1.SetContentFile(fileString)
-                                file1.Upload() 
-                                print("\033[1;34mUpdate Capture Picture Success\033[0m")
-                            else:
-                                print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-
-                        except:
-                            print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                        file.close()
-                    else:
-                        print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-
-                    bCameraUsed = False
                 #endregion
 
                 if _command == "CaptureVideo":
@@ -1393,18 +1343,18 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
 
             file1.SetContentFile(fileString)
             file1.Upload() 
-            print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
+            print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
             
             if deletefile == True:
                 try: 
                     os.remove(fileString)
-                    print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
+                    print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
                 except:
-                    print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
+                    print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
     except:
-        print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
+        print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
 
 #endregion
 
@@ -1419,6 +1369,9 @@ def UpdateLocalPicture():
     global bManualCaptureVideo
     global bManualVibrationStatus
     global bManualFireDetectStatus
+
+    bManualCaptureImageKeep = False
+
     #print("Update Local Picture Start")
     tStart = time.time()
 
@@ -1449,16 +1402,49 @@ def UpdateLocalPicture():
             else:
                 bUpdateRetry = False
             MyCamera.bCapturePictureError = False
-            print("\033[1;31mCapture Local Picture Failure\033[0m")
+            print("\033[1;31mCapture Picture Failure\033[0m")
 
         if (bUpdateKeep and MyCamera.bCapturePictureDone):
             bUpdateKeep = False
-            setsn=1
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
             UpdateImageToGoogleDrive(filename, fileString, True)
-            MyCamera.bCapturePictureDone = False         
+            MyCamera.bCapturePictureDone = False   
+
+        #endregion
+
+        # Manual Capture Image
+        #region
+
+        if (bManualCaptureImage and MyCamera.CheckCameraIdle()):
+            bManualCaptureImage=False
+            bManualCaptureImageKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/CapPictures/")
+            fileString += filename
+
+        if (bManualCaptureImageKeep and MyCamera.bCapturePictureError):
+            bManualCaptureImageKeep = False
+
+            MyCamera.bCapturePictureError = False
+            print("\033[1;31mCapture Picture Failure\033[0m")
+
+        if (bManualCaptureImageKeep and MyCamera.bCapturePictureDone):
+            bManualCaptureImageKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+
+            UpdateImageToGoogleDrive(filename, fileString, True)
+            MyCamera.bCapturePictureDone = False  
+
+        #endregion
+
+        #Check Update Local Picture Timer      
+        #region
 
         checktime = MyParameter.CameraFValue
         if bUpdateRetry:
@@ -1468,11 +1454,6 @@ def UpdateLocalPicture():
         if intervalTime >= MyParameter.CameraFValue:
             tStart=time.time()
             bUpdate=True
-        #endregion
-
-        # Manual Capture Image
-        #region
-
 
         #endregion
 
