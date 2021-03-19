@@ -17,34 +17,31 @@ import threading
 
 import picamera
 
+import MyParameter
+import MyCamera
+
 import sys
 import struct
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
 
-from ftplib import FTP 
-
 import socket
 import uuid
 import psutil
 
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from PIL import Image
+
+sSoftwareVersion='1.0.5.7'
 
 get_mi_device_number = 0
 mac_address_list = []
 get_mi_data_flag = []
+get_mi_data_flag2 = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
 get_mi_data_battery = []
-
-ftp_IP = '122.116.123.236'
-ftp_user = 'uploaduser'
-ftp_password = 'antiupload3t6Q'
-ftp_filename = 'sn_2020-11-11_16-35-28-000.jpg'
-ftp_path = '/home/pi/download/sn_2020-11-11_16-35-28-000.jpg'
-ftp_pictureFolder = '/photo'
-ftp_videoFolder = '/video'
-ftp_Exist = False
-ftp = 0
 
 hostname = ''
 local_mac_address = ''
@@ -158,6 +155,7 @@ class MyDelegate(btle.DefaultDelegate):
     def handleNotification(self, cHandle, data):
             global get_mi_device_number
             global get_mi_data_flag
+            global get_mi_data_flag2
             global get_mi_data_temp
             global get_mi_data_humidity
             #print(data)
@@ -166,12 +164,15 @@ class MyDelegate(btle.DefaultDelegate):
                 data2 = data[1]
                 data3 = data[2]
                 data4 = float(data2 * 256 + data1) / 100.0
+                data5 = int.from_bytes(data[3:5],byteorder='little') / 1000.
                 #print("Get Notification (" + str(get_mi_device_number) + ")")
-                print("  Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH")
+                print("  Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH; Voltage:" + str(data5))
                 if (self.index < get_mi_device_number):
                     get_mi_data_temp[self.index] = data4
                     get_mi_data_humidity[self.index] = data3
+                    get_mi_data_battery[self.index] = data5
                     get_mi_data_flag[self.index]=True
+                    get_mi_data_flag2[self.index]=True
 
 class MyTest():
     BLE_Connected=False
@@ -179,9 +180,11 @@ class MyTest():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 10
+    ReconnectIntervalSecond = 1800
+    bFirstOneFlag=False
 
     start_time2=time.time()
+    start_time3=time.time()
     GetBatteryValueIntervalSecond = 30
 
     def __init__(self, index, mac_address):
@@ -196,11 +199,12 @@ class MyTest():
             self.BLE_Connected = True
 
             try:
-
-                se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
-                ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
-                ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
-                ccc_desc.write(b"\x02")
+                if self.bFirstOneFlag == False:
+                    se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                    ccc_desc.write(b"\x02")
+                    self.bFirstOneFlag = True
             except:
                 print("Machine-" + str(self.index) + " Set Notification Error")
          
@@ -224,27 +228,26 @@ class MyTest():
             if (self.BLE_Connected & self.bRunning):
                 try:
                     self.p.waitForNotifications(0.5)
-
-                    if (int(time.time()-self.start_time2)>self.GetBatteryValueIntervalSecond):
-                        self.start_time2 = time.time()
-                        try:
-                            my_service = self.p.getServiceByUUID('0000180f-0000-1000-8000-00805f9b34fb')
-                            my_char = my_service.getCharacteristics('00002a19-0000-1000-8000-00805f9b34fb')[0]
-                            batter_raw_value = my_char.read()
-                            batter_value = int.from_bytes(batter_raw_value, 'big')
-                            get_mi_data_battery[self.index] = batter_value
-                            print(ANSI_GREEN + "    Machine-" + str(self.index) + " Get Battery Value: " + str(batter_value) + ANSI_OFF)
-                        except:
-                            self.BLE_Connected = False
-                            print(ANSI_RED + "    Machine-" + str(self.index) + " - Get Battery Fail" + ANSI_OFF)
                 except:
                     self.BLE_Connected = False
                     print("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
-                if (int(time.time()-self.start_time)>self.ReconnectIntervalSecond):
-                    self.start_time=time.time()
+                timer = time.time()-self.start_time3
+                if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
+                    self.start_time3=time.time()
                     self.Connect()
             time.sleep(0.5)
+
+    def Disconnect(self):
+        if self.BLE_Connected == True:
+            self.start_time3=time.time()
+            self.BLE_Connected = False
+            try:
+                self.p.disconnect()
+                print(ANSI_GREEN + "@@@@Machine-" + str(self.index) + " - Disconnect Success" + ANSI_OFF)
+            except:
+                self.p=None
+                print(ANSI_RED + "@@@@Machine-" + str(self.index) + " - Disconnect Fail" + ANSI_OFF)
     
     def Close(self):
         self.bRunning = False
@@ -283,6 +286,7 @@ class BLEDeviceForMi():
         global mac_address_list
         global get_mi_device_number
         global get_mi_data_flag
+        global get_mi_data_flag2
         global get_mi_data_temp
         global get_mi_data_humidity
         global get_mi_data_battery
@@ -347,9 +351,10 @@ class BLEDeviceForMi():
                         _device.Run()
                         self.myBleDevice.append(_device)
                         get_mi_data_flag.append(False)
+                        get_mi_data_flag2.append(False)
                         get_mi_data_temp.append(0.0)
                         get_mi_data_humidity.append(0)
-                        get_mi_data_battery.append(99)
+                        get_mi_data_battery.append(0)
                         get_mi_device_number = get_mi_device_number + 1
 
                         time.sleep(1.0)
@@ -364,6 +369,17 @@ class BLEDeviceForMi():
             #endregion
 
             # Disconnect
+            #region
+            length = len(mac_address_list)
+            if length > 0:
+                for index in range(length):
+                    if get_mi_data_flag2[index] == True:
+                        get_mi_data_flag2[index] = False
+                        self.myBleDevice[index].Disconnect()
+
+            #endregion
+
+            # Close
             #region
 
             if self.bExecuteStop:
@@ -384,24 +400,23 @@ bGetData = False
 bNetConnected = False
 bRebootTrigger = False
 bCameraUsed = False
+bRecordVibration = False
+
+#Manual Flag
+bManualCaptureImage = False
+bManualCaptureVideo = False
+bManualVibrationStatus = False
+bManualFireDetectStatus = False
 
 #Alarm Status
 sVibrationStatus = "Normal"
+sVibrationStatus_Keep = "Normal"
 sFireDetectStatus = "Normal"
 
-#Parameter
-VibrationWarningValue=30.0
-VibrationAlarmValue=50.0
-FireWarningTempValue=50.0
-FireWarningCountValue=4
-FireAlarmTempValue=70.0
-FireAlarmCountValue=1
-CapturePictureRH=1920
-CapturePictureRV=1080
-CaptureVideoSecond=15
-SensorsFValue=3.0
-CameraFValue=300.0
-UpdateFValue=10.0
+#Component Status
+sDHT22Status = "Stop"
+sAccelGaugeStatus = "Stop"
+sThermalStatus = "Stop"
 
 #Vibration Attribute
 gyro_xout = 0
@@ -440,6 +455,7 @@ power_mgmt_2 = 0x6c
 vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
 #Vibration Function
+#region Vibration Function
 def read_byte(adr):
     return vib_bus.read_byte_data(vib_address, adr)
 
@@ -467,23 +483,10 @@ def get_x_rotation(x, y, z):
     radians = math.atan2(y, dist(x, z))
     return math.degrees(radians)
 
-def CheckCloudExist():
-    global bNetConnected
+#endregion
 
-    while bRunning:
-        try:
-            if not bNetConnected:
-                bconnected = os.system("ping -c 1 8.8.8.8")
-                if bconnected == 0:
-                    bNetConnected = True
-                    print("\033[1;32mConnect to cloud success\033[0m")
-        except:
-            print("\033[1;31mConnect to cloud failure\033[0m")
-        time.sleep(30.0)
-
-            
-
-
+#Get Sensors Data
+#region Get Sensors Data
 def GetSensorsData():
 
     global bRunning
@@ -513,28 +516,38 @@ def GetSensorsData():
     #Alarm Status
     global sVibrationStatus
     global sFireDetectStatus
+    global sVibrationStatus_Keep
 
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
+    #component Status
+    global sDHT22Status
+    global sAccelGaugeStatus
+    global sThermalStatus
 
     #AMG8833 Attribute
     global thermalpixels
     global thermalmaxValue
     global thermalminValue
 
+    #Record Vibration
+    global bRecordVibration
+    calCount_RecordVibration = 0
+    RecordVibrationData = {}
+    tKeepVibrationStatusTimer = time.time()
+    iKeepVibrationStatus_IntervalTime = 5.0
 
+    #Vibration
+    bVibration_FirstFlag = False
+    gyro_xout_pre = 0.0
+    gyro_yout_pre = 0.0
+    gyro_zout_pre = 0.0
 
+    #Capture Delay
+    tStartTime_DHT22 = time.time()
+    tStartTime_Thermal = time.time()
+    fIntervalTime_Thermal = 1.0
+    tEndTime = time.time()
+    tStartTime_ShowInformation = time.time()
+    fIntervalTime_ShowInformation = 10.0
 
     print("Get Local Sensors Thread Start")
 
@@ -543,32 +556,51 @@ def GetSensorsData():
     try:
         dhtDevice = adafruit_dht.DHT22(board.D17)
         print(ANSI_GREEN + "Create DHT Device Success" + ANSI_OFF)
+        sDHT22Status="Running"
     except:
         dhtDevice = 0
-        print(ANSI_GREEN + "Create DHT Device Fail" + ANSI_OFF)
-
-   
-    
+        print(ANSI_RED + "Create DHT Device Fail" + ANSI_OFF)
+        sDHT22Status="Stop"
 
     #AMG8833 Attribute
     thermalImage = 0
     try:
         thermalImage = Adafruit_AMG88xx()
         print(ANSI_GREEN + "Connect to Theraml Camera Success" + ANSI_OFF)
+        sThermalStatus = "Running"
     except:
         thermalImage = 0
-        print(ANSI_GREEN + "Connect to Theraml Camera Fail" + ANSI_OFF)
+        print(ANSI_RED + "Connect to Theraml Camera Fail" + ANSI_OFF)
+        sThermalStatus = "Stop"
 
     while bRunning:
+        tEndTime = time.time()
+
+        if (tEndTime - tStartTime_ShowInformation) >= fIntervalTime_ShowInformation:
+            tStartTime_ShowInformation = time.time()
+            print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
+            print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+            print("     Get G Sensors Success: " + sVibrationStatus)
+            print("     Get ThermalPixels Success: " + sFireDetectStatus)
+            print("------------------------------------------------------------------" + ANSI_OFF)
 
         #DHT22
         try:
             if dhtDevice != 0:
-                temp_c = dhtDevice.temperature
-                humidity = dhtDevice.humidity
-                print("Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+                checkvalue = tEndTime - tStartTime_DHT22
+                if (checkvalue >= MyParameter.SensorsFValue) or (checkvalue < 0):
+                    tStartTime_DHT22 = time.time()
+                    temp_c = dhtDevice.temperature
+                    humidity = dhtDevice.humidity
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
+
+        #Vibration Status Return Normal Check
+        if sVibrationStatus == "Normal":
+            if sVibrationStatus_Keep != "Normal":
+                intervaltime = time.time() - tKeepVibrationStatusTimer
+                if (intervaltime >= iKeepVibrationStatus_IntervalTime) or (intervaltime < 0):
+                    sVibrationStatus_Keep = "Normal"
 
         #Vibration
         try:
@@ -586,65 +618,119 @@ def GetSensorsData():
             accel_zout_scaled = accel_zout / 16384.0
             x_rotation = get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
             y_rotation = get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            #print("gyro_xout:" + str(gyro_xout) + "-" + str(gyro_xout_scaled) + ";gyro_yout:" + str(gyro_yout) + "-" + str(gyro_yout_scaled) + ";gyro_zout:" + str(gyro_zout) + "-" + str(gyro_zout_scaled))
-            #print("accel_xout:" + str(accel_xout) + "-" + str(accel_xout_scaled) + ";accel_yout:" + str(accel_yout) + "-" + str(accel_yout_scaled) + ";accel_zout:" + str(accel_zout) + "-" + str(accel_zout_scaled))
-            #print("x_rotation:" + str(x_rotation) + ";y_rotation:" + str(y_rotation))
-            if (abs(gyro_xout_scaled) > VibrationAlarmValue) or (abs(gyro_yout_scaled) > VibrationAlarmValue) or (abs(gyro_zout_scaled) > VibrationAlarmValue):
+
+            gyro_xout_amp = 0.0
+            gyro_yout_amp = 0.0
+            gyro_zout_amp = 0.0
+
+            if bVibration_FirstFlag == True :
+                gyro_xout_amp = gyro_xout_scaled - gyro_xout_pre
+                gyro_yout_amp = gyro_yout_scaled - gyro_yout_pre
+                gyro_zout_amp = gyro_zout_scaled - gyro_zout_pre
+            gyro_xout_pre = gyro_xout_scaled
+            gyro_yout_pre = gyro_yout_scaled
+            gyro_zout_pre = gyro_zout_scaled
+            bVibration_FirstFlag = True
+
+            if (abs(gyro_xout_amp) > MyParameter.VibrationAlarmValue) or (abs(gyro_yout_amp) > MyParameter.VibrationAlarmValue) or (abs(gyro_zout_amp) > MyParameter.VibrationAlarmValue):
                 sVibrationStatus = "Alarm"
-            elif (abs(gyro_xout_scaled) > VibrationWarningValue) or (abs(gyro_yout_scaled) > VibrationWarningValue) or (abs(gyro_zout_scaled) > VibrationWarningValue):
+                sVibrationStatus_Keep = "Alarm"
+                tKeepVibrationStatusTimer = time.time()
+            elif (abs(gyro_xout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_yout_amp) > MyParameter.VibrationWarningValue) or (abs(gyro_zout_amp) > MyParameter.VibrationWarningValue):
                 sVibrationStatus = "Warning"
+                if sVibrationStatus_Keep == "Normal":
+                    sVibrationStatus_Keep = "Warning"
+                tKeepVibrationStatusTimer = time.time()
             else:
                 sVibrationStatus = "Normal"
-            print("Get G Sensors Success: " + sVibrationStatus)
+            if bRecordVibration:
+                if calCount_RecordVibration == 0:
+                    RecordVibrationData = {}
+                    RecordVibrationData["Machine ID"]=local_mac_address
+                    RecordVibrationData["Command"]="UpdateRecordVibration"
+                    RecordVibrationData["Data"] = []
+
+                datalist = {}
+                datalist['Gx']=gyro_xout_scaled
+                datalist['Gy']=gyro_yout_scaled
+                datalist['Gz']=gyro_zout_scaled
+                datalist['Ax']=accel_xout_scaled
+                datalist['Ay']=accel_yout_scaled
+                datalist['Az']=accel_zout_scaled
+                RecordVibrationData["Data"].append(datalist)
+
+                calCount_RecordVibration = calCount_RecordVibration + 1
+                if calCount_RecordVibration >= 100:
+                    bRecordVibration = False
+                    calCount_RecordVibration = 0
+                    TransferJSONData=json.dumps(RecordVibrationData)
+                    try:
+                        auth=('token', 'example')
+                        ssl._create_default_https_context = ssl._create_unverified_context
+                        headers = {'Content-Type': 'application/json'}
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                        print(ANSI_GREEN + "--Update Record Vibration Success" + ANSI_OFF)
+                    except BaseException as error:
+                        print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
+
+            sAccelGaugeStatus = "Running"
         except:
             print("Get G Sensor Failure")
+            sAccelGaugeStatus = "Stop"
             
 
         #Thermal Image
         try:
             if thermalImage != 0:
-                thermalpixels = thermalImage.readPixels()
+                checkvalue = tEndTime - tStartTime_Thermal
+                if (checkvalue >= fIntervalTime_Thermal) or (checkvalue < 0):
+                    tStartTime_Thermal = time.time()
+                    thermalpixels = thermalImage.readPixels()
 
-                fireAlarmCount=0
-                fireWarningCount=0
-                bFirstFlag = False
-                for i in thermalpixels:
-                    if i >FireAlarmTempValue:
-                        fireAlarmCount += 1
-                    elif i > FireWarningTempValue:
-                        fireWarningCount += 1
-                    if not bFirstFlag:
-                        bFirstFlag=True
-                        thermalmaxValue = i
-                        thermalminValue = i
+                    fireAlarmCount=0
+                    fireWarningCount=0
+                    bFirstFlag = False
+                    for i in thermalpixels:
+                        if i > MyParameter.FireAlarmTempValue:
+                            fireAlarmCount += 1
+                        elif i > MyParameter.FireWarningTempValue:
+                            fireWarningCount += 1
+                        if not bFirstFlag:
+                            bFirstFlag=True
+                            thermalmaxValue = i
+                            thermalminValue = i
+                        else:
+                            if i > thermalmaxValue:
+                                thermalmaxValue=i
+                            if i < thermalminValue:
+                                thermalminValue=i
+
+                    if fireAlarmCount > MyParameter.FireAlarmCountValue:
+                        sFireDetectStatus="Alarm"
+                    elif fireWarningCount > MyParameter.FireWarningCountValue:
+                        sFireDetectStatus="Warning"
                     else:
-                        if i > thermalmaxValue:
-                            thermalmaxValue=i
-                        if i < thermalminValue:
-                            thermalminValue=i
-
-                if fireAlarmCount > FireAlarmCountValue:
-                    sFireDetectStatus="Alarm"
-                elif fireWarningCount > FireWarningCountValue:
-                    sFireDetectStatus="Warning"
-                else:
-                    sFireDetectStatus="Normal"
-
-
-                print("Get ThermalPixels Success: " + sFireDetectStatus)
+                        sFireDetectStatus="Normal"
+                    #print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
             
 
         bGetData = True
 
-        #time.sleep(3.0)
-        time.sleep(SensorsFValue)
+        # Delay for getting Vibration Sensors (0.1 sec)
+        time.sleep(0.1)
+        #time.sleep(SensorsFValue)
+#endregion
+
+#Update Local Sensors Information
+#region Update Local Sensors Information
 
 def UpdateLocalSensorsInformation():
 
     global get_mi_device_number
     global get_mi_data_flag
+    global get_mi_data_flag2
     global get_mi_data_temp
     global get_mi_data_humidity
     global get_mi_data_battery
@@ -657,6 +743,11 @@ def UpdateLocalSensorsInformation():
 
     global local_mac_address
     global hostip
+
+    global sDHT22Status
+    global sAccelGaugeStatus
+    global sThermalStatus
+    
 
     #DHT Attribute
     global temp_c
@@ -678,159 +769,163 @@ def UpdateLocalSensorsInformation():
     global x_rotation
     global y_rotation
 
-    #Parameter
-    global VibrationWarningValue
-    global VibrationAlarmValue
-    global FireWarningTempValue
-    global FireWarningCountValue
-    global FireAlarmTempValue
-    global FireAlarmCountValue
-    global CapturePictureRH
-    global CapturePictureRV
-    global CaptureVideoSecond
-    global SensorsFValue
-    global CameraFValue
-    global UpdateFValue
-
     #AMG8833 Attribute
     global thermalpixels
 
+    global sVibrationStatus_Keep
+
+
     #print("Update Sensors Informatnio Start")
     while bRunning:
-        #time.sleep(10.0)
-        time.sleep(UpdateFValue)
+        try:
+            if ((MyParameter.UpdateFValue > 0.0) or (MyParameter.UpdateFValue < 60.0)):
+            time.sleep(MyParameter.UpdateFValue)
+        except:
+            time.sleep(10.0)
         if bGetData: # & bNetConnected:
             bGetData = False
 
-            #JSON
-            SetKey="Machine"
-            SetValue="IoT Edge"
-            InformationData = {}
-            InformationData[SetKey]=SetValue
-            InformationData["Machine ID"]=local_mac_address
-            InformationData["Comm Type"]="Ethernet"
-            InformationData["VibrationStatus"]=sVibrationStatus
-            InformationData["FireDetectStatus"]=sFireDetectStatus
-            InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
-            InformationData["Command"]="UpdateStatus"
-            InformationData["MachineIP"]=hostip
-            SetKey="Parameter"
-            InformationData[SetKey]={}
-            InformationData[SetKey]['VibrationWarningValue']=VibrationWarningValue
-            InformationData[SetKey]['VibrationAlarmValue']=VibrationAlarmValue
-            InformationData[SetKey]['FireWarningTempValue']=FireWarningTempValue
-            InformationData[SetKey]['FireWarningCountValue']=FireWarningCountValue
-            InformationData[SetKey]['FireAlarmTempValue']=FireAlarmTempValue
-            InformationData[SetKey]['FireAlarmCountValue']=FireAlarmCountValue
-            InformationData[SetKey]['CapturePictureRH']=CapturePictureRH
-            InformationData[SetKey]['CapturePictureRV']=CapturePictureRV
-            InformationData[SetKey]['CaptureVideoSecond']=CaptureVideoSecond
-            InformationData[SetKey]['SensorsFValue']=SensorsFValue
-            InformationData[SetKey]['CameraFValue']=CameraFValue
-            InformationData[SetKey]['UpdateFValue']=UpdateFValue
+            try:
+                #JSON
+                SetKey="Machine"
+                SetValue="IoT Edge"
+                InformationData = {}
+                InformationData[SetKey]=SetValue
+                InformationData["Machine ID"]=local_mac_address
+                InformationData["SoftwareVersion"]=sSoftwareVersion
+                InformationData["CameraSWVersion"]=MyCamera.sSoftwareVersion
+                InformationData["ParameterSWVersion"]=MyParameter.sSoftwareVersion
+                InformationData["Comm Type"]="Ethernet"
+                InformationData["VibrationStatus"]=sVibrationStatus_Keep
+                InformationData["FireDetectStatus"]=sFireDetectStatus
+                InformationData["DHT22Status"]=sDHT22Status
+                InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
+                InformationData["ThermalStatus"]=sThermalStatus
+                InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
+                InformationData["Command"]="UpdateStatus"
+                InformationData["MachineIP"]=hostip
+                SetKey="Parameter"
+                InformationData[SetKey]={}
+                InformationData[SetKey]['VibrationWarningValue']=MyParameter.VibrationWarningValue
+                InformationData[SetKey]['VibrationAlarmValue']=MyParameter.VibrationAlarmValue
+                InformationData[SetKey]['FireWarningTempValue']=MyParameter.FireWarningTempValue
+                InformationData[SetKey]['FireWarningCountValue']=MyParameter.FireWarningCountValue
+                InformationData[SetKey]['FireAlarmTempValue']=MyParameter.FireAlarmTempValue
+                InformationData[SetKey]['FireAlarmCountValue']=MyParameter.FireAlarmCountValue
+                InformationData[SetKey]['CapturePictureRH']=MyParameter.CapturePictureRH
+                InformationData[SetKey]['CapturePictureRV']=MyParameter.CapturePictureRV
+                InformationData[SetKey]['CaptureVideoSecond']=MyParameter.CaptureVideoSecond
+                InformationData[SetKey]['SensorsFValue']=MyParameter.SensorsFValue
+                InformationData[SetKey]['CameraFValue']=MyParameter.CameraFValue
+                InformationData[SetKey]['UpdateFValue']=MyParameter.UpdateFValue
+                InformationData[SetKey]['PhotoFolderID']=MyParameter.PhotoFolderID
+                InformationData[SetKey]['VideoFolderID']=MyParameter.VideoFolderID
 
-            SetKey="Data"
-            InformationData[SetKey]={}
-            SetKey2="Temp"
-            SetKey3="Data"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            templist = {}
-            templist["ID"]=1
-            templist["Type"]="Local"
-            templist["Unit"]="C"
-            templist["Address"]="NA"
-            templist["Value"]=temp_c
-            InformationData[SetKey][SetKey2][SetKey3].append(templist)
-            
-            SetKey2="Humidity"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            humiditylist = {}
-            humiditylist["ID"]=1
-            humiditylist["Type"]="Local"
-            humiditylist["Unit"]="%RH"
-            humiditylist["Value"]=humidity
-            InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
-
-            print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
-            SetKey2="MiTempHumidity"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=0
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            if (get_mi_device_number > 0):
-                print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
-                Count = 0
+                SetKey="Data"
+                InformationData[SetKey]={}
+                SetKey2="Temp"
+                SetKey3="Data"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                templist = {}
+                templist["ID"]=1
+                templist["Type"]="Local"
+                templist["Unit"]="C"
+                templist["Address"]="NA"
+                templist["Value"]=temp_c
+                InformationData[SetKey][SetKey2][SetKey3].append(templist)
                 
-                for index in range(get_mi_device_number):
-                    if get_mi_data_flag[index]:
-                        get_mi_data_flag[index] = False
-                        Count = Count + 1
-                        InformationData[SetKey][SetKey2]["Count"]=Count
+                SetKey2="Humidity"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                humiditylist = {}
+                humiditylist["ID"]=1
+                humiditylist["Type"]="Local"
+                humiditylist["Unit"]="%RH"
+                humiditylist["Value"]=humidity
+                InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
 
-                        mithlist = {}
-                        mithlist["ID"]=mac_address_list[index]
-                        mithlist["Type"]="MI Remote"
-                        mithlist["TUnit"]="C"
-                        mithlist["TValue"]=get_mi_data_temp[index]
-                        mithlist["HUnit"]="%RH"
-                        mithlist["HValue"]=get_mi_data_humidity[index]
-                        mithlist["BUnit"]="%"
-                        mithlist["BValue"]=get_mi_data_battery[index]
+                print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
+                SetKey2="MiTempHumidity"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=0
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                if (get_mi_device_number > 0):
+                    print("\t" + ANSI_YELLOW + "Create MI Device JSON" + ANSI_OFF)
+                    Count = 0
+                
+                    for index in range(get_mi_device_number):
+                        if get_mi_data_flag[index]:
+                            get_mi_data_flag[index] = False
+                            Count = Count + 1
+                            InformationData[SetKey][SetKey2]["Count"]=Count
 
-                        InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
+                            mithlist = {}
+                            mithlist["ID"]=mac_address_list[index]
+                            mithlist["Type"]="MI Remote"
+                            mithlist["TUnit"]="C"
+                            mithlist["TValue"]=get_mi_data_temp[index]
+                            mithlist["HUnit"]="%RH"
+                            mithlist["HValue"]=get_mi_data_humidity[index]
+                            mithlist["BUnit"]="%"
+                            mithlist["BValue"]=get_mi_data_battery[index]
+
+                            InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
 
             
-            SetKey2="Vibration"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            VibrationList={}
-            VibrationList["ID"]=1
-            VibrationList["Type"]="Local"
-            VibrationList["GyroUnit"]="DegreePerSecond"
-            VibrationList["GyroX"]=gyro_xout
-            VibrationList["GyroXScaled"]=gyro_xout_scaled
-            VibrationList["GyroY"]=gyro_yout
-            VibrationList["GyroYScaled"]=gyro_yout_scaled
-            VibrationList["GyroZ"]=gyro_zout
-            VibrationList["GyroZScaled"]=gyro_zout_scaled
-            VibrationList["AccelUnit"]="g"
-            VibrationList["AccelX"]=accel_xout
-            VibrationList["AccelXScaled"]=accel_xout_scaled
-            VibrationList["AccelY"]=accel_yout
-            VibrationList["AccelYScaled"]=accel_yout_scaled
-            VibrationList["AccelZ"]=accel_zout
-            VibrationList["AccelZScaled"]=accel_zout_scaled
-            VibrationList["RotationUnit"]="Degree"
-            VibrationList["RotationX"]=x_rotation
-            VibrationList["RotationY"]=y_rotation
-            InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
+                SetKey2="Vibration"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                VibrationList={}
+                VibrationList["ID"]=1
+                VibrationList["Type"]="Local"
+                VibrationList["GyroUnit"]="DegreePerSecond"
+                VibrationList["GyroX"]=gyro_xout
+                VibrationList["GyroXScaled"]=gyro_xout_scaled
+                VibrationList["GyroY"]=gyro_yout
+                VibrationList["GyroYScaled"]=gyro_yout_scaled
+                VibrationList["GyroZ"]=gyro_zout
+                VibrationList["GyroZScaled"]=gyro_zout_scaled
+                VibrationList["AccelUnit"]="g"
+                VibrationList["AccelX"]=accel_xout
+                VibrationList["AccelXScaled"]=accel_xout_scaled
+                VibrationList["AccelY"]=accel_yout
+                VibrationList["AccelYScaled"]=accel_yout_scaled
+                VibrationList["AccelZ"]=accel_zout
+                VibrationList["AccelZScaled"]=accel_zout_scaled
+                VibrationList["RotationUnit"]="Degree"
+                VibrationList["RotationX"]=x_rotation
+                VibrationList["RotationY"]=y_rotation
+                InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
 
-            SetKey2="ThermalCamera"
-            InformationData[SetKey][SetKey2]={}
-            InformationData[SetKey][SetKey2]["Count"]=1
-            InformationData[SetKey][SetKey2][SetKey3]=[]
-            thermalDataLength=len(thermalpixels)
-            ThermalDataList={}
-            ThermalDataList["ID"]=1
-            ThermalDataList["Type"]="Local"
-            ThermalDataList["Unit"]="C"
-            ThermalDataList["Length"]=thermalDataLength
-            ThermalDataList["Value"]=[]
-            setIDIndex=1
-            for thermalpoint in thermalpixels:
-                ThermalDataValue={}
-                ThermalDataValue["ID"]=setIDIndex
-                ThermalDataValue["Value"]=thermalpoint
-                setIDIndex = setIDIndex + 1
-                ThermalDataList["Value"].append(ThermalDataValue)
-            InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
+                SetKey2="ThermalCamera"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=1
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                thermalDataLength=len(thermalpixels)
+                ThermalDataList={}
+                ThermalDataList["ID"]=1
+                ThermalDataList["Type"]="Local"
+                ThermalDataList["Unit"]="C"
+                ThermalDataList["Length"]=thermalDataLength
+                ThermalDataList["Value"]=[]
+                setIDIndex=1
+                for thermalpoint in thermalpixels:
+                    ThermalDataValue={}
+                    ThermalDataValue["ID"]=setIDIndex
+                    ThermalDataValue["Value"]=thermalpoint
+                    setIDIndex = setIDIndex + 1
+                    ThermalDataList["Value"].append(ThermalDataValue)
+                InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
 
-            TransferJSONData=json.dumps(InformationData)
-            #print(TransferJSONData)
+                TransferJSONData=json.dumps(InformationData)
+                #print(TransferJSONData)
+                print(ANSI_GREEN + "Create JSON File Success" + ANSI_OFF) 
+            except:
+                print(ANSI_RED + "Create JSON File Failure" + ANSI_OFF) 
 
             try:
                 auth=('token', 'example')
@@ -843,10 +938,34 @@ def UpdateLocalSensorsInformation():
                 bNetConnected = False
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
 
+#endregion
+
+#Trigger Alarm to Cloud
+#region
+
+def TriggerAlarmToCloud():
+    try:
+        url = "http://122.116.123.236/Antiquities/API/WebService1.asmx/IotGWNotify"
+
+        payload="{\"machineId\":\"" + local_mac_address + "\"}"
+        headers = {'Content-Type': 'application/json'}
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
+    except:
+        print(ANSI_RED + "--Trigger Alarm To Cloud Happen Error!" + ANSI_OFF)
+
+#endregion
+
+
+
+#Get Command From Cloud
+#region Get Command From Cloud
 def GetCommandFromCloud():
     global bRunning
     global bNetConnected
     global bRebootTrigger
+    global bRecordVibration
 
     #Parameter
     global VibrationWarningValue
@@ -861,14 +980,23 @@ def GetCommandFromCloud():
     global SensorsFValue
     global CameraFValue
     global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
 
     global bCameraUsed
     global ftp
 
     global sVibrationStatus
     global sFireDetectStatus
+    global sVibrationStatus_Keep
 
     global local_mac_address
+
+    #Manual Flag
+    global bManualCaptureImage
+    global bManualCaptureVideo
+    global bManualVibrationStatus
+    global bManualFireDetectStatus
 
     #flag
     bCaptureImage = False
@@ -892,7 +1020,7 @@ def GetCommandFromCloud():
         InformationData[SetKey]=SetValue
         InformationData["Machine ID"]=local_mac_address
         InformationData["Comm Type"]="Ethernet"
-        InformationData["VibrationStatus"]=sVibrationStatus
+        InformationData["VibrationStatus"]=sVibrationStatus_Keep
         InformationData["FireDetectStatus"]=sFireDetectStatus
         InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
         InformationData["Command"]="GetCommand"
@@ -902,15 +1030,12 @@ def GetCommandFromCloud():
         
         if bNetConnected or True:
             try:
-                #response = requests.request("GET", url, headers=headers, data = payload)
-                #response.text.encode('utf8')
                 TransferJSONData=json.dumps(InformationData)
 
                 try:
                     auth=('token', 'example')
                     ssl._create_default_https_context = ssl._create_unverified_context
                     headers = {'Content-Type': 'application/json'}
-                    #headers = {'Content-Type': 'text/plain'}
                     response = requests.request("POST", url, headers=headers, data=TransferJSONData)
                     data = response.json()
 
@@ -920,83 +1045,38 @@ def GetCommandFromCloud():
                     bNetConnected = False
                     print("\033[1;31mGet Command Failure\033[0m")
 
-                
+                if _command == "RecordVibration":
+                    bRecordVibration = True
 
                 if _command == "Reboot":
                     bRebootTrigger = True
                     bRunning = False
 
                 if _command == "SetValue":
-                    VibrationWarningValue=data['VibrationWarningValue']
-                    VibrationAlarmValue=data['VibrationAlarmValue']
-                    FireWarningTempValue=data['FireWarningTempValue']
-                    FireWarningCountValue=data['FireWarningCountValue']
-                    FireAlarmTempValue=data['FireAlarmTempValue']
-                    FireAlarmCountValue=data['FireAlarmCountValue']
-                    CapturePictureRH=data['CapturePictureRH']
-                    CapturePictureRV=data['CapturePictureRV']
-                    CaptureVideoSecond=data['CaptureVideoSecond']
-                    SensorsFValue=data['SensorsFValue']
-                    CameraFValue=data['CameraFValue']
-                    UpdateFValue=data['UpdateFValue']
+                    MyParameter.VibrationWarningValue=data['VibrationWarningValue']
+                    MyParameter.VibrationAlarmValue=data['VibrationAlarmValue']
+                    MyParameter.FireWarningTempValue=data['FireWarningTempValue']
+                    MyParameter.FireWarningCountValue=data['FireWarningCountValue']
+                    MyParameter.FireAlarmTempValue=data['FireAlarmTempValue']
+                    MyParameter.FireAlarmCountValue=data['FireAlarmCountValue']
+                    MyParameter.CapturePictureRH=data['CapturePictureRH']
+                    MyParameter.CapturePictureRV=data['CapturePictureRV']
+                    MyParameter.CaptureVideoSecond=data['CaptureVideoSecond']
+                    MyParameter.SensorsFValue=data['SensorsFValue']
+                    MyParameter.CameraFValue=data['CameraFValue']
+                    MyParameter.UpdateFValue=data['UpdateFValue']
+                    MyParameter.PhotoFolderID=data['PhotoFolderID']
+                    MyParameter.VideoFolderID=data['VideoFolderID']
+
+                    MyParameter.SaveParameter()
 
                     print("Set Value Completely")
 
                 #CapturePicture
                 #region
                 if _command == "CapturePicture":
-                    bCaptureImage = True
+                    bManualCaptureImage = True
                 
-                if (bCaptureImage and (bCameraUsed == False)):
-                    print("    Start To Capture Image")
-                    bCameraUsed = True
-                    bCaptureImage = False
-                    nowtime = datetime.now()
-                    datestring = nowtime.strftime('%Y%m%d')
-                    fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
-
-                    if not os.path.isdir("/home/pi/Pictures/CapPictures/"):
-                        os.mkdir("/home/pi/Pictures/CapPictures/")
-                    if not os.path.isdir(fileString):
-                        os.mkdir(fileString)
-                    filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_snapshot') + ".jpg"
-                    fileString += filename
-
-                    with picamera.PiCamera() as camera:
-                        camera.resolution = (CapturePictureRH,CapturePictureRV)
-                        time.sleep(1.0)
-                        camera.capture(fileString)
-
-                    time.sleep(1.0)
-
-                    if True:
-                        setsn=1
-                        setfilename=filename
-                        setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        #url = "http://192.168.8.100:5099/Update/JpgCapPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
-
-                        file=open(fileString ,'rb')
-                        size = os.path.getsize(fileString)
-                        #payload=file.read()
-                        #file.close()
-                        headers = {'Content-Type': 'image/jpeg'}
-                        try:
-                            #responses = requests.request("POST", url, headers=headers, data = payload)
-                            #if responses.status_code == 200:
-                            ftp.connect(ftp_IP) 
-                            ftp.login(ftp_user,ftp_password)
-                            ftp.cwd('/photo')
-                            ftp.storbinary(('STOR ' + filename), file, size) 
-                            ftp.close()
-                            print("\033[1;34mUpdate Capture Picture Success\033[0m")
-
-                        except:
-                            print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                        file.close()
-                    else:
-                        print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-
-                    bCameraUsed = False
                 #endregion
 
                 if _command == "CaptureVideo":
@@ -1019,29 +1099,48 @@ def GetCommandFromCloud():
                     filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".mp4"
                     fileString += filename
 
-                    cap = cv2.VideoCapture(0)                    encode = cv2.VideoWriter_fourcc(*'mp4v')                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))                    start_time=time.time()                    while(int(time.time()-start_time)<CaptureVideoSecond):                        ret, frame = cap.read()                        if ret == True:                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)"                             showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)                            out.write(frame)                        else:                            break                    cap.release()                    out.release()                    cv2.destroyAllWindows()                    time.sleep(5.0)
+                    cap = cv2.VideoCapture(0)
+                    encode = cv2.VideoWriter_fourcc(*'mp4v')
+                    out = cv2.VideoWriter(fileString, encode, 15.0, (640, 480))
+
+                    start_time=time.time()
+                    while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
+                        ret, frame = cap.read()
+                        if ret == True:
+                            showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
+                            showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
+                            showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
+                            cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+                            out.write(frame)
+                        else:
+                            break
+                    cap.release()
+                    out.release()
+                    cv2.destroyAllWindows()
+
+                    time.sleep(5.0)
+
                     if True:
                         setsn=1
                         setfilename=filename
                         setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                        #url = "http://192.168.8.100:5099/Update/CapVideo?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
-                        file=open(fileString ,'rb')
-                        size = os.path.getsize(fileString)
-                        #payload=file.read()
-                        #file.close()
-                        headers = {'Content-Type': 'video/mp4'}
+
                         try:
-                            #responses = requests.request("POST", url, headers=headers, data = payload)
-                            #if responses.status_code == 200:
-                            
-                            ftp.connect(ftp_IP) 
-                            ftp.login(ftp_user,ftp_password)
-                            ftp.cwd('/video')
-                            ftp.storbinary(('STOR ' + filename), file, size) 
-                            ftp.close()
-                            print("\033[1;34mUpdate Capture Video Success\033[0m")
-                            #else:
-                                #print("\033[1;31mUpdate Capture Video Failure\033[0m")
+                            if MyParameter.VideoFolderID != 'NA':
+                                gauth = GoogleAuth()
+                                gauth.CommandLineAuth() 
+                                drive = GoogleDrive(gauth)
+
+                                file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': MyParameter.VideoFolderID }]}) 
+
+                                file1.SetContentFile(fileString)
+                                file1.Upload() 
+                                print("\033[1;34mUpdate Capture Video Success\033[0m")
+                            else:
+                                print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
                         except:
                             print("\033[1;31mUpdate Capture Video Failure\033[0m")
                         file.close()
@@ -1052,62 +1151,27 @@ def GetCommandFromCloud():
             
             except:
                 bNetConnected = False
+                bCameraUsed = False
                 print("\033[1;31mGet Command Failure\033[0m")
 
         print("\033[1;34mCheck Alarm Status-------------------------" + "\033[0m")
         #sVibrationStatus
         #region
-        if ((sVibrationStatus != "Alarm") and bVibrationStatus):
+
+        if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
 
-        if(sVibrationStatus == "Alarm"):
+        if(sVibrationStatus_Keep == "Alarm"):
             print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
+        elif(sVibrationStatus_Keep == "Warning"):
+            print(ANSI_YELLOW + "Detect Vibration Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
-                
-        if ((sVibrationStatus == "Alarm") and (bVibrationStatus==False) and (bCameraUsed == False)):
-            print("    Start To Capture Image For Vibration Alarm")
-            bCameraUsed = True
+        
+        if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False)):
             bVibrationStatus = True
-            nowtime = datetime.now()
-            datestring = nowtime.strftime('%Y%m%d')
-            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
+            bManualVibrationStatus = True
 
-            if not os.path.isdir("/home/pi/Pictures/VibrationAlarmPictures/"):
-                os.mkdir("/home/pi/Pictures/VibrationAlarmPictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            filename = sn + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_vibration_alarm') + ".jpg"
-            fileString += filename
-
-            with picamera.PiCamera() as camera:
-                camera.resolution = (CapturePictureRH,CapturePictureRV)
-                time.sleep(1.0)
-                camera.capture(fileString)
-
-                time.sleep(1.0)
-
-            if True:
-                setsn=1
-                setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
-                try:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
-                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
-
-                except:
-                    print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                file.close()
-            else:
-                print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-
-            bCameraUsed = False
         #endregion
 
         #sFireDetectStatus
@@ -1117,147 +1181,304 @@ def GetCommandFromCloud():
 
         if(sFireDetectStatus == "Alarm"):
             print(ANSI_RED + "Detect Fire Alarm......................................................" + ANSI_OFF)
+        elif(sFireDetectStatus == "Warning"):
+            print(ANSI_RED + "Detect Fire Warning......................................................" + ANSI_OFF)
         else:
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
-                
+        
+        bCaptureFromCamera = False
         if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False) and (bCameraUsed == False)):
             print("    Start To Capture Image For Fire Detect Alarm")
-            bCameraUsed = True
-            bFireDetectStatus = True
-            nowtime = datetime.now()
-            datestring = nowtime.strftime('%Y%m%d')
-            fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
+            try:
+                bCameraUsed = True
+                bFireDetectStatus = True
+                nowtime = datetime.now()
+                datestring = nowtime.strftime('%Y%m%d')
+                fileString ="/home/pi/Pictures/FireDetectPictures/" + datestring + "/"
 
-            if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
-                os.mkdir("/home/pi/Pictures/FireDetectPictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S_fire_alarm') + ".jpg"
-            fileString += filename
+                if not os.path.isdir("/home/pi/Pictures/FireDetectPictures/"):
+                    os.mkdir("/home/pi/Pictures/FireDetectPictures/")
+                if not os.path.isdir(fileString):
+                    os.mkdir(fileString)
+                filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
+                fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (CapturePictureRH,CapturePictureRV)
-                time.sleep(1.0)
-                camera.capture(fileString)
+                bCaptureFromCamera = True
+                try:
+                    with picamera.PiCamera() as camera:
+                        camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
+                        time.sleep(1.0)
+                        camera.capture(fileString)
+                        time.sleep(0.1)
+                except:
+                    bCaptureFromCamera = False
+            except:
+                print(ANSI_RED + "    Capture Image For Fire Alarm Error" + ANSI_OFF)
 
-            time.sleep(1.0)
-
-            if True:
+            if bCaptureFromCamera:
                 setsn=1
                 setfilename=filename
                 setdatetime=nowtime.strftime('%Y%m%d%H%M%S')
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
                 try:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
-                    print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                    if MyParameter.PhotoFolderID != 'NA':
+                        gauth = GoogleAuth()
+                        gauth.CommandLineAuth() 
+                        drive = GoogleDrive(gauth)
+
+                        file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': MyParameter.PhotoFolderID }]}) 
+
+                        file1.SetContentFile(fileString)
+                        file1.Upload() 
+                        print("\033[1;34mUpdate Capture Picture Success\033[0m")
+                        FireAlarmData = {}
+                        FireAlarmData["Machine ID"]=local_mac_address
+                        FireAlarmData["Command"]="UpdateFireAlarmTrigger"
+                        FireAlarmData["PhotoFileName"]=filename
+                        FireAlarmData["VideoFileName"]="NA"
+                        TransferJSONData=json.dumps(FireAlarmData)
+                        try:
+                            auth=('token', 'example')
+                            ssl._create_default_https_context = ssl._create_unverified_context
+                            headers = {'Content-Type': 'application/json'}
+                            r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+                            print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
+                        except BaseException as error:
+                            print(ANSI_RED + "--Update Fire Alarm Trigger Failure" + ANSI_OFF)
+                    else:
+                        print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
 
                 except:
                     print("\033[1;31mUpdate Capture Picture Failure\033[0m")
-                file.close()
             else:
                 print("\033[1;31mUpdate Capture Picture Failure\033[0m")
+
+            TriggerAlarmToCloud()
 
             bCameraUsed = False
         #endregion
 
         time.sleep(5.0)
 
+#endregion
 
+#Update File To Google Drive
+#region Update File To Google Drive
+
+FireAlarmData={}
+VibrationAlarmData = {}
+
+def UpdateImageToGoogleDrive(filename, fileString, deletefile):
+    try:
+        if MyParameter.PhotoFolderID != 'NA':
+            gauth = GoogleAuth()
+            gauth.CommandLineAuth() 
+            drive = GoogleDrive(gauth)
+
+            file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': MyParameter.PhotoFolderID }]}) 
+
+            file1.SetContentFile(fileString)
+            file1.Upload() 
+            print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
+            
+            if deletefile == True:
+                try: 
+                    os.remove(fileString)
+                    print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
+                except:
+                    print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
+        else:
+            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+    except:
+        print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
+
+#endregion
+
+#Update Local Picture
+#region Update Local Picture
+
+def VibrationAlarmTrigger():
+    global FireAlarmData
+    global VibrationAlarmData
+
+    TransferJSONData=json.dumps(VibrationAlarmData)
+    try:
+        auth=('token', 'example')
+        ssl._create_default_https_context = ssl._create_unverified_context
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
+        print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
+
+        Thread.sleep(0.5)
+
+        TriggerAlarmToCloud()
+
+    except BaseException as error:
+        print(ANSI_RED + "--Update Vibration Alarm Trigger Failure" + ANSI_OFF)
 
 def UpdateLocalPicture():
-    global ftp
-    global ftp_Exist
     global bCameraUsed
     global local_mac_address
+
+    #Manual Flag
+    global bManualCaptureImage
+    global bManualCaptureVideo
+    global bManualVibrationStatus
+    global bManualFireDetectStatus
+
+    global FireAlarmData
+    global VibrationAlarmData
+
+    bManualCaptureImageKeep = False
+    bManualCaptureVideoKeep = False
+    bManualVibrationStatusKeep = False
+    bManualFireDetectStatusKeep = False
+
     #print("Update Local Picture Start")
     tStart = time.time()
 
-    time.sleep(2.0)
+    time.sleep(3.0)
 
     bUpdate=True
+    bUpdateKeep = False
+    bUpdateRetry = False
+    filename=''
     while bRunning:
         
-        if (bUpdate and (bCameraUsed==False)):
-            bCameraUsed = True
+        # Update Regular Image
+        #region
+        if (bUpdate and MyCamera.CheckCameraIdle()):
             bUpdate=False
-            #bconnected = os.system("ping -c 1 192.168.8.100")
+            bUpdateKeep = True
 
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/Pictures/" + datestring + "/"
-
-            if not os.path.isdir("/home/pi/Pictures/Pictures/"):
-                os.mkdir("/home/pi/Pictures/Pictures/")
-            if not os.path.isdir(fileString):
-                os.mkdir(fileString)
-            filename = "sn" + local_mac_address + nowtime.strftime('_%Y-%m-%d %H-%M-%S') + ".jpg"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime)
             fileString += filename
 
-            with picamera.PiCamera() as camera:
-                camera.resolution = (1024,768)
-                time.sleep(1.0)
-                camera.capture(fileString)
-
-            time.sleep(1.0)
-
-            if True:
-                setsn=1
-                setfilename=filename
-                setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
-                #url = "http://192.168.8.100:5099/Update/JpgPicture?sn=" + str(setsn) + "&filename=" + setfilename + "&datetime=" + setdatetime
-                file=open(fileString ,'rb')
-                size = os.path.getsize(fileString)
-                #payload=file.read()
-                #file.close()
-                #headers = {'Content-Type': 'image/jpeg'}
-                try:
-                #    responses = requests.request("POST", url, headers=headers, data = payload)
-                    #print(responses.text.encode('utf8'))
-                    #if responses.status_code == 200:
-                    ftp.connect(ftp_IP) 
-                    ftp.login(ftp_user,ftp_password)
-                    ftp.cwd('/photo')
-                    ftp.storbinary(('STOR ' + filename), file, size) 
-                    ftp.close()
-                    print("\033[1;34mUpdate Local Picture Success\033[0m")
-                    try:
-                        os.remove(fileString)
-                        print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
-                    except:
-                        print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
-                    #else:
-                        #print("\033[1;31mUpdate Local Picture Failure\033[0m")
-                    #print(responses)
-                except:
-                    print("\033[1;31mUpdate Local Picture Failure\033[0m")
-                file.close()
+        if (bUpdateKeep and MyCamera.bCapturePictureError):
+            bUpdateKeep = False
+            if bUpdateRetry:
+                bUpdateRetry = True
             else:
-                print("\033[1;31mUpdate Local Picture Failure\033[0m")
+                bUpdateRetry = False
+            MyCamera.bCapturePictureError = False
 
-            bCameraUsed = False
+        if (bUpdateKeep and MyCamera.bCapturePictureDone):
+            bUpdateKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
+            UpdateImageToGoogleDrive(filename, fileString, True)
+            MyCamera.bCapturePictureDone = False   
+
+        #endregion
+
+        # Manual Capture Image
+        #region
+
+        if (bManualCaptureImage and MyCamera.CheckCameraIdle()):
+            bManualCaptureImage=False
+            bManualCaptureImageKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/CapPictures/")
+            fileString += filename
+
+        if (bManualCaptureImageKeep and MyCamera.bCapturePictureError):
+            bManualCaptureImageKeep = False
+
+            MyCamera.bCapturePictureError = False
+
+
+        if (bManualCaptureImageKeep and MyCamera.bCapturePictureDone):
+            bManualCaptureImageKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+
+            UpdateImageToGoogleDrive(filename, fileString, False)
+            MyCamera.bCapturePictureDone = False  
+
+        #endregion
+
+        # Vibaration Alarm Picture
+        #region
+
+        if (bManualVibrationStatus and MyCamera.CheckCameraIdle()):
+            print("    Start To Capture Image For Vibration Alarm")
+            bManualVibrationStatus=False
+            bManualVibrationStatusKeep = True
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
+            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
+            fileString += filename
+
+        if (bManualVibrationStatusKeep and MyCamera.bCapturePictureError):
+            bManualVibrationStatusKeep = False
+
+            MyCamera.bCapturePictureError = False
+
+        if (bManualVibrationStatusKeep and MyCamera.bCapturePictureDone):
+            bManualVibrationStatusKeep = False
+            setfilename=filename
+            setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
+            VibrationAlarmData = {}
+            VibrationAlarmData["Machine ID"]=local_mac_address
+            VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
+            VibrationAlarmData["PhotoFileName"]=filename
+            VibrationAlarmData["VideoFileName"]="NA"
+            UpdateImageToGoogleDrive(filename, fileString, True)
+            VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
+            VibrationAlarmTriggerThread.start()
+            MyCamera.bCapturePictureDone = False  
+
+        #endregion
+
+        #Check Update Local Picture Timer      
+        #region
+
+        checktime = MyParameter.CameraFValue
+        if bUpdateRetry:
+            checktime = 30.0
         tEnd = time.time()
         intervalTime = tEnd - tStart
-        if intervalTime >= CameraFValue:#300.0:
+        if intervalTime >= MyParameter.CameraFValue:
             tStart=time.time()
             bUpdate=True
 
-        time.sleep(1.0)
+        #endregion
 
+        time.sleep(0.1)
+#endregion
+
+#CameraFunction
+#region
+
+def CameraFunction():
+    while bRunning:
+        MyCamera.DoWork()
+
+        time.sleep(0.1)
+
+#endregion
 
 print("\033[1;33mProgram Start\033[0m")
+
+#Load Parameter
+MyParameter.LoadParameter()
 
 #Get Mac Address
 hostname=socket.gethostname()
 try:
     local_mac_address = get_mac_address()
 except:
-    local_mac_address='00:00:00:00:00:00'
+    local_mac_address='000000000000'
 try:
     hostip = socket.gethostbyname(hostname)
 except:
@@ -1265,44 +1486,27 @@ except:
 
 print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 
-#FTP
-ftp=FTP() 
-ftp.set_debuglevel(2)
-ftp.set_pasv(False)
-#try:
-#    ftp.connect(ftp_IP) 
-#    ftp.login(ftp_user,ftp_password)
-#    ftp_Exist = True
-#except:
-#    ftp_Exist = False
-
-print(ANSI_GREEN + "Connect To FTP Status:" + str(ftp_Exist) + ANSI_OFF)
 
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-
-#CheckCloudExistThread = threading.Thread(target=CheckCloudExist)
+CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateSensorsThread = threading.Thread(target=UpdateLocalSensorsInformation)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 
-#CheckCloudExistThread.start()
+
+CameraThread.start()
 GetLocalSensorsThread.start()
 UpdateSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
-#CheckCloudExistThread.join()
-#GetLocalSensorsThread.join()
-#UpdateSensorsThread.join()
-#UpdateLocalPictureThread.join()
-#GetCommandFromCloudThread.join()
-
 try:
     #while bRunning:
         #time.sleep(1.0)
+    print("Waiting for Finished!!")
     input()
 except KeyboardInterrupt:
     bRunning=False
