@@ -1434,7 +1434,7 @@ def UpdateLocalPicture():
             VibrationAlarmData["VideoFileName"]="NA"
             UpdateImageToGoogleDrive(filename, fileString, True)
             VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
-            VibrationAlarmTriggerThread.Start()
+            VibrationAlarmTriggerThread.start()
             MyCamera.bCapturePictureDone = False  
 
         #endregion
