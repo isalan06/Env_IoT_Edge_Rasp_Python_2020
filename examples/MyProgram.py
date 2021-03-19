@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.5'
+sSoftwareVersion='1.0.5.6'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1167,8 +1167,8 @@ def GetCommandFromCloud():
         else:
             print(ANSI_GREEN + "Vibration Status is Normal................................................" + ANSI_OFF)
         
-        bCaptureFromCamera = False
         if ((sVibrationStatus_Keep == "Alarm") and (bVibrationStatus==False)):
+            bVibrationStatus = True
             bManualVibrationStatus = True
 
         #endregion
