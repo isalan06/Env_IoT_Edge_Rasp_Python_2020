@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.9'
+sSoftwareVersion='1.0.5.10'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -326,7 +326,7 @@ class BLEDeviceForMi():
                     print (ANSI_RED + "Scanning for devices..." + ANSI_OFF)
                     #devices = scanner.scan(arg.timeout)
                     try:
-                        devices = scanner.scan(20)
+                        devices = scanner.scan(10)
                     except:
                         print("Scanning for devices happen error")
 
@@ -1528,7 +1528,7 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-time.sleep(10.0)
+time.sleep(20.0)
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
