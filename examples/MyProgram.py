@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.7'
+sSoftwareVersion='1.0.5.8'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1196,7 +1196,7 @@ def GetCommandFromCloud():
             print(ANSI_GREEN + "Not Detect Fire......................................................" + ANSI_OFF)
         
         bCaptureFromCamera = False
-        if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False):
+        if ((sFireDetectStatus == "Alarm") and (bFireDetectStatus==False)):
             bFireDetectStatus = True
             bManualFireDetectStatus = True
 
