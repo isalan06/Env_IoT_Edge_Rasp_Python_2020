@@ -14,6 +14,7 @@ sImageFileName=''
 bCapturePictureTrigger = False
 bCapturePictureDone = False
 bCapturePictureError = False
+sSoftwareVersion='1.0.0.0'
 
 def CheckCameraRunning():
     bResult = bCapturePictureTrigger or bCapturePictureDone or bCapturePictureError

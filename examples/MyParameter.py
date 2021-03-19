@@ -3,6 +3,8 @@
 import os
 import configparser
 
+sSoftwareVersion='1.0.0.0'
+
 #Parameter
 VibrationWarningValue=30.0
 VibrationAlarmValue=50.0

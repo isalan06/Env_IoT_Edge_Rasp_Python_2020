@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.2'
+sSoftwareVersion='1.0.5.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -792,6 +792,8 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]=SetValue
                 InformationData["Machine ID"]=local_mac_address
                 InformationData["SoftwareVersion"]=sSoftwareVersion
+                InformationData["CameraSWVersion"]=MyCamera.sSoftwareVersion
+                InformationData["ParameterSWVersion"]=MyParameter.sSoftwareVersion
                 InformationData["Comm Type"]="Ethernet"
                 InformationData["VibrationStatus"]=sVibrationStatus_Keep
                 InformationData["FireDetectStatus"]=sFireDetectStatus
@@ -954,6 +956,8 @@ def TriggerAlarmToCloud():
 
 #endregion
 
+
+
 #Get Command From Cloud
 #region Get Command From Cloud
 def GetCommandFromCloud():
@@ -986,6 +990,12 @@ def GetCommandFromCloud():
     global sVibrationStatus_Keep
 
     global local_mac_address
+
+    #Manual Flag
+    global bManualCaptureImage
+    global bManualCaptureVideo
+    global bManualVibrationStatus
+    global bManualFireDetectStatus
 
     #flag
     bCaptureImage = False
@@ -1368,11 +1378,47 @@ def GetCommandFromCloud():
 
 #endregion
 
+#Update File To Google Drive
+#region Update File To Google Drive
+
+def UpdateImageToGoogleDrive(filename, filestring, deletefile):
+    try:
+        if MyParameter.PhotoFolderID != 'NA':
+            gauth = GoogleAuth()
+            gauth.CommandLineAuth() 
+            drive = GoogleDrive(gauth)
+
+            file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
+                                     'id': MyParameter.PhotoFolderID }]}) 
+
+            file1.SetContentFile(fileString)
+            file1.Upload() 
+            print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
+            
+            if deletefile == True:
+                try: 
+                    os.remove(fileString)
+                    print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
+                except:
+                    print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
+        else:
+            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+    except:
+        print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
+
+#endregion
+
 #Update Local Picture
 #region Update Local Picture
 def UpdateLocalPicture():
     global bCameraUsed
     global local_mac_address
+
+    #Manual Flag
+    global bManualCaptureImage
+    global bManualCaptureVideo
+    global bManualVibrationStatus
+    global bManualFireDetectStatus
     #print("Update Local Picture Start")
     tStart = time.time()
 
@@ -1411,27 +1457,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            try:
-                if MyParameter.PhotoFolderID != 'NA':
-                    gauth = GoogleAuth()
-                    gauth.CommandLineAuth() 
-                    drive = GoogleDrive(gauth)
-
-                    file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.PhotoFolderID }]}) 
-
-                    file1.SetContentFile(fileString)
-                    file1.Upload() 
-                    print("\033[1;34mUpdate Local Picture To Google Drive Success\033[0m")
-                    try:
-                        os.remove(fileString)
-                        print(ANSI_GREEN + "    Delete Local Picture Success" + ANSI_OFF)
-                    except:
-                        print(ANSI_RED + "    Delete Local Picture Failure" + ANSI_OFF)
-                else:
-                    print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-            except:
-                print("\033[1;31mUpdate Local Picture To Google Drive Failure\033[0m")
+            UpdateImageToGoogleDrive(filename, filestring, True)
             MyCamera.bCapturePictureDone = False         
 
         checktime = MyParameter.CameraFValue
