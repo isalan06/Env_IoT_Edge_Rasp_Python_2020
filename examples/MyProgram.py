@@ -1381,7 +1381,7 @@ def GetCommandFromCloud():
 #Update File To Google Drive
 #region Update File To Google Drive
 
-def UpdateImageToGoogleDrive(filename, filestring, deletefile):
+def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
         if MyParameter.PhotoFolderID != 'NA':
             gauth = GoogleAuth()
