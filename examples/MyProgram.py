@@ -1161,7 +1161,7 @@ def GetCommandFromCloud():
         #region
         if ((sFireDetectStatus != "Alarm") and bFireDetectStatus):
             bFireDetectStatus = False
-        if ((sFireDetectSTatus != "Warning") and bFireWarningStatusTrigger):
+        if ((sFireDetectStatus != "Warning") and bFireWarningStatusTrigger):
             bFireWarningStatusTrigger = False
 
         if(sFireDetectStatus == "Alarm"):
