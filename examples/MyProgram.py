@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.11'
+sSoftwareVersion='1.0.5.12'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -927,11 +927,15 @@ def UpdateLocalSensorsInformation():
                 auth=('token', 'example')
                 ssl._create_default_https_context = ssl._create_unverified_context
                 headers = {'Content-Type': 'application/json'}
-                #r = requests.post('https://script.google.com/macros/s/AKfycbwOx-ypSoziN9f9__rit-_J3bjYP8sSOPoIfzo1rqi3QRIl-DQ/exec',headers=headers, data=TransferJSONData, auth=auth)
-                r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-                print("\033[1;32mUpdate Sensors Information Success\033[0m")
+                i = 0
+                while i < 3:
+                    try:
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                        print("\033[1;32mUpdate Sensors Information Success\033[0m")
+                        break
+                    except requests.exceptions.RequestException as e:
+                        print(ANSI_RED + str(e) + ANSI_OFF)
             except BaseException as error:
-                bNetConnected = False
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
 
 #endregion
@@ -945,9 +949,14 @@ def TriggerAlarmToCloud():
 
         payload="{\"machineId\":\"" + local_mac_address + "\"}"
         headers = {'Content-Type': 'application/json'}
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-        print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
+        i = 0
+        while i < 3:
+            try:
+                response = requests.request("POST", url, headers=headers, data=payload, timeout=5)
+                print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
+                break
+            except requests.exceptions.RequestException as e:
+                print(ANSI_RED + str(e) + ANSI_OFF)
     except:
         print(ANSI_RED + "--Trigger Alarm To Cloud Happen Error!" + ANSI_OFF)
 
@@ -1034,6 +1043,7 @@ def GetCommandFromCloud():
 
         payload = {}
         headers= {}
+        data = {}
         
         #Update Local Sensors Information Timer Check
         end_time = time.time()
@@ -1049,8 +1059,14 @@ def GetCommandFromCloud():
                     auth=('token', 'example')
                     ssl._create_default_https_context = ssl._create_unverified_context
                     headers = {'Content-Type': 'application/json'}
-                    response = requests.request("POST", url, headers=headers, data=TransferJSONData)
-                    data = response.json()
+                    i = 0
+                    while i < 3:
+                        try:
+                            response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=5)
+                            data = response.json()
+                            break
+                        except requests.exceptions.RequestException as e:
+                            print(ANSI_RED + str(e) + ANSI_OFF)
 
                     _command = data['Command']
                     print("\033[1;34mGet Command: " + _command + "\033[0m")
