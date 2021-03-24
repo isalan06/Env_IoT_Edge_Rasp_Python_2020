@@ -1133,7 +1133,7 @@ def GetCommandFromCloud():
 
         if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
-        if((sVibrationStatus_Keep != "Warning") and sVibrationWarningStatusTrigger)
+        if((sVibrationStatus_Keep != "Warning") and sVibrationWarningStatusTrigger):
             sVibrationWarningStatusTrigger = False
 
         if(sVibrationStatus_Keep == "Alarm"):
@@ -1161,7 +1161,7 @@ def GetCommandFromCloud():
         #region
         if ((sFireDetectStatus != "Alarm") and bFireDetectStatus):
             bFireDetectStatus = False
-        if ((sFireDetectSTatus != "Warning") and bFireWarningStatusTrigger)
+        if ((sFireDetectSTatus != "Warning") and bFireWarningStatusTrigger):
             bFireWarningStatusTrigger = False
 
         if(sFireDetectStatus == "Alarm"):
