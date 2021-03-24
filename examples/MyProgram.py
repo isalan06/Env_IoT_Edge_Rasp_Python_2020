@@ -934,6 +934,7 @@ def UpdateLocalSensorsInformation():
                         print("\033[1;32mUpdate Sensors Information Success\033[0m")
                         break
                     except requests.exceptions.RequestException as e:
+                        i = i + 1
                         print(ANSI_RED + str(e) + ANSI_OFF)
             except BaseException as error:
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
@@ -956,6 +957,7 @@ def TriggerAlarmToCloud():
                 print(ANSI_YELLOW + "--Trigger Alarm To Cloud Result: " + response.text + ANSI_OFF)
                 break
             except requests.exceptions.RequestException as e:
+                i = i + 1
                 print(ANSI_RED + str(e) + ANSI_OFF)
     except:
         print(ANSI_RED + "--Trigger Alarm To Cloud Happen Error!" + ANSI_OFF)
@@ -969,6 +971,10 @@ def TriggerAlarmToCloud():
 
 bFireAlarmUpdateTrigger = False
 bVibrationAlarmUpdateTrigger = False
+bFireWarningStatusTrigger = False
+bVibrationWarningStatusTrigger = False
+bFireWarningStatusTriggerKeep = False
+bVibrationWarningStatusTriggerKeep = False
 
 def GetCommandFromCloud():
     global bRunning
@@ -1009,6 +1015,10 @@ def GetCommandFromCloud():
 
     global bFireAlarmUpdateTrigger
     global bVibrationAlarmUpdateTrigger
+    global bFireWarningStatusTrigger
+    global bVibrationWarningStatusTrigger
+    global bFireWarningStatusTriggerKeep
+    global bVibrationWarningStatusTriggerKeep
 
     #flag
     bCaptureImage = False
@@ -1066,6 +1076,7 @@ def GetCommandFromCloud():
                             data = response.json()
                             break
                         except requests.exceptions.RequestException as e:
+                            i = i + 1
                             print(ANSI_RED + str(e) + ANSI_OFF)
 
                     _command = data['Command']
@@ -1122,6 +1133,8 @@ def GetCommandFromCloud():
 
         if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
+        if((sVibrationStatus_Keep != "Warning") and sVibrationWarningStatusTrigger)
+            sVibrationWarningStatusTrigger = False
 
         if(sVibrationStatus_Keep == "Alarm"):
             print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
@@ -1138,12 +1151,18 @@ def GetCommandFromCloud():
             bVibrationAlarmUpdateTrigger = False
             VibrationAlarmTrigger()
 
+        if((sVibrationStatusKeep == "Warning") and (sVibrationWarningStatusTrigger == False)):
+            sVibrationWarningStatusTrigger = True
+            TriggerAlarmToCloud()
+
         #endregion
 
         #sFireDetectStatus
         #region
         if ((sFireDetectStatus != "Alarm") and bFireDetectStatus):
             bFireDetectStatus = False
+        if ((sFireDetectSTatus != "Warning") and bFireWarningStatusTrigger)
+            bFireWarningStatusTrigger = False
 
         if(sFireDetectStatus == "Alarm"):
             print(ANSI_RED + "Detect Fire Alarm......................................................" + ANSI_OFF)
@@ -1159,6 +1178,10 @@ def GetCommandFromCloud():
         if bFireAlarmUpdateTrigger:
             bFireAlarmUpdateTrigger = False
             FireAlarmTrigger()
+        
+        if((sFireDetectStatus == "Warning") and (bFireWarningStatusTrigger == False)):
+            bFireWarningStatusTrigger = True
+            TriggerAlarmToCloud()
 
         #endregion
 
@@ -1236,8 +1259,15 @@ def VibrationAlarmTrigger():
         auth=('token', 'example')
         ssl._create_default_https_context = ssl._create_unverified_context
         headers = {'Content-Type': 'application/json'}
-        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-        print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
+        i = 0
+        while i < 3:
+            try:
+                r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                print(ANSI_GREEN + "--Update Vibration Alarm Trigger Success" + ANSI_OFF)
+                break
+            except requests.exceptions.RequestException as e:
+                i = i + 1
+                print(ANSI_RED + str(e) + ANSI_OFF)
 
         time.sleep(0.5)
 
@@ -1255,8 +1285,15 @@ def FireAlarmTrigger():
         auth=('token', 'example')
         ssl._create_default_https_context = ssl._create_unverified_context
         headers = {'Content-Type': 'application/json'}
-        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth)
-        print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
+        i = 0
+        while i < 3:
+            try:
+                r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                print(ANSI_GREEN + "--Update Fire Alarm Trigger Success" + ANSI_OFF)
+                break
+            except requests.exceptions.RequestException as e:
+                i = i + 1
+                print(ANSI_RED + str(e) + ANSI_OFF)
 
         time.sleep(0.5)
 
