@@ -1133,8 +1133,8 @@ def GetCommandFromCloud():
 
         if ((sVibrationStatus_Keep != "Alarm") and bVibrationStatus):
             bVibrationStatus = False
-        if((sVibrationStatus_Keep != "Warning") and sVibrationWarningStatusTrigger):
-            sVibrationWarningStatusTrigger = False
+        if((sVibrationStatus_Keep != "Warning") and bVibrationWarningStatusTrigger):
+            bVibrationWarningStatusTrigger = False
 
         if(sVibrationStatus_Keep == "Alarm"):
             print(ANSI_RED + "Detect Vibration Alarm......................................................" + ANSI_OFF)
@@ -1151,7 +1151,7 @@ def GetCommandFromCloud():
             bVibrationAlarmUpdateTrigger = False
             VibrationAlarmTrigger()
 
-        if((sVibrationStatusKeep == "Warning") and (sVibrationWarningStatusTrigger == False)):
+        if((sVibrationStatusKeep == "Warning") and (bVibrationWarningStatusTrigger == False)):
             sVibrationWarningStatusTrigger = True
             TriggerAlarmToCloud()
 
