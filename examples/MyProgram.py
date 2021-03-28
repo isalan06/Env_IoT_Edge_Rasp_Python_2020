@@ -1206,7 +1206,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
                 gauth.LocalWebserverAuth()
             elif gauth.access_token_expired:
                 # Refresh them if expired
-                print "Google Drive Token Expired, Refreshing"
+                print("Google Drive Token Expired, Refreshing")
                 gauth.Refresh()
             else:
                 # Initialize the saved creds
