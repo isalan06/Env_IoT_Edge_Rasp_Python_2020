@@ -1200,17 +1200,17 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         if MyParameter.PhotoFolderID != 'NA':
             gauth = GoogleAuth()
             gauth.CommandLineAuth() 
-            gauth.credentials = GoogleCredentials.get_application_default()
-            if gauth.credentials is None:
+            #gauth.credentials = GoogleCredentials.get_application_default()
+            #if gauth.credentials is None:
                 # Authenticate if they're not there
-                gauth.LocalWebserverAuth()
-            elif gauth.access_token_expired:
+                #gauth.LocalWebserverAuth()
+            #elif gauth.access_token_expired:
                 # Refresh them if expired
-                print("Google Drive Token Expired, Refreshing")
-                gauth.Refresh()
-            else:
+                #print("Google Drive Token Expired, Refreshing")
+                #gauth.Refresh()
+            #else:
                 # Initialize the saved creds
-                gauth.Authorize()
+                #gauth.Authorize()
             drive = GoogleDrive(gauth)
 
             file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
