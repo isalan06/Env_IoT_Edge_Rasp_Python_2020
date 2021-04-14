@@ -59,15 +59,21 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
 
             service = build('drive', 'v3', credentials=creds)
 
+            print("Google Drive Play 1")
+
             folder_id = MyParameter.PhotoFolderID
             file_metadata = {
                 'name': filename,
                 'parents': [folder_id]
             }
 
+            print("Google Drive Play 2")
+
             media = MediaFileUpload(fileString,
                         mimetype='image/jpeg',
                         resumable=True)
+
+            print("Google Drive Play 3")
             
             file = service.files().create(body=file_metadata,
                                     media_body=media,
