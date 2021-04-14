@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.12'
+sSoftwareVersion='1.0.5.13'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1195,11 +1195,27 @@ def GetCommandFromCloud():
 FireAlarmData={}
 VibrationAlarmData = {}
 
+def getDrive(drive=None, gauth=None)
+    gauth = GoogleAuth()
+    gauth.CommandLineAuth() 
+    #gauth.credentials = GoogleCredentials.get_application_default()
+    #if gauth.credentials is None:
+        # Authenticate if they're not there
+        #gauth.LocalWebserverAuth()
+    #elif gauth.access_token_expired:
+        # Refresh them if expired
+        #print("Google Drive Token Expired, Refreshing")
+        #gauth.Refresh()
+    #else:
+        # Initialize the saved creds
+        #gauth.Authorize()
+    return GoogleDrive(gauth)
+
 def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
         if MyParameter.PhotoFolderID != 'NA':
-            gauth = GoogleAuth()
-            gauth.CommandLineAuth() 
+            #gauth = GoogleAuth()
+            #gauth.CommandLineAuth() 
             #gauth.credentials = GoogleCredentials.get_application_default()
             #if gauth.credentials is None:
                 # Authenticate if they're not there
@@ -1211,7 +1227,8 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             #else:
                 # Initialize the saved creds
                 #gauth.Authorize()
-            drive = GoogleDrive(gauth)
+            #drive = GoogleDrive(gauth)
+            drive = getDrive()
 
             file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
                                      'id': MyParameter.PhotoFolderID }]}) 
