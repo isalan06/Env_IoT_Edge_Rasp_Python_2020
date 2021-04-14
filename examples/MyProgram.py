@@ -19,6 +19,7 @@ import picamera
 
 import MyParameter
 import MyCamera
+import MyGoogleDrive
 
 import sys
 import struct
@@ -33,7 +34,9 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.13'
+from MyGoogleDrive import UpdateImageToGoogleDrive
+
+sSoftwareVersion='1.0.6.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1194,97 +1197,6 @@ def GetCommandFromCloud():
 
 FireAlarmData={}
 VibrationAlarmData = {}
-
-def getDrive(drive=None, gauth=None):
-    #gauth = GoogleAuth()
-    #gauth.CommandLineAuth() 
-    #gauth.credentials = GoogleCredentials.get_application_default()
-    #if gauth.credentials is None:
-        # Authenticate if they're not there
-        #gauth.LocalWebserverAuth()
-    #elif gauth.access_token_expired:
-        # Refresh them if expired
-        #print("Google Drive Token Expired, Refreshing")
-        #gauth.Refresh()
-    #else:
-        # Initialize the saved creds
-        #gauth.Authorize()
-    #return GoogleDrive(gauth)
-    print("Start To get Drive")
-
-    if not drive:
-        print("Google Drive Not Drive")
-        if not gauth:
-            print("Google Drive Not GAUTH")
-            gauth = GoogleAuth()#(settings_file=settings_yaml)
-        # Try to load saved client credentials
-        print("Start to Load Credential")
-        gauth.LoadCredentialsFile("credentials.json")
-        print("Load Credential")
-        if gauth.access_token_expired:
-            # Refresh them if expired
-            print("Google Drive Expired")
-            try:
-                gauth.Refresh()
-                print("Google Drive Refresh Success")
-            except RefreshError as e:
-                print("Google Drive error: %s", e)
-            except Exception as e:
-                log.exception(e)
-                print("Google Drive Unknown error")
-        else:
-            # Initialize the saved creds
-            print("GAUTH AUTHORIZE")
-            gauth.Authorize()
-        # Save the current credentials to a file
-        print("Google Drive Success")
-        return GoogleDrive(gauth)
-    if drive.auth.access_token_expired:
-        try:
-            drive.auth.Refresh()
-        except RefreshError as e:
-            print("Google Drive error: %s", e)
-
-    print("Google Drive Do nothing")
-
-def UpdateImageToGoogleDrive(filename, fileString, deletefile):
-    try:
-        if MyParameter.PhotoFolderID != 'NA':
-            #gauth = GoogleAuth()
-            #gauth.CommandLineAuth() 
-            #gauth.credentials = GoogleCredentials.get_application_default()
-            #if gauth.credentials is None:
-                # Authenticate if they're not there
-                #gauth.LocalWebserverAuth()
-            #elif gauth.access_token_expired:
-                # Refresh them if expired
-                #print("Google Drive Token Expired, Refreshing")
-                #gauth.Refresh()
-            #else:
-                # Initialize the saved creds
-                #gauth.Authorize()
-            #drive = GoogleDrive(gauth)
-
-            drive = getDrive()
-            print("Get Google Drive")
-
-            file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.PhotoFolderID }]}) 
-
-            file1.SetContentFile(fileString)
-            file1.Upload() 
-            print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
-            
-            if deletefile == True:
-                try: 
-                    os.remove(fileString)
-                    print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
-                except:
-                    print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
-        else:
-            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-    except:
-        print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
 
 def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
     try:
