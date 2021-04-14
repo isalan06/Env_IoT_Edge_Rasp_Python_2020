@@ -92,7 +92,8 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-    except:
+    except Exception as e:
+        print(e)
         print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
 
    
