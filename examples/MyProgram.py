@@ -1219,13 +1219,15 @@ def getDrive(drive=None, gauth=None):
             gauth = GoogleAuth()#(settings_file=settings_yaml)
         # Try to load saved client credentials
         print("Start to Load Credential")
-        gauth.LoadCredentialsFile("credentials.json")
+        gauth.LocalWebserverAuth()
+        gauth.LoadCredentialsFile(gauth)
         print("Load Credential")
         if gauth.access_token_expired:
             # Refresh them if expired
             print("Google Drive Expired")
             try:
                 gauth.Refresh()
+                print("Google Drive Refresh Success")
             except RefreshError as e:
                 print("Google Drive error: %s", e)
             except Exception as e:
