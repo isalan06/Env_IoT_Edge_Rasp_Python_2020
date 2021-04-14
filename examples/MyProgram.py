@@ -1232,6 +1232,7 @@ def getDrive(drive=None, gauth=None):
                 print("Google Drive Unknown error")
         else:
             # Initialize the saved creds
+            print("GAUTH AUTHORIZE")
             gauth.Authorize()
         # Save the current credentials to a file
         return GoogleDrive(gauth)
