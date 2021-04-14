@@ -65,7 +65,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             folder_id = MyParameter.PhotoFolderID
             file_metadata = {
                 'name': filename,
-                'parents': folder_id
+                'parents': [folder_id]
             }
 
             print("Google Drive Play 2")
@@ -79,7 +79,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             file = service.files().create(body=file_metadata,
                                     media_body=media,
                                     fields='id').execute()
-            print('File ID: %s' % file.get('id'))
+            #print('File ID: %s' % file.get('id'))
             print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
 
             if deletefile == True:
