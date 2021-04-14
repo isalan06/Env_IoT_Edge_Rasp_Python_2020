@@ -1216,7 +1216,7 @@ def getDrive(drive=None, gauth=None):
         print("Google Drive Not Drive")
         if not gauth:
             print("Google Drive Not GAUTH")
-            gauth = GoogleAuth(settings_file=settings_yaml)
+            gauth = GoogleAuth()#(settings_file=settings_yaml)
         # Try to load saved client credentials
         print("Start to Load Credential")
         gauth.LoadCredentialsFile("credentials.json")
