@@ -1196,8 +1196,8 @@ FireAlarmData={}
 VibrationAlarmData = {}
 
 def getDrive(drive=None, gauth=None):
-    gauth = GoogleAuth()
-    gauth.CommandLineAuth() 
+    #gauth = GoogleAuth()
+    #gauth.CommandLineAuth() 
     #gauth.credentials = GoogleCredentials.get_application_default()
     #if gauth.credentials is None:
         # Authenticate if they're not there
@@ -1209,7 +1209,32 @@ def getDrive(drive=None, gauth=None):
     #else:
         # Initialize the saved creds
         #gauth.Authorize()
-    return GoogleDrive(gauth)
+    #return GoogleDrive(gauth)
+
+    if not drive:
+        if not gauth:
+            gauth = GoogleAuth(settings_file=settings_yaml)
+        # Try to load saved client credentials
+        gauth.LoadCredentialsFile(CREDENTIALS)
+        if gauth.access_token_expired:
+            # Refresh them if expired
+            try:
+                gauth.Refresh()
+            except RefreshError as e:
+                print("Google Drive error: %s", e)
+            except Exception as e:
+                log.exception(e)
+                print("Google Drive Unknown error")
+        else:
+            # Initialize the saved creds
+            gauth.Authorize()
+        # Save the current credentials to a file
+        return GoogleDrive(gauth)
+    if drive.auth.access_token_expired:
+        try:
+            drive.auth.Refresh()
+        except RefreshError as e:
+            print("Google Drive error: %s", e)
 
 def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
