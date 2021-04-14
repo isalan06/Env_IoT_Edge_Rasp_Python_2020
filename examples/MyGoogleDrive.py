@@ -76,11 +76,12 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
 
             print("Google Drive Play 3")
             
-            file = service.files().create(body=file_metadata,
+            _file = service.files().create(body=file_metadata,
                                     media_body=media,
                                     fields='id').execute()
-            #print('File ID: %s' % file.get('id'))
             print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
+            print('File ID: %s' % _file.get('id'))
+            
 
             if deletefile == True:
                 try: 
