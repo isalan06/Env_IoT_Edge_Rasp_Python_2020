@@ -1210,12 +1210,14 @@ def getDrive(drive=None, gauth=None):
         # Initialize the saved creds
         #gauth.Authorize()
     #return GoogleDrive(gauth)
+    print("Start To get Drive")
 
     if not drive:
         if not gauth:
             gauth = GoogleAuth(settings_file=settings_yaml)
         # Try to load saved client credentials
         gauth.LoadCredentialsFile(CREDENTIALS)
+        print("Load Credential")
         if gauth.access_token_expired:
             # Refresh them if expired
             print("Google Drive Expired")
