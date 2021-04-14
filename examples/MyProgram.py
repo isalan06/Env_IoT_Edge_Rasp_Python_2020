@@ -1235,12 +1235,15 @@ def getDrive(drive=None, gauth=None):
             print("GAUTH AUTHORIZE")
             gauth.Authorize()
         # Save the current credentials to a file
+        print("Google Drive Success")
         return GoogleDrive(gauth)
     if drive.auth.access_token_expired:
         try:
             drive.auth.Refresh()
         except RefreshError as e:
             print("Google Drive error: %s", e)
+
+    print("Google Drive Do nothing")
 
 def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
