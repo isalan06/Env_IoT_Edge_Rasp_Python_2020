@@ -1195,7 +1195,7 @@ def GetCommandFromCloud():
 FireAlarmData={}
 VibrationAlarmData = {}
 
-def getDrive(drive=None, gauth=None)
+def getDrive(drive=None, gauth=None):
     gauth = GoogleAuth()
     gauth.CommandLineAuth() 
     #gauth.credentials = GoogleCredentials.get_application_default()
@@ -1602,7 +1602,7 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-time.sleep(30.0)
+time.sleep(3.0)
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
