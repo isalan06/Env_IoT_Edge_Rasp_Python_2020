@@ -1218,6 +1218,7 @@ def getDrive(drive=None, gauth=None):
         gauth.LoadCredentialsFile(CREDENTIALS)
         if gauth.access_token_expired:
             # Refresh them if expired
+            print("Google Drive Expired")
             try:
                 gauth.Refresh()
             except RefreshError as e:
