@@ -65,7 +65,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             folder_id = MyParameter.PhotoFolderID
             file_metadata = {
                 'name': filename,
-                'parents': [folder_id]
+                'parents': folder_id
             }
 
             print("Google Drive Play 2")
