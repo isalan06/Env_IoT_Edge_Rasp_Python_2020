@@ -1219,7 +1219,6 @@ def getDrive(drive=None, gauth=None):
             gauth = GoogleAuth()#(settings_file=settings_yaml)
         # Try to load saved client credentials
         print("Start to Load Credential")
-        gauth.LocalWebserverAuth()
         gauth.LoadCredentialsFile(gauth)
         print("Load Credential")
         if gauth.access_token_expired:
