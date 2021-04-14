@@ -1262,7 +1262,9 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
                 # Initialize the saved creds
                 #gauth.Authorize()
             #drive = GoogleDrive(gauth)
+
             drive = getDrive()
+            print("Get Google Drive")
 
             file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
                                      'id': MyParameter.PhotoFolderID }]}) 
