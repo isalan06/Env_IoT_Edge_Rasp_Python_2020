@@ -60,25 +60,20 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
 
             service = build('drive', 'v3', credentials=creds)
 
-            print("Google Drive Play 1")
-
             folder_id = MyParameter.PhotoFolderID
             file_metadata = {
                 'name': filename,
                 'parents': [folder_id]
             }
 
-            print("Google Drive Play 2")
-
             media = MediaFileUpload(fileString,
                         mimetype='image/jpeg',
                         resumable=True)
-
-            print("Google Drive Play 3")
             
             _file = service.files().create(body=file_metadata,
                                     media_body=media,
                                     fields='id').execute()
+                                    
             print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
             print('File ID: %s' % _file.get('id'))
             
@@ -96,4 +91,63 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         print(e)
         print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
 
-   
+def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
+    """Shows basic usage of the Drive v3 API.
+    Prints the names and ids of the first 10 files the user has access to.
+    """
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+
+    try:
+        if MyParameter.VideoFolderID != 'NA':
+
+            if os.path.exists('token.json'):
+                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+            # If there are no (valid) credentials available, let the user log in.
+            if not creds or not creds.valid:
+                if creds and creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+                else:
+                    flow = InstalledAppFlow.from_client_secrets_file(
+                        'client_secrets.json', SCOPES)
+                    creds = flow.run_local_server(port=0)
+                # Save the credentials for the next run
+                with open('token.json', 'w') as token:
+                    token.write(creds.to_json())
+
+            service = build('drive', 'v3', credentials=creds)
+
+            folder_id = MyParameter.VideoFolderID
+            file_metadata = {
+                'name': filename,
+                'parents': [folder_id]
+            }
+
+            media = MediaFileUpload(fileString,
+                        mimetype='video/mp4',
+                        resumable=True)
+            
+            _file = service.files().create(body=file_metadata,
+                                    media_body=media,
+                                    fields='id').execute()
+                                    
+            print("\033[1;34mUpdate Video To Google Drive Success\033[0m")
+            print('File ID: %s' % _file.get('id'))
+            
+
+            if deletefile == True:
+                try: 
+                    os.remove(fileString)
+                    print(ANSI_GREEN + "    Delete Video Success" + ANSI_OFF)
+                except:
+                    print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
+        
+        else:
+            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+    except Exception as e:
+        print(e)
+        print("\033[1;31mUpdate Video To Google Drive Failure\033[0m")
+
+

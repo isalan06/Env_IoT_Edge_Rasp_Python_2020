@@ -35,8 +35,9 @@ from pydrive.drive import GoogleDrive
 from PIL import Image
 
 from MyGoogleDrive import UpdateImageToGoogleDrive
+from MyGoogleDrive import UpdateVideoToGoogleDrive
 
-sSoftwareVersion='1.0.6.0'
+sSoftwareVersion='1.0.6.1'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -794,6 +795,7 @@ def UpdateLocalSensorsInformation():
                 InformationData["SoftwareVersion"]=sSoftwareVersion
                 InformationData["CameraSWVersion"]=MyCamera.sSoftwareVersion
                 InformationData["ParameterSWVersion"]=MyParameter.sSoftwareVersion
+                InformationData["GoogleDriveSWVersion"]=MyGoogleDrive.sSoftwareVersion
                 InformationData["Comm Type"]="Ethernet"
                 InformationData["VibrationStatus"]=sVibrationStatus_Keep
                 InformationData["FireDetectStatus"]=sFireDetectStatus
@@ -1197,31 +1199,6 @@ def GetCommandFromCloud():
 
 FireAlarmData={}
 VibrationAlarmData = {}
-
-def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
-    try:
-        if MyParameter.VideoFolderID != 'NA':
-            gauth = GoogleAuth()
-            gauth.CommandLineAuth() 
-            drive = GoogleDrive(gauth)
-
-            file1 = drive.CreateFile({'title': filename, 'mimeType':'image/jpeg','parents':[{'kind': 'drive#fileLink',
-                                     'id': MyParameter.VideoFolderID }]}) 
-
-            file1.SetContentFile(fileString)
-            file1.Upload() 
-            print("\033[1;34mUpdate Video To Google Drive Success\033[0m")
-            
-            if deletefile == True:
-                try: 
-                    os.remove(fileString)
-                    print(ANSI_GREEN + "    Delete Video Success" + ANSI_OFF)
-                except:
-                    print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
-        else:
-            print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
-    except:
-        print("\033[1;31mUpdate Video To Google Drive Failure\033[0m")
 
 #endregion
 
