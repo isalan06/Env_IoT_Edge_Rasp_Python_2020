@@ -1529,7 +1529,7 @@ print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
-time.sleep(3.0)
+time.sleep(30.0)
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
