@@ -37,7 +37,7 @@ from PIL import Image
 from MyGoogleDrive import UpdateImageToGoogleDrive
 from MyGoogleDrive import UpdateVideoToGoogleDrive
 
-sSoftwareVersion='1.0.6.1'
+sSoftwareVersion='1.0.6.2'
 
 get_mi_device_number = 0
 mac_address_list = []
