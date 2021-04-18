@@ -931,6 +931,17 @@ def UpdateLocalSensorsInformation():
     global lightdata_Before
     global lightdata
 
+    # Raspberry Pi 4 Status
+    global CPU_temp
+    global CPU_temp_2
+    global CPU_temp_3
+    global CPU_usage
+    global RAM_total
+    global RAM_used
+    global RAM_free
+    global DISK_total
+    global DISK_used
+    global DISK_perc
 
     #print("Update Sensors Informatnio Start")
     #while bRunning:
@@ -974,6 +985,19 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['UpdateFValue']=MyParameter.UpdateFValue
                 InformationData[SetKey]['PhotoFolderID']=MyParameter.PhotoFolderID
                 InformationData[SetKey]['VideoFolderID']=MyParameter.VideoFolderID
+
+                SetKey="Status"
+                InformationData[SetKey]={}
+                InformationData[SetKey]['CPU_Temp']=CPU_temp
+                InformationData[SetKey]['CPU_Temp2']=CPU_temp2
+                InformationData[SetKey]['CPU_Temp3']=CPU_temp3
+                InformationData[SetKey]['CPU_Usage']=CPU_usage
+                InformationData[SetKey]['RAM_Total']=RAM_total
+                InformationData[SetKey]['RAM_Used']=RAM_used
+                InformationData[SetKey]['RAM_Free']=RAM_free
+                InformationData[SetKey]['DISK_Total']=DISK_total
+                InformationData[SetKey]['DISK_Used']=DISK_used
+                InformationData[SetKey]['DISK_Perc']=DISK_perc
 
                 SetKey="Data"
                 InformationData[SetKey]={}
