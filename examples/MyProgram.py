@@ -465,6 +465,18 @@ power_mgmt_2 = 0x6c
 lightdata_Before = 0
 lightdata = 0
 
+# Raspberry Pi 4 Status
+CPU_temp = 0.0
+CPU_temp_2 = 0.0
+CPU_temp_3 = 0.0
+CPU_usage = 0.0
+RAM_total = 0.0
+RAM_used = 0.0
+RAM_free = 0.0
+DISK_total = ''
+DISK_used = ''
+DISK_perc = ''
+
 #Vibration - Now make the 6050 up as it starts in sleep mode
 vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
@@ -499,8 +511,95 @@ def get_x_rotation(x, y, z):
 
 #endregion
 
+#Check Raspberry pi 4 Status
+#region Check Raspberry pi 4 Status
+
+# Return CPU temperature as a character string
+def getCPUtemperature():
+    res = os.popen('vcgencmd measure_temp').readline()
+    return(res.replace("temp=","").replace("'C\n",""))
+
+def getCPUtemperature_2():
+    return os.popen('vcgencmd measure_temp').read()[5:9]
+
+def getCPUtemperature_3():
+    with open("/sys/class/thermal/thermal_zone0/temp") as tempFile:
+        res = tempFile.read()
+        res=str(float(res)/1000)
+    return res
+
+# Return RAM infomation(unit=kb) in a list
+# Index 0: total RAM
+# Index 1: used RAM
+# Index 2: free RAM
+def getRAMinfo():
+    p = os.popen('free')
+    i = 0
+    while 1:
+        i = i+1
+        line = p.readline()
+        if i == 2:
+            return(line.split()[1:4])
+
+# Return % of CPU used by user as a character string
+def getCPUuse():
+    return(str(os.popen("top -n1 | awk '/Cpu\(s\):/ {print $2}'").readline().strip()))
+
+# Return information about disk space as a list (unit include)
+# Index 0: total disk space
+# Index 1: used disk space
+# Index 2: remaining disk space
+# Index 3: percentaage of disk used
+def getDiskSpace():
+    p = os.popen("df -h /")
+    i = 0
+    while 1:
+         i = i + 1
+         line = p.readline()
+         if i == 2:
+             return(line.split()[1:5])
+
+
+def checkRaspberryStatus():
+    # Raspberry Pi 4 Status
+    global CPU_temp
+    global CPU_temp_2
+    global CPU_temp_3
+    global CPU_usage
+    global RAM_total
+    global RAM_used
+    global RAM_free
+    global DISK_total
+    global DISK_used
+    global DISK_perc
+
+    try:
+        # CPU informaiton
+        CPU_temp = getCPUtemperature()
+        CPU_temp_2 = getCPUtemperature_2()
+        CPU_temp_3 = getCPUtemperature_3()
+        CPU_usage = getCPUuse()
+
+        # RAM information
+        # Output is in kb, here I convert it in Mb for readability
+        RAM_stats = getRAMinfo()
+        RAM_total = round(int(RAM_stats[0]) / 1000, 1)
+        RAM_used = round(int(RAM_stats[1]) / 1000, 1)
+        RAM_free = round(int(RAM_stats[2]) /1000, 1)
+
+        # Disk information
+        DISK_stats = getDiskSpace()
+        DISK_total = DISK_stats[0]
+        DISK_used = DISK_stats[1]
+        DISK_perc = DISK_stats[3]
+    except:
+        print(ANSI_RED + "Get Raspberry Pi 4 Status Failure" + ANSI_OFF)
+#endregion
+
+
 #Get Sensors Data
 #region Get Sensors Data
+
 def GetSensorsData():
 
     global bRunning
@@ -766,6 +865,9 @@ def GetSensorsData():
                 lightdata = int.from_bytes(lightdatabuffer[6:8], byteorder='big')
             except:
                 print(ANSI_RED + "Transfer Light Sensor Data Failure" + ANSI_OFF)
+
+        #Check Raspberry Pi 4 Status
+        checkRaspberryStatus()
 
         bGetData = True
 
