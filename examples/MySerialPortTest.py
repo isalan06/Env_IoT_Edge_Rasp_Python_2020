@@ -25,3 +25,14 @@ while res != b'':
     res = ser.read()
 
 print(buffer)
+
+data_byte1 = []
+data_byte1.append(buffer[4])
+data_byte1.append(buffer[5])
+data_byte2 = []
+data_byte2.append(buffer[6])
+data_byte2.append(buffer[7])
+data1 = int.from_bytes(data_byte1, 'big')
+data2 = int.from_bytes(data_byte2, 'big')
+print(data1)
+print(data2)
