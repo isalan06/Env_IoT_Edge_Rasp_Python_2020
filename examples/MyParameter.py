@@ -160,7 +160,7 @@ def DIO_Initialize():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(rled, GPIO.OUT)
     GPIO.setup(gled, GPIO.OUT)
-    GPIO.output(rled, GPIO.OUT)
+    GPIO.output(rled, GPIO.HIGH)
 
 def DIO_Green(flag=True):
     if flag:
@@ -169,6 +169,8 @@ def DIO_Green(flag=True):
         GPIO.output(gled, GPIO.LOW)
 
 def DIO_Finish():
+    GPIO.output(rled, GPIO.LOW)
+    GPIO.output(gled, GPIO.LOW)
     GPIO.cleanup()
 
 
