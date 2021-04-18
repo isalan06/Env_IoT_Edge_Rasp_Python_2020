@@ -22,8 +22,8 @@ UpdateFValue=10.0
 PhotoFolderID="NA"
 VideoFolderID="NA"
 
-rled=18
-gled=16
+rled=24
+gled=23
 
 
 #Parameter function           
@@ -157,7 +157,7 @@ def SaveParameter():
 #region DIO function
 
 def DIO_Initialize():
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BCM)
     GPIO.setup(rled, GPIO.OUT)
     GPIO.setup(gled, GPIO.OUT)
     GPIO.output(rled, GPIO.OUT)
@@ -168,6 +168,8 @@ def DIO_Green(flag=True):
     else:
         GPIO.output(gled, GPIO.LOW)
 
+def DIO_Finish():
+    GPIO.cleanup()
 
 
 #endregion

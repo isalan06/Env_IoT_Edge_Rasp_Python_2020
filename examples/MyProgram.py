@@ -39,6 +39,7 @@ from MyGoogleDrive import UpdateVideoToGoogleDrive
 
 from MyParameter import DIO_Initialize
 from MyParameter import DIO_Green
+from MyParameter import DIO_Finish
 
 sSoftwareVersion='1.0.6.3'
 
@@ -1562,6 +1563,7 @@ bRunning=False
 myBLEDevice.Stop()
 
 print("\033[1;33mProgram Finish\033[0m")
+DIO_Finish()
 
 time.sleep(2.0)
 
