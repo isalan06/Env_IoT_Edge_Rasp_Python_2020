@@ -29,7 +29,9 @@ while res != b'':
 print(buffer)
 print(buffer2)
 
-data1 = int.from_bytes(buffer2[4:5], 'big')
-data2 = int.from_bytes(buffer2[6:7], 'big')
+data1 = int.from_bytes(buffer2[4:5], byteorder='big')
+data2 = int.from_bytes(buffer2[6:7], byteorder='big')
+print(buffer2[4:5])
 print(data1)
+print(buffer2[6:7])
 print(data2)
