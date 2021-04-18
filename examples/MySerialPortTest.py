@@ -21,5 +21,6 @@ res = ser.read()
 
 while res != '':
     buffer.append(res)
+    res = ser.read()
 
 print(buffer)
