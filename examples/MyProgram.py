@@ -1120,8 +1120,9 @@ def UpdateLocalSensorsInformation():
                 TransferJSONData=json.dumps(InformationData)
                 #print(TransferJSONData)
                 print(ANSI_GREEN + "Create JSON File Success" + ANSI_OFF) 
-            except:
+            except Exception as error:
                 print(ANSI_RED + "Create JSON File Failure" + ANSI_OFF) 
+                print(error)
 
             try:
                 auth=('token', 'example')
