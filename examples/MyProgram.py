@@ -1138,6 +1138,7 @@ def UpdateLocalSensorsInformation():
                         print(ANSI_RED + str(e) + ANSI_OFF)
             except BaseException as error:
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
+                print(error)
 
 #endregion
 
