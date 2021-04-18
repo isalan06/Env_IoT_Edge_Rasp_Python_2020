@@ -989,8 +989,8 @@ def UpdateLocalSensorsInformation():
                 SetKey="Status"
                 InformationData[SetKey]={}
                 InformationData[SetKey]['CPU_Temp']=CPU_temp
-                InformationData[SetKey]['CPU_Temp2']=CPU_temp2
-                InformationData[SetKey]['CPU_Temp3']=CPU_temp3
+                InformationData[SetKey]['CPU_Temp2']=CPU_temp_2
+                InformationData[SetKey]['CPU_Temp3']=CPU_temp_3
                 InformationData[SetKey]['CPU_Usage']=CPU_usage
                 InformationData[SetKey]['RAM_Total']=RAM_total
                 InformationData[SetKey]['RAM_Used']=RAM_used
