@@ -41,7 +41,9 @@ from MyParameter import DIO_Initialize
 from MyParameter import DIO_Green
 from MyParameter import DIO_Finish
 
-sSoftwareVersion='1.0.6.3'
+import serial
+
+sSoftwareVersion='1.0.7.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -459,6 +461,10 @@ vib_address = 0x68
 power_mgmt_1 = 0x6b
 power_mgmt_2 = 0x6c
 
+# Light Sensors Data (Remote)
+lightdata_Before = 0
+lightdata = 0
+
 #Vibration - Now make the 6050 up as it starts in sleep mode
 vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
@@ -557,7 +563,26 @@ def GetSensorsData():
     tStartTime_ShowInformation = time.time()
     fIntervalTime_ShowInformation = 10.0
 
+    # Light Sensors Data (Remote)
+
+
     print("Get Local Sensors Thread Start")
+
+    # Serial Port Attribute
+    ser=serial.Serial(
+        port='/dev/ttyS0',
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1    
+    )
+    ser.flushInput()
+
+    outputCommand = b'\xA5\x09\xAE'
+
+    global lightdata_Before
+    global lightdata
 
     # DHT22 Attribute
     dhtDevice = 0
@@ -722,7 +747,25 @@ def GetSensorsData():
                     #print("Get ThermalPixels Success: " + sFireDetectStatus)
         except:
             print("Get TermalPixels Failure")
-            
+
+        #Light Sensors Remote by RS485
+        ser.write(outputCommand)
+        lightdatabuffer = b''
+
+        res = ser.read()
+        rs485_communication_flag = False
+
+        while res != b'':
+            rs485_communication_flag = True
+            lightdatabuffer = lightdatabuffer + res
+            res = ser.read()    
+
+        if rs485_communication_flag:
+            try:
+                lightdata_Before = int.from_bytes(lightdatabuffer[4:6], byteorder='big')
+                lightdata = int.from_bytes(lightdatabuffer[6:8], byteorder='big')
+            except:
+                print(ANSI_RED + "Transfer Light Sensor Data Failure" + ANSI_OFF)
 
         bGetData = True
 
@@ -781,6 +824,10 @@ def UpdateLocalSensorsInformation():
     global thermalpixels
 
     global sVibrationStatus_Keep
+
+    #Light Sensor Attribute
+    global lightdata_Before
+    global lightdata
 
 
     #print("Update Sensors Informatnio Start")
@@ -851,6 +898,24 @@ def UpdateLocalSensorsInformation():
                 humiditylist["Unit"]="%RH"
                 humiditylist["Value"]=humidity
                 InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
+
+                SetKey2="LightSensor"
+                InformationData[SetKey][SetKey2]={}
+                InformationData[SetKey][SetKey2]["Count"]=2
+                InformationData[SetKey][SetKey2][SetKey3]=[]
+                lightlist = {}
+                lightlist["ID"]=1
+                lightlist["Type"]="Remote_Before"
+                lightlist["Unit"]="point"
+                lightlist["Value"]=lightdata_Before
+                InformationData[SetKey][SetKey2][SetKey3].append(lightlist)
+                lightlist = {}
+                lightlist["ID"]=2
+                lightlist["Type"]="Remote_current"
+                lightlist["Unit"]="point"
+                lightlist["Value"]=lightdata
+                InformationData[SetKey][SetKey2][SetKey3].append(lightlist)
+
 
                 print("\t" + ANSI_YELLOW + "Check MI Device Number: " + str(get_mi_device_number) + ANSI_OFF)
                 SetKey2="MiTempHumidity"
