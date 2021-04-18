@@ -37,7 +37,10 @@ from PIL import Image
 from MyGoogleDrive import UpdateImageToGoogleDrive
 from MyGoogleDrive import UpdateVideoToGoogleDrive
 
-sSoftwareVersion='1.0.6.2'
+from MyParameter import DIO_Initialize
+from MyParameter import DIO_Green
+
+sSoftwareVersion='1.0.6.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1086,6 +1089,7 @@ def GetCommandFromCloud():
 
                     _command = data['Command']
                     print("\033[1;34mGet Command: " + _command + "\033[0m")
+                    DIO_Green()
                 except BaseException as error:
                     bNetConnected = False
                     print("\033[1;31mGet Command Failure\033[0m")
@@ -1190,7 +1194,9 @@ def GetCommandFromCloud():
 
         #endregion
 
-        time.sleep(3.0)
+        time.sleep(2.0)
+
+        DIO_Green(False)
 
 #endregion
 
@@ -1508,6 +1514,8 @@ def CameraFunction():
 #endregion
 
 print("\033[1;33mProgram Start\033[0m")
+
+DIO_Initialize()
 
 #Load Parameter
 MyParameter.LoadParameter()

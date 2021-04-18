@@ -2,8 +2,9 @@
 #MyParameter.py
 import os
 import configparser
+import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.0.0'
+sSoftwareVersion='1.0.0.1'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -20,6 +21,9 @@ CameraFValue=300.0
 UpdateFValue=10.0
 PhotoFolderID="NA"
 VideoFolderID="NA"
+
+rled=18
+gled=16
 
 
 #Parameter function           
@@ -148,3 +152,24 @@ def SaveParameter():
         CreateParameter()
 
 #endregion
+
+#DIO function
+#region DIO function
+
+def DIO_Initialize():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(rled, GPIO.OUT)
+    GPIO.setup(gled, GPIO.OUT)
+    GPIO.output(rled, GPIO.OUT)
+
+def DIO_Green(flag=True):
+    if flag:
+        GPIO.output(gled, GPIO.HIGH)
+    else:
+        GPIO.output(gled, GPIO.LOW)
+
+
+
+#endregion
+
+
