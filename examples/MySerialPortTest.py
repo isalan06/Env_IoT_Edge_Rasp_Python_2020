@@ -20,6 +20,7 @@ buffer = []
 res = ser.read()
 
 while res != '':
+    print(res)
     buffer.append(res)
     res = ser.read()
 
