@@ -107,18 +107,18 @@ def DoWork():
         if MyParameter.CameraFunctionFlag != 0:
             print("Start To Check Camera Function")
             # initialize the camera and grab a reference to the raw camera capture
-            _camera = PiCamera()
-            _camera.resolution = (1600,900)
-            _rawCapture = PiRGBArray(_camera)
-            # allow the camera to warmup
-            time.sleep(0.1)
-            # grab an image from the camera
-            _camera.capture(_rawCapture, format="bgr")
-            _image = _rawCapture.array
+            with picamera.PiCamera as camera:
+                camera.resolution = (1600,900)
+                rawCapture = PiRGBArray(_camera)
+                # allow the camera to warmup
+                time.sleep(0.1)
+                # grab an image from the camera
+                camera.capture(rawCapture, format="bgr")
+                image = rawCapture.array
 
-            _gray_image = cv2.cvtColor(_image, cv2.COLOR_BGR2GRAY)
-            ImageGrayMean = _gray_image.mean()
-            print(ImageGrayMean)
+                gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                ImageGrayMean = gray_image.mean()
+                print(ImageGrayMean)
 
 
     if bCapturePictureTrigger == True:
