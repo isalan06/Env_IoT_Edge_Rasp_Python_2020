@@ -4,7 +4,7 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.0.1'
+sSoftwareVersion='1.0.0.2'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -21,6 +21,7 @@ CameraFValue=300.0
 UpdateFValue=10.0
 PhotoFolderID="NA"
 VideoFolderID="NA"
+CameraFunction=0
 
 rled=24
 gled=23
@@ -45,6 +46,7 @@ def CreateParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
+    global CameraFunction
 
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
@@ -66,6 +68,7 @@ def CreateParameter():
     config['Parameter']['UpdateFValue'] = str(UpdateFValue)
     config['Parameter']['PhotoFolderID'] = PhotoFolderID
     config['Parameter']['VideoFolderID'] = VideoFolderID
+    config['Parameter']['CameraFunction'] = CameraFunction
 
     with open(filePathString, 'w') as configfile:
         config.write(configfile)
@@ -107,6 +110,7 @@ def LoadParameter():
         UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
         PhotoFolderID = config['Parameter']['PhotoFolderID']
         VideoFolderID = config['Parameter']['VideoFolderID']
+        CameraFunction = config['Parameter'].getint('CameraFunction')
     else:
         CreateParameter()
 
@@ -145,6 +149,7 @@ def SaveParameter():
         config['Parameter']['UpdateFValue'] = str(UpdateFValue)
         config['Parameter']['PhotoFolderID'] = PhotoFolderID
         config['Parameter']['VideoFolderID'] = VideoFolderID
+        config['Parameter']['CameraFunction'] = CameraFunction
 
         with open(filePathString, 'w') as configfile:
             config.write(configfile)
