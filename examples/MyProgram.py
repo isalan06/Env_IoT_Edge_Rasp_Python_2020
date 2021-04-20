@@ -1000,7 +1000,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['DISK_Used']=DISK_used
                 InformationData[SetKey]['DISK_Perc']=DISK_perc
 
-                SetKay="CameraStatus"
+                SetKey="CameraStatus"
                 InformationData[SetKey]={}
                 InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
 
