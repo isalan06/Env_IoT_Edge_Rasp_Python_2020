@@ -4,7 +4,7 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.0.2'
+sSoftwareVersion='1.0.0.3'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -90,6 +90,7 @@ def LoadParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
+    global CameraFunction
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
 
@@ -130,6 +131,7 @@ def SaveParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
+    global CameraFunction
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
     if os.path.isfile(filePathString):
