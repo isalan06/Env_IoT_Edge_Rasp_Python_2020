@@ -28,7 +28,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.1.0'
+sSoftwareVersion='1.0.1.1'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -39,6 +39,8 @@ sVideoFileName = ''
 bCaptureVideoTrigger = False
 bCaptureVideoDone = False
 bCaptureVideoError = False
+
+tCheckImageTimer_Start = time.time()
 
 #Camera Function Data
 ImageGrayMean=0.0
@@ -95,6 +97,28 @@ def DoWork():
     global bCaptureVideoTrigger
     global bCaptureVideoDone
     global bCaptureVideoError
+
+    global tCheckImageTimer_Start
+    global ImageGrayMean
+
+    checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
+    if checkCameraFunctionIntervalTime >= 2:
+        tCheckImageTimer_Start = time.time()
+        if MyParameter.CameraFunction != 0:
+            # initialize the camera and grab a reference to the raw camera capture
+            _camera = PiCamera()
+            _camera.resolution = (1600,900)
+            _rawCapture = PiRGBArray(_camera)
+            # allow the camera to warmup
+            time.sleep(0.1)
+            # grab an image from the camera
+            _camera.capture(_rawCapture, format="bgr")
+            _image = _rawCapture.array
+
+            _gray_image = cv2.cvtColor(_image, cv2.COLOR_BGR2GRAY)
+            ImageGrayMean = gray_image.mean()
+
+
     if bCapturePictureTrigger == True:
         bCapturePictureTrigger = False
 
