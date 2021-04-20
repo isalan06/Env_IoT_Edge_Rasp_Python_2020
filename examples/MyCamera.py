@@ -7,6 +7,9 @@ import picamera
 import time
 import datetime
 
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+
 import MyParameter
 
 if os.getenv('C', '1') == '0':
@@ -25,7 +28,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.0.3'
+sSoftwareVersion='1.0.1.0'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -36,6 +39,9 @@ sVideoFileName = ''
 bCaptureVideoTrigger = False
 bCaptureVideoDone = False
 bCaptureVideoError = False
+
+#Camera Function Data
+ImageGrayMean=0.0
 
 def CheckCameraRunning():
     bResult = bCapturePictureTrigger or bCapturePictureDone or bCapturePictureError or bCaptureVideoTrigger or bCaptureVideoDone or bCaptureVideoError

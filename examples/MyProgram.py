@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.0'
+sSoftwareVersion='1.0.7.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -985,6 +985,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['UpdateFValue']=MyParameter.UpdateFValue
                 InformationData[SetKey]['PhotoFolderID']=MyParameter.PhotoFolderID
                 InformationData[SetKey]['VideoFolderID']=MyParameter.VideoFolderID
+                InformationData[SetKey]['CameraFunction']=MyParameter.CameraFunction
 
                 SetKey="Status"
                 InformationData[SetKey]={}
@@ -998,6 +999,10 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['DISK_Total']=DISK_total
                 InformationData[SetKey]['DISK_Used']=DISK_used
                 InformationData[SetKey]['DISK_Perc']=DISK_perc
+
+                SetKay="CameraStatus"
+                InformationData[SetKey]={}
+                InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
 
                 SetKey="Data"
                 InformationData[SetKey]={}
@@ -1310,6 +1315,7 @@ def GetCommandFromCloud():
                     MyParameter.UpdateFValue=data['UpdateFValue']
                     MyParameter.PhotoFolderID=data['PhotoFolderID']
                     MyParameter.VideoFolderID=data['VideoFolderID']
+                    MyParameter.CameraFunction=data['CameraFunction']
 
                     MyParameter.SaveParameter()
 
@@ -1388,7 +1394,7 @@ def GetCommandFromCloud():
 
         #endregion
 
-        time.sleep(2.0)
+        time.sleep(3.0)
 
         DIO_Green(False)
 
