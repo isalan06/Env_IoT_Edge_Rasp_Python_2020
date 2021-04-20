@@ -107,7 +107,7 @@ def DoWork():
         if MyParameter.CameraFunctionFlag != 0:
             print("Start To Check Camera Function")
             # initialize the camera and grab a reference to the raw camera capture
-            with picamera.PiCamera as camera:
+            with picamera.PiCamera() as camera:
                 camera.resolution = (1600,900)
                 rawCapture = PiRGBArray(_camera)
                 # allow the camera to warmup
