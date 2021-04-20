@@ -985,7 +985,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['UpdateFValue']=MyParameter.UpdateFValue
                 InformationData[SetKey]['PhotoFolderID']=MyParameter.PhotoFolderID
                 InformationData[SetKey]['VideoFolderID']=MyParameter.VideoFolderID
-                InformationData[SetKey]['CameraFunction']=MyParameter.CameraFunction
+                InformationData[SetKey]['CameraFunction']=MyParameter.CameraFunctionFlag
 
                 SetKey="Status"
                 InformationData[SetKey]={}
@@ -1315,7 +1315,7 @@ def GetCommandFromCloud():
                     MyParameter.UpdateFValue=data['UpdateFValue']
                     MyParameter.PhotoFolderID=data['PhotoFolderID']
                     MyParameter.VideoFolderID=data['VideoFolderID']
-                    MyParameter.CameraFunction=data['CameraFunction']
+                    MyParameter.CameraFunctionFlag=data['CameraFunction']
 
                     MyParameter.SaveParameter()
 

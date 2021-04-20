@@ -104,7 +104,7 @@ def DoWork():
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
     if checkCameraFunctionIntervalTime >= 2:
         tCheckImageTimer_Start = time.time()
-        if MyParameter.CameraFunction != 0:
+        if MyParameter.CameraFunctionFlag != 0:
             print("Start To Check Camera Function")
             # initialize the camera and grab a reference to the raw camera capture
             _camera = PiCamera()
@@ -117,7 +117,7 @@ def DoWork():
             _image = _rawCapture.array
 
             _gray_image = cv2.cvtColor(_image, cv2.COLOR_BGR2GRAY)
-            ImageGrayMean = gray_image.mean()
+            ImageGrayMean = _gray_image.mean()
             print(ImageGrayMean)
 
 

@@ -21,7 +21,7 @@ CameraFValue=300.0
 UpdateFValue=10.0
 PhotoFolderID="NA"
 VideoFolderID="NA"
-CameraFunction=0
+CameraFunctionFlag=0
 
 rled=24
 gled=23
@@ -46,7 +46,7 @@ def CreateParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
-    global CameraFunction
+    global CameraFunctionFlag
 
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
@@ -68,7 +68,7 @@ def CreateParameter():
     config['Parameter']['UpdateFValue'] = str(UpdateFValue)
     config['Parameter']['PhotoFolderID'] = PhotoFolderID
     config['Parameter']['VideoFolderID'] = VideoFolderID
-    config['Parameter']['CameraFunction'] = CameraFunction
+    config['Parameter']['CameraFunction'] = str(CameraFunctionFlag)
 
     with open(filePathString, 'w') as configfile:
         config.write(configfile)
@@ -90,7 +90,7 @@ def LoadParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
-    global CameraFunction
+    global CameraFunctionFlag
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
 
@@ -111,7 +111,7 @@ def LoadParameter():
         UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
         PhotoFolderID = config['Parameter']['PhotoFolderID']
         VideoFolderID = config['Parameter']['VideoFolderID']
-        CameraFunction = config['Parameter'].getint('CameraFunction')
+        CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
     else:
         CreateParameter()
 
@@ -131,7 +131,7 @@ def SaveParameter():
     global UpdateFValue
     global PhotoFolderID
     global VideoFolderID
-    global CameraFunction
+    global CameraFunctionFlag
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
     if os.path.isfile(filePathString):
@@ -151,7 +151,7 @@ def SaveParameter():
         config['Parameter']['UpdateFValue'] = str(UpdateFValue)
         config['Parameter']['PhotoFolderID'] = PhotoFolderID
         config['Parameter']['VideoFolderID'] = VideoFolderID
-        config['Parameter']['CameraFunction'] = CameraFunction
+        config['Parameter']['CameraFunction'] = str(CameraFunctionFlag)
 
         with open(filePathString, 'w') as configfile:
             config.write(configfile)
