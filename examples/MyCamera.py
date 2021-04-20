@@ -109,7 +109,7 @@ def DoWork():
             # initialize the camera and grab a reference to the raw camera capture
             with picamera.PiCamera() as camera:
                 camera.resolution = (1600,900)
-                rawCapture = PiRGBArray(_camera)
+                rawCapture = PiRGBArray(camera)
                 # allow the camera to warmup
                 time.sleep(0.1)
                 # grab an image from the camera
