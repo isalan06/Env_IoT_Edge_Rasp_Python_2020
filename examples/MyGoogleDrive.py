@@ -45,12 +45,16 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         if MyParameter.PhotoFolderID != 'NA':
 
             if os.path.exists('token.json'):
+                print("GD1")
                 creds = Credentials.from_authorized_user_file('token.json', SCOPES)
             # If there are no (valid) credentials available, let the user log in.
             if not creds or not creds.valid:
+                print("GD2")
                 if creds and creds.expired and creds.refresh_token:
+                    print("GD3")
                     creds.refresh(Request())
                 else:
+                    print("GD4")
                     flow = InstalledAppFlow.from_client_secrets_file(
                         'client_secrets.json', SCOPES)
                     creds = flow.run_local_server(port=0)
