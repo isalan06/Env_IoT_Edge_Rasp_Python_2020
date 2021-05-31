@@ -115,6 +115,7 @@ def DoWork():
 
     global tCheckImageTimer_Start
     global ImageGrayMean
+    global sSmallImageData
 
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
     if checkCameraFunctionIntervalTime >= 2:
