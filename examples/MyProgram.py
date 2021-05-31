@@ -1004,7 +1004,11 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]={}
                 InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
                 #print(MyCamera.sSmallImageData)
-                InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
+                InformationData[SetKey]['SmallImage']=''
+                if MyCamera.iSmallImageIndex == 0:
+                    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
+                if MyCamera.iSmallImageIndex == 1:
+                    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
 
                 SetKey="Data"
                 InformationData[SetKey]={}
