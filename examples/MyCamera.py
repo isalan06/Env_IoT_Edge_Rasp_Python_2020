@@ -12,6 +12,10 @@ from picamera import PiCamera
 
 import MyParameter
 
+import base64
+from PIL import Image
+from io import BytesIO
+
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
     ANSI_GREEN = ''
@@ -42,8 +46,18 @@ bCaptureVideoError = False
 
 tCheckImageTimer_Start = time.time()
 
+sSmallImageData=''
+
 #Camera Function Data
 ImageGrayMean=0.0
+
+def frame2base64(frame):
+    img = Image.fromarray(frame) #將每一幀轉為Image
+    output_buffer = BytesIO() #建立一個BytesIO
+    img.save(output_buffer, format='JPEG') #寫入output_buffer
+    byte_data = output_buffer.getvalue() #在記憶體中讀取
+    sSmallImageData = base64.b64encode(byte_data) #轉為BASE64
+    print(sSmallImageData)
 
 def CheckCameraRunning():
     bResult = bCapturePictureTrigger or bCapturePictureDone or bCapturePictureError or bCaptureVideoTrigger or bCaptureVideoDone or bCaptureVideoError
@@ -105,10 +119,11 @@ def DoWork():
     if checkCameraFunctionIntervalTime >= 2:
         tCheckImageTimer_Start = time.time()
         if MyParameter.CameraFunctionFlag != 0:
-            print("Start To Check Camera Function")
+            #print("Start To Check Camera Function")
             # initialize the camera and grab a reference to the raw camera capture
             with picamera.PiCamera() as camera:
-                camera.resolution = (1600,912)
+                #camera.resolution = (1600,912)
+                camera.resolution = (640,480)
                 rawCapture = PiRGBArray(camera)
                 # allow the camera to warmup
                 time.sleep(0.1)
@@ -118,7 +133,10 @@ def DoWork():
 
                 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 ImageGrayMean = gray_image.mean()
-                print(ImageGrayMean)
+                #print(ImageGrayMean)
+                frame2base64(rawCapture)
+
+
 
 
     if bCapturePictureTrigger == True:
