@@ -135,22 +135,24 @@ def DoWork():
         
         if MyParameter.CameraFunctionFlag != 0:
             #print("Start To Check Camera Function")
-            # initialize the camera and grab a reference to the raw camera capture
-            with picamera.PiCamera() as camera:
-                #camera.resolution = (1600,912)
-                camera.resolution = (640,480)
-                #camera.framerate = 32
-                rawCapture = PiRGBArray(camera)
-                # allow the camera to warmup
-                time.sleep(0.1)
-                # grab an image from the camera
-                camera.capture(rawCapture, format="bgr")
-                image = rawCapture.array
 
-                gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                ImageGrayMean = gray_image.mean()
-                #print(ImageGrayMean)
-                frame2base64(image)
+            try:
+            # initialize the camera and grab a reference to the raw camera capture
+                with picamera.PiCamera() as camera:
+                    camera.resolution = (640,480)
+                    rawCapture = PiRGBArray(camera)
+                    # allow the camera to warmup
+                    time.sleep(0.1)
+                    # grab an image from the camera
+                    camera.capture(rawCapture, format="bgr")
+                    image = rawCapture.array
+
+                    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    ImageGrayMean = gray_image.mean()
+                    #print(ImageGrayMean)
+                    frame2base64(image)
+            except:
+                print(ANSI_RED + 'Transfer Image Error' + ANSI_OFF)
 
         time.sleep(0.5)
         tCheckImageTimer_Start = time.time()
@@ -203,4 +205,4 @@ def DoWork():
             bCaptureVideoError = True
             print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
 
-    time.sleep(0.1)
+    time.sleep(0.5)
