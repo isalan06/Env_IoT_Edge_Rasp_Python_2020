@@ -139,7 +139,7 @@ def DoWork():
             try:
             # initialize the camera and grab a reference to the raw camera capture
                 with picamera.PiCamera() as camera:
-                    camera.resolution = (640,480)
+                    camera.resolution = (480, 320)
                     rawCapture = PiRGBArray(camera)
                     # allow the camera to warmup
                     time.sleep(0.1)
