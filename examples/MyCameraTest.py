@@ -34,7 +34,7 @@ image = rawCapture.array
 
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 print("Light:", gray_image.mean())
-frame2base64(rawCapture)
+frame2base64(image)
 
 # display the image on screen and wait for a keypress
 cv2.imshow("Image", image)
