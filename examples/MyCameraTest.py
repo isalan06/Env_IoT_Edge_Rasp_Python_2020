@@ -27,7 +27,7 @@ time.sleep(0.1)
 # grab an image from the camera
 print("Capture")
 rawCapture.truncate(0)
-camera.capture(rawCapture, format="bgr")
+camera.capture(rawCapture)#, format="bgr")
 print("Transfer")
 image = rawCapture.array
 
