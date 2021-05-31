@@ -66,7 +66,7 @@ def frame2base64(frame):
         sSmallImageData = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
         iSmallImageIndex = 0
     else:
-        sSmallImageData1 = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
+        sSmallImageData2 = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
         iSmallImageIndex = 1
 
     print('Transfer Image Data')
