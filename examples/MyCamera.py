@@ -119,6 +119,7 @@ def DoWork():
     global sSmallImageData
 
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
+    print(checkCameraFunctionIntervalTime)
     if checkCameraFunctionIntervalTime >= 2:
         tCheckImageTimer_Start = time.time()
         if MyParameter.CameraFunctionFlag != 0:
