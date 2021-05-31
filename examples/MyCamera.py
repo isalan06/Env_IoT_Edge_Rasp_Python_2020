@@ -58,7 +58,7 @@ def frame2base64(frame):
     output_buffer = BytesIO() #建立一個BytesIO
     img.save(output_buffer, format='JPEG') #寫入output_buffer
     byte_data = output_buffer.getvalue() #在記憶體中讀取
-    sSmallImageData = base64.b64encode(byte_data) #轉為BASE64
+    sSmallImageData = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
     print('Transfer Image Data')
 
 def CheckCameraRunning():
