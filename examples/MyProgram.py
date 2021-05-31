@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.3'
+sSoftwareVersion='1.0.7.4'
 
 get_mi_device_number = 0
 mac_address_list = []
