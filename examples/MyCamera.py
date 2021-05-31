@@ -53,6 +53,7 @@ ImageGrayMean=0.0
 sSmallImageData=''
 
 def frame2base64(frame):
+    global sSmallImageData
     img = Image.fromarray(frame) #將每一幀轉為Image
     output_buffer = BytesIO() #建立一個BytesIO
     img.save(output_buffer, format='JPEG') #寫入output_buffer
