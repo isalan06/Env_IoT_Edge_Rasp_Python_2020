@@ -17,13 +17,15 @@ def frame2base64(frame):
     print(sSmallImageData)
 
 # initialize the camera and grab a reference to the raw camera capture
+print("Start")
 camera = PiCamera()
-camera.resolution = (1920,1088)
+camera.resolution = (1600,912)
 #camera.framerate = 32
 rawCapture = PiRGBArray(camera)#, size=(640, 480))
 # allow the camera to warmup
 time.sleep(0.1)
 # grab an image from the camera
+print("Capture")
 camera.capture(rawCapture, format="bgr")
 image = rawCapture.array
 
