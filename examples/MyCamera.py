@@ -134,7 +134,7 @@ def DoWork():
                 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 ImageGrayMean = gray_image.mean()
                 #print(ImageGrayMean)
-                frame2base64(rawCapture)
+                #frame2base64(rawCapture)
 
 
 
