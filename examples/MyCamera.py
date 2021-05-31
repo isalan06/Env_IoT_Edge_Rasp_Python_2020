@@ -126,7 +126,7 @@ def DoWork():
             # initialize the camera and grab a reference to the raw camera capture
             with picamera.PiCamera() as camera:
                 #camera.resolution = (1600,912)
-                camera.resolution = (640,480)
+                camera.resolution = (320,240)
                 #camera.framerate = 32
                 rawCapture = PiRGBArray(camera)
                 # allow the camera to warmup
