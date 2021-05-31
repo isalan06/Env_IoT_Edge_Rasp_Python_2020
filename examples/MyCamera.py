@@ -67,7 +67,7 @@ def frame2base64(frame):
         iSmallImageIndex = 0
     else:
         sSmallImageData1 = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
-        iSmallImageIndex = 0
+        iSmallImageIndex = 1
 
     print('Transfer Image Data')
 
@@ -130,7 +130,7 @@ def DoWork():
     
 
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
-    print(checkCameraFunctionIntervalTime)
+    #print(checkCameraFunctionIntervalTime)
     if checkCameraFunctionIntervalTime >= 2:
         
         if MyParameter.CameraFunctionFlag != 0:
@@ -152,6 +152,7 @@ def DoWork():
                 #print(ImageGrayMean)
                 frame2base64(image)
 
+        time.sleep(0.5)
         tCheckImageTimer_Start = time.time()
 
 
