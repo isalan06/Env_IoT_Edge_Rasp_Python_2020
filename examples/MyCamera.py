@@ -146,7 +146,7 @@ def DoWork():
             # initialize the camera and grab a reference to the raw camera capture
                 with picamera.PiCamera() as camera:
                     camera.resolution = (480, 320)
-                    rawCapture = PiRGBArray(camera)
+                    rawCapture = PiRGBArray(camera, size=(480, 320))
                     # allow the camera to warmup
                     time.sleep(0.1)
                     # grab an image from the camera
@@ -155,7 +155,7 @@ def DoWork():
 
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
-                    #print(ImageGrayMean)
+                    print(ImageGrayMean)
                     frame2base64(image)
             except:
                 print(ANSI_RED + 'Transfer Image Error' + ANSI_OFF)
