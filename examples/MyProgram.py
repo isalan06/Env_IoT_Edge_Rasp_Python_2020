@@ -1737,7 +1737,7 @@ def CheckCameraTimeout():
 
     timeoutIntervalTime = time.time() - dtCameraTimeoutTimer
 
-    if (timeoutIntervalTime < 30) AND (timeoutIntervalTime >= 0):
+    if (timeoutIntervalTime < 30) and (timeoutIntervalTime >= 0):
         sCameraStatus = 'Running'
     else:
         sCameraStatus = 'Stop'
