@@ -46,13 +46,14 @@ bCaptureVideoError = False
 
 tCheckImageTimer_Start = time.time()
 
-
+iCameraCount = 0
 
 #Camera Function Data
 ImageGrayMean=0.0
 sSmallImageData=''
 sSmallImageData2=''
 iSmallImageIndex=-1
+sSmallImageTime='NA'
 
 def frame2base64(frame):
     global sSmallImageData
@@ -70,6 +71,7 @@ def frame2base64(frame):
             sSmallImageData2 = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
             iSmallImageIndex = 1
 
+        sSmallImageTime=datetime.now().strftime("%Y%m%d%H%M%S")
         print('Transfer Image Data Success')
     except:
         print(ANSI_RED + 'Transfer Image Data Failure' + ANSI_OFF)
@@ -131,6 +133,7 @@ def DoWork():
     global ImageGrayMean
     global sSmallImageData
     
+    global iCameraCount
 
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
     #print(checkCameraFunctionIntervalTime)
@@ -207,5 +210,9 @@ def DoWork():
         except:
             bCaptureVideoError = True
             print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
+
+    iCameraCount = iCameraCount + 1
+    if iCameraCount > = 1000:
+        iCameraCount = 0    
 
     time.sleep(0.5)

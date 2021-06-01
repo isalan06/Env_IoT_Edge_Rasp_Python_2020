@@ -427,6 +427,9 @@ sFireDetectStatus = "Normal"
 sDHT22Status = "Stop"
 sAccelGaugeStatus = "Stop"
 sThermalStatus = "Stop"
+sCameraStatus = "Stop"
+iCameraCount = 0
+dtCameraTimeoutTimer = time.time()
 
 #Vibration Attribute
 gyro_xout = 0
@@ -900,7 +903,7 @@ def UpdateLocalSensorsInformation():
     global sDHT22Status
     global sAccelGaugeStatus
     global sThermalStatus
-    
+    global sCameraStatus
 
     #DHT Attribute
     global temp_c
@@ -966,6 +969,7 @@ def UpdateLocalSensorsInformation():
                 InformationData["DHT22Status"]=sDHT22Status
                 InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
                 InformationData["ThermalStatus"]=sThermalStatus
+                InformationData["CameraStatus"]=sCameraStatus
                 InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
                 InformationData["Command"]="UpdateStatus"
                 InformationData["MachineIP"]=hostip
@@ -1010,6 +1014,7 @@ def UpdateLocalSensorsInformation():
                     InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
                 if MyCamera.iSmallImageIndex == 1:
                     InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
+                InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
 
                 SetKey="Data"
                 InformationData[SetKey]={}
@@ -1720,6 +1725,23 @@ def CameraFunction():
 
 #endregion
 
+
+def CheckCameraTimeout():
+    global sCameraStatus
+    global iCameraCount
+    global dtCameraTimeoutTimer
+
+    if(iCameraCount != MyCamera.iCameraCount):
+        iCameraCount = MyCamera.iCameraCount
+        dtCameraTimeoutTimer = time.time()
+
+    timeoutIntervalTime = time.time() - dtCameraTimeoutTimer
+
+    if (timeoutIntervalTime < 30) AND (timeoutIntervalTime >= 0):
+        sCameraStatus = 'Running'
+    else:
+        sCameraStatus = 'Stop'
+
 print("\033[1;33mProgram Start\033[0m")
 
 DIO_Initialize()
@@ -1758,10 +1780,12 @@ UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 
 try:
-    #while bRunning:
-        #time.sleep(1.0)
-    print("Waiting for Finished!!")
-    input()
+    while bRunning:
+        CheckCameraTimeout()
+
+        time.sleep(1.0)
+    #print("Waiting for Finished!!")
+    #input()
 except KeyboardInterrupt:
     bRunning=False
 
