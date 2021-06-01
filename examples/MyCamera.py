@@ -212,7 +212,7 @@ def DoWork():
             print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
 
     iCameraCount = iCameraCount + 1
-    if iCameraCount > = 1000:
+    if iCameraCount >= 1000:
         iCameraCount = 0    
 
     time.sleep(0.5)
