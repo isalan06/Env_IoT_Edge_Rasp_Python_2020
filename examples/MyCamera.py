@@ -74,7 +74,7 @@ def frame2base64(frame):
                 sSmallImageData2 = (base64.b64encode(byte_data)).decode('utf-8') #轉為BASE64
                 iSmallImageIndex = 1
 
-            sSmallImageTime=datetime.now().strftime("%Y%m%d%H%M%S")
+            #sSmallImageTime=datetime.now().strftime("%Y%m%d%H%M%S")
         except:
             print(ANSI_RED + 'Transfer Base64 Failure' + ANSI_OFF)
 
