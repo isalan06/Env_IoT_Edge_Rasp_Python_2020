@@ -29,6 +29,8 @@ else:
 
 sSoftwareVersion='1.0.0.0'
 
+sFileUpdateStatus='Stop'
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -80,7 +82,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
                                     
             print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
             print('File ID: %s' % _file.get('id'))
-            
+            sFileUpdateStatus='Running'
 
             if deletefile == True:
                 try: 
@@ -91,9 +93,11 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+            sFileUpdateStatus='Stop'
     except Exception as e:
         print(e)
         print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
+        sFileUpdateStatus='Stop'
 
 def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
     """Shows basic usage of the Drive v3 API.
@@ -139,7 +143,7 @@ def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
                                     
             print("\033[1;34mUpdate Video To Google Drive Success\033[0m")
             print('File ID: %s' % _file.get('id'))
-            
+            sFileUpdateStatus='Running'
 
             if deletefile == True:
                 try: 
@@ -150,8 +154,10 @@ def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
         
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
+            sFileUpdateStatus='Stop'
     except Exception as e:
         print(e)
         print("\033[1;31mUpdate Video To Google Drive Failure\033[0m")
+        sFileUpdateStatus='Stop'
 
 

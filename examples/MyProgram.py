@@ -966,6 +966,7 @@ def UpdateLocalSensorsInformation():
                 InformationData["Comm Type"]="Ethernet"
                 InformationData["VibrationStatus"]=sVibrationStatus_Keep
                 InformationData["FireDetectStatus"]=sFireDetectStatus
+                InformationData["FileUpdateStatus"]=MyGoogleDrive.sFileUpdateStatus
                 InformationData["DHT22Status"]=sDHT22Status
                 InformationData["AccelGaugeStatus"]=sAccelGaugeStatus
                 InformationData["ThermalStatus"]=sThermalStatus
