@@ -35,6 +35,7 @@ sFileUpdateStatus='Stop'
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def UpdateImageToGoogleDrive(filename, fileString, deletefile):
+    global sFileUpdateStatus
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.
     """
@@ -100,6 +101,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         sFileUpdateStatus='Stop'
 
 def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
+    global sFileUpdateStatus
     """Shows basic usage of the Drive v3 API.
     Prints the names and ids of the first 10 files the user has access to.
     """
