@@ -27,7 +27,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.0.0'
+sSoftwareVersion='1.0.0.1'
 
 sFileUpdateStatus='Stop'
 
@@ -47,9 +47,9 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
     try:
         if MyParameter.PhotoFolderID != 'NA':
 
-            if os.path.exists('token.json'):
+            if os.path.exists('/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/examples/token.json'):
                 print("GD1")
-                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+                creds = Credentials.from_authorized_user_file('/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/examples/token.json', SCOPES)
             # If there are no (valid) credentials available, let the user log in.
             if not creds or not creds.valid:
                 print("GD2")
@@ -59,10 +59,10 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
                 else:
                     print("GD4")
                     flow = InstalledAppFlow.from_client_secrets_file(
-                        'client_secrets.json', SCOPES)
+                        '/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/examples/client_secrets.json', SCOPES)
                     creds = flow.run_local_server(port=0)
                 # Save the credentials for the next run
-                with open('token.json', 'w') as token:
+                with open('/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/examples/token.json', 'w') as token:
                     token.write(creds.to_json())
 
             service = build('drive', 'v3', credentials=creds)
