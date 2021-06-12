@@ -54,6 +54,7 @@ sSmallImageData=''
 sSmallImageData2=''
 iSmallImageIndex=-1
 sSmallImageTime='NA'
+bSmallImageTrigger = 0
 
 def frame2base64(frame):
     global sSmallImageData
@@ -141,6 +142,7 @@ def DoWork():
     global sSmallImageData
     
     global iCameraCount
+    global bSmallImageTrigger
 
     checkCameraFunctionIntervalTime = time.time() - tCheckImageTimer_Start
     #print(checkCameraFunctionIntervalTime)
@@ -164,6 +166,7 @@ def DoWork():
                     ImageGrayMean = gray_image.mean()
                     print(ImageGrayMean)
                     frame2base64(image)
+                    bSmallImageTrigger = 1
             except:
                 print(ANSI_RED + 'Transfer Image Error' + ANSI_OFF)
 

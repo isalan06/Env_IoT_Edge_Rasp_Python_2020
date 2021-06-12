@@ -1005,17 +1005,17 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['DISK_Used']=DISK_used
                 InformationData[SetKey]['DISK_Perc']=DISK_perc
 
-                SetKey="CameraImage"
-                InformationData[SetKey]={}
-                InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
+                #SetKey="CameraImage"
+                #InformationData[SetKey]={}
+                #InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
                 #print(MyCamera.sSmallImageData)
                 
-                InformationData[SetKey]['SmallImage']=''
-                if MyCamera.iSmallImageIndex == 0:
-                    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
-                if MyCamera.iSmallImageIndex == 1:
-                    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
-                InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
+                #InformationData[SetKey]['SmallImage']=''
+                #if MyCamera.iSmallImageIndex == 0:
+                #    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
+                #if MyCamera.iSmallImageIndex == 1:
+                #    InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
+                #InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
 
                 SetKey="Data"
                 InformationData[SetKey]={}
@@ -1159,6 +1159,44 @@ def UpdateLocalSensorsInformation():
                 print("\033[1;31mUpdate Sensors Information Failure\033[0m")
                 print(error)
 
+def UpdateLocalPictureInformation():
+    if MyCamera.bSmallImageTrigger == 1:
+        MyCamera.bSmallImageTrigger = 0
+        try:
+            #JSON
+            SetKey="Machine"
+            SetValue="IoT Edge"
+            InformationData = {}
+            InformationData["Machine ID"]=local_mac_address
+            InformationData["Command"]="UpdatePicture"
+            SetKey="CameraImage"
+            InformationData[SetKey]={}
+            InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
+                
+            InformationData[SetKey]['SmallImage']=''
+            if MyCamera.iSmallImageIndex == 0:
+                InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
+            if MyCamera.iSmallImageIndex == 1:
+                InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
+            InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
+
+            TransferJSONData=json.dumps(InformationData)
+
+            auth=('token', 'example')
+            ssl._create_default_https_context = ssl._create_unverified_context
+            headers = {'Content-Type': 'application/json'}
+            i = 0
+            while i < 3:
+                try:
+                    r = requests.post('https://script.google.com/macros/s/AKfycbx58QrAGjqzD_-v4k69IQZfoT86qCaCjyb5dGkJcmxV6lsCr-0/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                    print(ANSI_GREEN + "Update Local Picture Information Success" + ANSI_OFF)
+                        break
+                    except requests.exceptions.RequestException as e:
+                        i = i + 1
+                        print(ANSI_RED + str(e) + ANSI_OFF)
+        except:
+            print(ANSI_RED + "Update Local Picture Information Failure" + ANSI_OFF)
+
 #endregion
 
 #Trigger Alarm to Cloud
@@ -1281,6 +1319,7 @@ def GetCommandFromCloud():
         if ((update_intervalTime < 0.0) or (update_intervalTime >= MyParameter.UpdateFValue)):
             start_UpdateSensors_time=time.time()
             UpdateLocalSensorsInformation()
+            UpdateLocalPictureInformation()
         else:
             try:
                 TransferJSONData=json.dumps(InformationData)
