@@ -37,6 +37,7 @@ print("Light:", gray_image.mean())
 frame2base64(image)
 
 print(gray_image)
+print(gray_image.len())
 
 # display the image on screen and wait for a keypress
 cv2.imshow("Image", image)
