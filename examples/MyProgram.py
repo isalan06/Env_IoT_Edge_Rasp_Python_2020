@@ -1189,7 +1189,7 @@ def UpdateLocalPictureInformation():
             while i < 3:
                 try:
                     r = requests.post('https://script.google.com/macros/s/AKfycbx58QrAGjqzD_-v4k69IQZfoT86qCaCjyb5dGkJcmxV6lsCr-0/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
-                    print(ANSI_GREEN + "Update Local Picture Information Success" + ANSI_OFF)
+                    print(ANSI_CYAN + "Update Local Picture Information Success" + ANSI_OFF)
                     break
                 except requests.exceptions.RequestException as e:
                     i = i + 1
