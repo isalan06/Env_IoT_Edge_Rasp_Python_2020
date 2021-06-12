@@ -1190,10 +1190,10 @@ def UpdateLocalPictureInformation():
                 try:
                     r = requests.post('https://script.google.com/macros/s/AKfycbx58QrAGjqzD_-v4k69IQZfoT86qCaCjyb5dGkJcmxV6lsCr-0/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
                     print(ANSI_GREEN + "Update Local Picture Information Success" + ANSI_OFF)
-                        break
-                    except requests.exceptions.RequestException as e:
-                        i = i + 1
-                        print(ANSI_RED + str(e) + ANSI_OFF)
+                    break
+                except requests.exceptions.RequestException as e:
+                    i = i + 1
+                    print(ANSI_RED + str(e) + ANSI_OFF)
         except:
             print(ANSI_RED + "Update Local Picture Information Failure" + ANSI_OFF)
 
