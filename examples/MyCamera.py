@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.1.1'
+sSoftwareVersion='1.0.2.0'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False

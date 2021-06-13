@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.4'
+sSoftwareVersion='1.0.7.5'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -446,6 +446,9 @@ accel_yout_scaled = 0
 accel_zout_scaled = 0
 x_rotation = 0
 y_rotation = 0
+vibrationDataList = {}
+vibrationDataList['LastRecordTime'] = 'NA'
+vibrationDataList['Data'] = [] 
 
 #AMG8833 Attribute
 thermalpixels= []
@@ -628,6 +631,7 @@ def GetSensorsData():
     global accel_zout_scaled
     global x_rotation
     global y_rotation
+    global vibrationDataList
 
     #Alarm Status
     global sVibrationStatus
@@ -778,6 +782,21 @@ def GetSensorsData():
                 tKeepVibrationStatusTimer = time.time()
             else:
                 sVibrationStatus = "Normal"
+
+            datalist = {}
+            datalist['Gx']=gyro_xout_scaled
+            datalist['Gy']=gyro_yout_scaled
+            datalist['Gz']=gyro_zout_scaled
+            datalist['Ax']=accel_xout_scaled
+            datalist['Ay']=accel_yout_scaled
+            datalist['Az']=accel_zout_scaled
+
+            vibrationDataList['Data'].append(datalist)
+            vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
+            if vibrationDataList['Data'].length > 1000:
+                del vibrationDataList['Data'][0]
+
+
             if bRecordVibration:
                 if calCount_RecordVibration == 0:
                     RecordVibrationData = {}
@@ -785,13 +804,13 @@ def GetSensorsData():
                     RecordVibrationData["Command"]="UpdateRecordVibration"
                     RecordVibrationData["Data"] = []
 
-                datalist = {}
-                datalist['Gx']=gyro_xout_scaled
-                datalist['Gy']=gyro_yout_scaled
-                datalist['Gz']=gyro_zout_scaled
-                datalist['Ax']=accel_xout_scaled
-                datalist['Ay']=accel_yout_scaled
-                datalist['Az']=accel_zout_scaled
+                #datalist = {}
+                #datalist['Gx']=gyro_xout_scaled
+                #datalist['Gy']=gyro_yout_scaled
+                #datalist['Gz']=gyro_zout_scaled
+                #datalist['Ax']=accel_xout_scaled
+                #datalist['Ay']=accel_yout_scaled
+                #datalist['Az']=accel_zout_scaled
                 RecordVibrationData["Data"].append(datalist)
 
                 calCount_RecordVibration = calCount_RecordVibration + 1
