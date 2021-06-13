@@ -832,7 +832,7 @@ def GetSensorsData():
 
             sAccelGaugeStatus = "Running"
             print("Get G Sensor Success")
-        except BaseException as error::
+        except BaseException as error:
             print("Get G Sensor Failure")
             print(error)
             sAccelGaugeStatus = "Stop"
