@@ -1207,6 +1207,7 @@ def UpdateLocalPictureInformation():
             if MyCamera.iSmallImageIndex == 1:
                 InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
             InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
+            print(MyCamera.sSmallImageTime)
 
             TransferJSONData=json.dumps(InformationData)
 
