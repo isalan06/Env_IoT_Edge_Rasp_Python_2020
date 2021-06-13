@@ -796,8 +796,10 @@ def GetSensorsData():
                 vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
                 if vibrationDataList['Data'].length > 200:
                     del vibrationDataList['Data'][0]
-            except Exception as error:
-                print(ANSI_RED + error + ANSI_OFF)
+            except:
+                print(ANSI_RED + "Record Vibration History Failure" + ANSI_OFF)
+
+            print(ANSI_Green + "ABCDR" + ANSI_OFF)
 
             if bRecordVibration:
                 if calCount_RecordVibration == 0:
