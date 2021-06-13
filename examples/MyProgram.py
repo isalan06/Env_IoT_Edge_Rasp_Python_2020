@@ -794,7 +794,7 @@ def GetSensorsData():
             try:
                 vibrationDataList['Data'].append(datalist)
                 vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
-                if vibrationDataList['Data'].length > 200:
+                if len(vibrationDataList['Data']) > 200:
                     del vibrationDataList['Data'][0]
             except Exception as e:
                 print(e)
