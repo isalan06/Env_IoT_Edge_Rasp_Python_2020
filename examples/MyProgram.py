@@ -795,7 +795,6 @@ def GetSensorsData():
             vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
             if vibrationDataList['Data'].length > 1000:
                 del vibrationDataList['Data'][0]
-            print(vibrationDataList)
 
 
             if bRecordVibration:
