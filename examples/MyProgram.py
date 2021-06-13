@@ -797,10 +797,9 @@ def GetSensorsData():
                 if len(vibrationDataList['Data']) > 200:
                     del vibrationDataList['Data'][0]
             except Exception as e:
-                print(e)
+                #print(e)
                 print(ANSI_RED + "Record Vibration History Failure" + ANSI_OFF)
 
-            print(ANSI_GREEN + "ABCDR" + ANSI_OFF)
 
             if bRecordVibration:
                 if calCount_RecordVibration == 0:
@@ -834,10 +833,10 @@ def GetSensorsData():
                         print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
 
             sAccelGaugeStatus = "Running"
-            print("Get G Sensor Success")
+            #print("Get G Sensor Success")
         except BaseException as error:
             print("Get G Sensor Failure")
-            print(error)
+            #print(error)
             sAccelGaugeStatus = "Stop"
             
 
