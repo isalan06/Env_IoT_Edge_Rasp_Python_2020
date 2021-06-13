@@ -794,7 +794,7 @@ def GetSensorsData():
             try:
                 vibrationDataList['Data'].append(datalist)
                 vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
-                if vibrationDataList['Data'].length > 1000:
+                if vibrationDataList['Data'].length > 200:
                     del vibrationDataList['Data'][0]
             except Exception as error:
                 print(ANSI_RED + error + ANSI_OFF)
@@ -831,8 +831,10 @@ def GetSensorsData():
                         print(ANSI_RED + "--Update Record Vibration Failure" + ANSI_OFF)
 
             sAccelGaugeStatus = "Running"
-        except:
+            print("Get G Sensor Success")
+        except BaseException as error::
             print("Get G Sensor Failure")
+            print(error)
             sAccelGaugeStatus = "Stop"
             
 
