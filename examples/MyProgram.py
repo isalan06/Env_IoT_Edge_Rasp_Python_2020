@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.5'
+sSoftwareVersion='1.0.7.6'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -943,6 +943,7 @@ def UpdateLocalSensorsInformation():
     global accel_zout_scaled
     global x_rotation
     global y_rotation
+    global vibrationDataList
 
     #AMG8833 Attribute
     global thermalpixels
@@ -1133,6 +1134,7 @@ def UpdateLocalSensorsInformation():
                 VibrationList["RotationX"]=x_rotation
                 VibrationList["RotationY"]=y_rotation
                 InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
+                InformationData[SetKey][SetKey2]["History"]=vibrationDataList
 
                 SetKey2="ThermalCamera"
                 InformationData[SetKey][SetKey2]={}
