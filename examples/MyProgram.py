@@ -791,11 +791,13 @@ def GetSensorsData():
             datalist['Ay']=accel_yout_scaled
             datalist['Az']=accel_zout_scaled
 
-            vibrationDataList['Data'].append(datalist)
-            vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
-            if vibrationDataList['Data'].length > 1000:
-                del vibrationDataList['Data'][0]
-
+            try:
+                vibrationDataList['Data'].append(datalist)
+                vibrationDataList['LastRecordTime']=datetime.now().strftime("%Y%m%d%H%M%S")	
+                if vibrationDataList['Data'].length > 1000:
+                    del vibrationDataList['Data'][0]
+            except Exception as error:
+                print(ANSI_RED + error + ANSI_OFF)
 
             if bRecordVibration:
                 if calCount_RecordVibration == 0:
