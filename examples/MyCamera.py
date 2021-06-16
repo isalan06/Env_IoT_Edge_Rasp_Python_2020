@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.2.1'
+sSoftwareVersion='1.0.2.2'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -156,8 +156,8 @@ def DoWork():
                 with picamera.PiCamera() as camera:
                     #camera.resolution = (480, 320)
                     #rawCapture = PiRGBArray(camera, size=(480, 320))
-                    camera.resolution = (480, 320)
-                    rawCapture = PiRGBArray(camera, size=(480, 320))
+                    camera.resolution = (1920, 1080)
+                    rawCapture = PiRGBArray(camera, size=(1920, 1088))
                     # allow the camera to warmup
                     time.sleep(0.1)
                     # grab an image from the camera
@@ -166,8 +166,9 @@ def DoWork():
 
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
+                    new_image = cv2.resize(image, (480, 320), interpolation=cv2.INTER_AREA)
                     print(ImageGrayMean)
-                    frame2base64(image)
+                    frame2base64(new_image)
                     bSmallImageTrigger = 1
             except:
                 print(ANSI_RED + 'Transfer Image Error' + ANSI_OFF)
