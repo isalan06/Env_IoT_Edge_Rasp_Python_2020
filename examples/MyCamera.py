@@ -185,7 +185,7 @@ def DoWork():
 
         try:
             with picamera.PiCamera() as camera:
-                camera.shutter_speed=100
+                #camera.shutter_speed=100
                 camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                 time.sleep(0.1)
                 camera.capture(sImageFileName)
