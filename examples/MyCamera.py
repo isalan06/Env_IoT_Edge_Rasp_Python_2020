@@ -154,6 +154,7 @@ def DoWork():
             try:
             # initialize the camera and grab a reference to the raw camera capture
                 with picamera.PiCamera() as camera:
+                    camera.shutter_speed=100
                     #camera.resolution = (480, 320)
                     #rawCapture = PiRGBArray(camera, size=(480, 320))
                     camera.resolution = (1920, 1080)
@@ -184,6 +185,7 @@ def DoWork():
 
         try:
             with picamera.PiCamera() as camera:
+                camera.shutter_speed=100
                 camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                 time.sleep(0.1)
                 camera.capture(sImageFileName)
