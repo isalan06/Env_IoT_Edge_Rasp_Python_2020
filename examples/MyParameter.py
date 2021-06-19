@@ -259,7 +259,7 @@ def LoadParameter():
         C_EF_Function = config2['CameraIgnition'].getint('Parameter06')
         C_EF_X1 = config2['CameraIgnition'].getint('Parameter07')
         C_EF_X2 = config2['CameraIgnition'].getint('Parameter08')
-    else
+    else:
         CreateParameter2()
 
 def SaveParameter():
