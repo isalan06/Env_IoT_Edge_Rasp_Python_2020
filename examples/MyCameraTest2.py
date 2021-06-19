@@ -3,9 +3,19 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
+
+print('Input Shutter Speed: ')
+shutter_speed = int(input())
+print('Input ISO: ')
+iso = int(input())
+print('Input Rotation')
+rotation = int(input())
+
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.shutter_speed=6000000
+camera.shutter_speed=shutter_speed
+camera.iso=iso
+camera.rotation=rotation
 rawCapture = PiRGBArray(camera)
 # allow the camera to warmup
 time.sleep(0.1)
