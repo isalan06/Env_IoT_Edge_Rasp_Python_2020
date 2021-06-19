@@ -166,6 +166,7 @@ def CreateParameter2():
     config2['CameraSetting']['Parameter08'] = '0'
     config2['CameraSetting']['Parameter09'] = '0'
     config2['CameraSetting']['Parameter10'] = '0'
+    config2['CameraIgnition']={}
     config2['CameraIgnition']['Parameter01']=str(C_OD_Funciton)
     config2['CameraIgnition']['Parameter02']=str(C_OD_X1)
     config2['CameraIgnition']['Parameter03']=str(C_OD_Y1)
