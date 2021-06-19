@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.2.2'
+sSoftwareVersion='1.0.3.0'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -157,7 +157,9 @@ def DoWork():
                     #camera.shutter_speed=100
                     #camera.resolution = (480, 320)
                     #rawCapture = PiRGBArray(camera, size=(480, 320))
-                    camera.resolution = (1920, 1080)
+                    camera.shutter_speed=MyParameter.C_ShutterSpeed
+                    camera.rotation=MyParameter.C_Rotation
+                    camera.resolution = (1920, 1088)
                     rawCapture = PiRGBArray(camera, size=(1920, 1088))
                     # allow the camera to warmup
                     time.sleep(0.1)
@@ -185,7 +187,8 @@ def DoWork():
 
         try:
             with picamera.PiCamera() as camera:
-                #camera.shutter_speed=6000000
+                camera.shutter_speed=MyParameter.C_ShutterSpeed
+                camera.rotation=MyParameter.C_Rotation
                 camera.resolution = (MyParameter.CapturePictureRH,MyParameter.CapturePictureRV)
                 time.sleep(0.1)
                 camera.capture(sImageFileName)
