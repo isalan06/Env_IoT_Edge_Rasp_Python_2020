@@ -4,7 +4,7 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.1.0'
+sSoftwareVersion='1.0.1.1'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -334,6 +334,7 @@ def SaveParameter2():
         config2['CameraSetting']['Parameter08'] = '0'
         config2['CameraSetting']['Parameter09'] = '0'
         config2['CameraSetting']['Parameter10'] = '0'
+        config2['CameraIgnition']={}
         config2['CameraIgnition']['Parameter01']=str(C_OD_Funciton)
         config2['CameraIgnition']['Parameter02']=str(C_OD_X1)
         config2['CameraIgnition']['Parameter03']=str(C_OD_Y1)
