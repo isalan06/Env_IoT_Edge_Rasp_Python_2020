@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.7'
+sSoftwareVersion='1.0.7.8'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1417,6 +1417,7 @@ def GetCommandFromCloud():
                     print("Set Value Completely")
 
                 if _command == "SetCameraValue":
+                    print("Set Camera Value-0")
                     MyParameter.C_ShutterSpeed=data['CameraParameter']['ShutterSpeed']
                     MyParameter.C_ISO=data['CameraParameter']['ISO']
                     MyParameter.C_Rotation=data['CameraParameter']['Rotation']
@@ -1428,6 +1429,7 @@ def GetCommandFromCloud():
                     MyParameter.C_EF_Function=data['CameraParameter']['EF_Function']
                     MyParameter.C_EF_X1=data['CameraParameter']['EF_X1']
                     MyParameter.C_EF_X2=data['CameraParameter']['EF_X2']
+                    print("Set Camera Value-1")
 
                     MyParameter.SaveParameter2()
 
