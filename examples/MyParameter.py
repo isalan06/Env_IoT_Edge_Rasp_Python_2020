@@ -321,7 +321,7 @@ def SaveParameter2():
     global C_EF_X2
 
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
-    if os.path.isfile(filePathString):
+    if os.path.isfile(filePathString2):
         config2 = configparser.ConfigParser()
         config2['CameraSetting']={}
         config2['CameraSetting']['Parameter01'] = str(C_ISO)
