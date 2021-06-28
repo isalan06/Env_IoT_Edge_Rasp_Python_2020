@@ -24,6 +24,7 @@ out = cv2.VideoWriter(today + ".mp4", fourcc, fps_out, (1920, 1088))
 
 # allow the camera to warmup
 time.sleep(0.1)
+start = time.time()
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     # grab the raw NumPy array representing the image, then initialize the timestamp
@@ -33,6 +34,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     showString3 = "Time:" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     cv2.putText(image, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+    end = time.time()
+    showString2 = 'fps:' + int(round(1 / (end - start)))
+    cv2.putText(image, showString2, (0, 620), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
+    print(showString2)
+    start = time.time()
 
     # show the frame
     cv2.imshow("Frame", image)
