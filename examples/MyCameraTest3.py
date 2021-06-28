@@ -11,14 +11,16 @@ from imutils.video import VideoStream
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (1920, 1088)
-camera.framerate = 32
+camera.framerate = 20
 rawCapture = PiRGBArray(camera, size=(1920, 1088))
 
 #Define the codec
 today = time.strftime("%Y%m%d-%H%M%S")
-fps_out = 32
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter(today + ".avi", fourcc, fps_out, (1920, 1088))
+fps_out = 20
+#fourcc = cv2.VideoWriter_fourcc(*'XVID')
+#out = cv2.VideoWriter(today + ".avi", fourcc, fps_out, (1920, 1088))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter(today + ".mp4", fourcc, fps_out, (1920, 1088))
 
 # allow the camera to warmup
 time.sleep(0.1)
