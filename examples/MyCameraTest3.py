@@ -28,6 +28,8 @@ time.sleep(0.1)
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     # grab the raw NumPy array representing the image, then initialize the timestamp
     # and occupied/unoccupied text
+    showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
     image = frame.array
     # show the frame
     cv2.imshow("Frame", image)
