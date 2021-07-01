@@ -27,7 +27,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.0.1'
+sSoftwareVersion='1.0.0.2'
 
 sFileUpdateStatus='Stop'
 
@@ -85,12 +85,7 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             print('File ID: %s' % _file.get('id'))
             sFileUpdateStatus='Running'
 
-            if deletefile == True:
-                try: 
-                    os.remove(fileString)
-                    print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
-                except:
-                    print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
+            
         
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
@@ -99,6 +94,15 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
         print(e)
         print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
         sFileUpdateStatus='Stop'
+
+    if deletefile == True:
+        try: 
+            os.remove(fileString)
+            print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
+        except:
+            print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
+
+
 
 def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
     global sFileUpdateStatus
@@ -147,12 +151,7 @@ def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
             print('File ID: %s' % _file.get('id'))
             sFileUpdateStatus='Running'
 
-            if deletefile == True:
-                try: 
-                    os.remove(fileString)
-                    print(ANSI_GREEN + "    Delete Video Success" + ANSI_OFF)
-                except:
-                    print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
+            
         
         else:
             print(ANSI_YELLOW + "    There is no update folder ID" + ANSI_OFF)
@@ -161,5 +160,12 @@ def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
         print(e)
         print("\033[1;31mUpdate Video To Google Drive Failure\033[0m")
         sFileUpdateStatus='Stop'
+
+    if deletefile == True:
+        try: 
+            os.remove(fileString)
+            print(ANSI_GREEN + "    Delete Video Success" + ANSI_OFF)
+        except:
+            print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
 
 
