@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.0.7.8'
+sSoftwareVersion='1.1.0.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1331,13 +1331,11 @@ def GetCommandFromCloud():
 
     #Update Sensors Information Timer
     start_UpdateSensors_time=time.time()
-
-    #print("Get Command From Cloud")
     
     while bRunning:
 
-        url = "https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec"
-
+        #url = "https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec"
+        url = "https://script.google.com/macros/s/AKfycbzydu9vOcTly8nIuw11aqe52KD7Tp3xBaL0G6MyeXF2onVbs9E/exec"
         
 
         #JSON
@@ -1359,11 +1357,12 @@ def GetCommandFromCloud():
         #Update Local Sensors Information Timer Check
         end_time = time.time()
         update_intervalTime = end_time - start_UpdateSensors_time
-        if ((update_intervalTime < 0.0) or (update_intervalTime >= MyParameter.UpdateFValue)):
-            start_UpdateSensors_time=time.time()
-            UpdateLocalSensorsInformation()
-            UpdateLocalPictureInformation()
-        else:
+        #if ((update_intervalTime < 0.0) or (update_intervalTime >= MyParameter.UpdateFValue)):
+        #    start_UpdateSensors_time=time.time()
+        #    UpdateLocalSensorsInformation()
+        #    UpdateLocalPictureInformation()
+        #else:
+        if ((update_intervalTime < 0.0) or (update_intervalTime >= 5.0)):
             try:
                 TransferJSONData=json.dumps(InformationData)
 
@@ -1509,6 +1508,70 @@ def GetCommandFromCloud():
         time.sleep(3.0)
 
         DIO_Green(False)
+
+#endregion
+
+#Update Information To Cloud
+#region Update Information To Cloud
+
+def UpdateInformationToCloud():
+    global bRunning
+    global bNetConnected
+    global bRebootTrigger
+    global bRecordVibration
+
+    #Parameter
+    global VibrationWarningValue
+    global VibrationAlarmValue
+    global FireWarningTempValue
+    global FireWarningCountValue
+    global FireAlarmTempValue
+    global FireAlarmCountValue
+    global CapturePictureRH
+    global CapturePictureRV
+    global CaptureVideoSecond
+    global SensorsFValue
+    global CameraFValue
+    global UpdateFValue
+    global PhotoFolderID
+    global VideoFolderID
+
+    global bCameraUsed
+    global ftp
+
+    global sVibrationStatus
+    global sFireDetectStatus
+    global sVibrationStatus_Keep
+
+    global local_mac_address
+
+    #Manual Flag
+    global bManualCaptureImage
+    global bManualCaptureVideo
+    global bManualVibrationStatus
+    global bManualFireDetectStatus
+
+    global bFireAlarmUpdateTrigger
+    global bVibrationAlarmUpdateTrigger
+    global bFireWarningStatusTrigger
+    global bVibrationWarningStatusTrigger
+    global bFireWarningStatusTriggerKeep
+    global bVibrationWarningStatusTriggerKeep
+
+    #Update Sensors Information Timer
+    start_UpdateSensors_time=time.time()
+
+    while bRunning:
+        
+        #Update Local Sensors Information Timer Check
+        end_time = time.time()
+        update_intervalTime = end_time - start_UpdateSensors_time
+        if ((update_intervalTime < 0.0) or (update_intervalTime >= MyParameter.UpdateFValue)):
+            start_UpdateSensors_time=time.time()
+            UpdateLocalSensorsInformation()
+            UpdateLocalPictureInformation()
+
+        time.sleep(2.0)
 
 #endregion
 
@@ -1872,12 +1935,14 @@ CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
+UpdateInformationToCloudThread = threading.Thread(target=UpdateInformationToCloud)
 
 
 CameraThread.start()
 GetLocalSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
+UpdateInformationToCloudThread.start()
 
 try:
     while bRunning:
