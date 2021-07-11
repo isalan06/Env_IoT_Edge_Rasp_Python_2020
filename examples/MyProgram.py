@@ -1385,7 +1385,7 @@ def GetCommandFromCloud():
                     DIO_Green()
                 except BaseException as error:
                     bNetConnected = False
-                    print("\033[1;31mGet Command Failure\033[0m")
+                    print("\033[1;31mGet Command Failure - Connection Error\033[0m")
 
                 if _command == "RecordVibration":
                     bRecordVibration = True
