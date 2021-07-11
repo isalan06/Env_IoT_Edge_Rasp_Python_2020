@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.0.0'
+sSoftwareVersion='1.1.0.1'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1191,7 +1191,7 @@ def UpdateLocalSensorsInformation():
                 i = 0
                 while i < 3:
                     try:
-                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=10)
                         print("\033[1;32mUpdate Sensors Information Success\033[0m")
                         break
                     except requests.exceptions.RequestException as e:
@@ -1231,7 +1231,7 @@ def UpdateLocalPictureInformation():
             i = 0
             while i < 3:
                 try:
-                    r = requests.post('https://script.google.com/macros/s/AKfycbx58QrAGjqzD_-v4k69IQZfoT86qCaCjyb5dGkJcmxV6lsCr-0/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=5)
+                    r = requests.post('https://script.google.com/macros/s/AKfycbx58QrAGjqzD_-v4k69IQZfoT86qCaCjyb5dGkJcmxV6lsCr-0/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=10)
                     print(ANSI_CYAN + "Update Local Picture Information Success" + ANSI_OFF)
                     break
                 except requests.exceptions.RequestException as e:
@@ -1373,7 +1373,7 @@ def GetCommandFromCloud():
                     i = 0
                     while i < 3:
                         try:
-                            response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=5)
+                            response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
                             data = response.json()
                             break
                         except requests.exceptions.RequestException as e:
