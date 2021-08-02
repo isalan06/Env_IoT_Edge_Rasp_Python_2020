@@ -137,6 +137,7 @@ def CheckObjectDetect(gray_image):
     if (_width > 0) and (_height > 0):
         crop_image = gray_image[_y:_y+_height, _x:_x+_width]
         CropImageGrayMean = crop_image.mean()
+        print(CropImageGrayMean)
 
 def DoWork():
     global bCameraUsed
