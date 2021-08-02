@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.0'
+sSoftwareVersion='1.0.3.1'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -55,6 +55,7 @@ sSmallImageData2=''
 iSmallImageIndex=-1
 sSmallImageTime='NA'
 bSmallImageTrigger = 0
+CropImageGrayMean=0.0
 
 def frame2base64(frame):
     global sSmallImageData
@@ -126,6 +127,17 @@ def CreateVideoFileName(folderString, nowtime, baseFolderString="/home/pi/Pictur
     bCaptureVideoTrigger = True
     return filename
 
+def CheckObjectDetect(gray_image):
+    global CropImageGrayMean
+
+    _x = MyParameter.C_OD_X1
+    _y = MyParameter.C_OD_Y1
+    _width = MyParameter.C_OD_X2 - MyParameter.C_OD_X1
+    _height = MyParameter.C_OD_Y2 - MyParameter.C_OD_Y1
+    if (_width > 0) and (_height > 0):
+        crop_image = gray_image[_y:_y+_height, _x:_x+_width]
+        CropImageGrayMean = crop_image.mean()
+
 def DoWork():
     global bCameraUsed
     global sImageFileName
@@ -169,6 +181,7 @@ def DoWork():
 
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
+                    CheckObjectDetect(gray_image)
                     new_image = cv2.resize(image, (480, 320), interpolation=cv2.INTER_AREA)
                     print(ImageGrayMean)
                     frame2base64(new_image)
