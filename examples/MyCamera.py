@@ -56,6 +56,7 @@ iSmallImageIndex=-1
 sSmallImageTime='NA'
 bSmallImageTrigger = 0
 CropImageGrayMean=0.0
+CropImageCalculateValue=0.0
 
 def frame2base64(frame):
     global sSmallImageData
@@ -129,6 +130,7 @@ def CreateVideoFileName(folderString, nowtime, baseFolderString="/home/pi/Pictur
 
 def CheckObjectDetect(gray_image):
     global CropImageGrayMean
+    global CropImageCalculateValue
 
     _x = MyParameter.C_OD_X1
     _y = MyParameter.C_OD_Y1
@@ -138,6 +140,14 @@ def CheckObjectDetect(gray_image):
         crop_image = gray_image[_y:_y+_height, _x:_x+_width]
         CropImageGrayMean = crop_image.mean()
         print(CropImageGrayMean)
+        size = _width * _height
+        bufferValue = 0.0
+        for y in range(0, _height):
+            for x in range(1, _width):
+                bufferValue = bufferValue + ((crop_image[y, x] - crop_image[y, x-1])/ size)
+        CropImageCalculateValue = bufferValue
+        print(CropImageCalculateValue)
+
 
 def DoWork():
     global bCameraUsed
