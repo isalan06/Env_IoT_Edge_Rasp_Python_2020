@@ -144,7 +144,7 @@ def CheckObjectDetect(gray_image):
         bufferValue = 0.0
         for y in range(0, _height):
             for x in range(1, _width):
-                bufferValue = bufferValue + ((crop_image[y, x] - crop_image[y, x-1])/ size)
+                bufferValue = bufferValue + ((crop_image[y, x] - crop_image[y, x-1])/ 10.0)
         CropImageCalculateValue = bufferValue
         print(CropImageCalculateValue)
 
