@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.1'
+sSoftwareVersion='1.0.3.2'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -128,7 +128,7 @@ def CreateVideoFileName(folderString, nowtime, baseFolderString="/home/pi/Pictur
     bCaptureVideoTrigger = True
     return filename
 
-def CheckObjectDetect(gray_image):
+def CheckObjectDetect(gray_image, color_image):
     global CropImageGrayMean
     global CropImageCalculateValue
 
@@ -139,14 +139,32 @@ def CheckObjectDetect(gray_image):
     if (_width > 0) and (_height > 0):
         crop_image = gray_image[_y:_y+_height, _x:_x+_width]
         CropImageGrayMean = crop_image.mean()
-        print(CropImageGrayMean)
+        crop_colorimage = color_image[_y:_y+_height, _x:_x+_width]
         size = _width * _height
         bufferValue = 0.0
+        RValue = 0
+        GValue = 0
+        BValue = 0
         for y in range(0, _height):
-            for x in range(1, _width):
-                bufferValue = bufferValue + ((float)(crop_image[y, x] - crop_image[y, x-1])/ 100.0)
-        CropImageCalculateValue = bufferValue
+            for x in range(0, _width):
+                if x > 0 :
+                    bufferValue = bufferValue + (((float)crop_image[y, x] - (float)crop_image[y, x-1])/ 100.0)
+                RValue = RValue + (int)crop_colorimage[y, x, 2]
+                GValue = GValue + (int)crop_colorimage[y, x, 1]
+                BValue = BValue + (int)crop_colorimage[y, x, 0]
+        CropImageCalculateValue = bufferValue 
+
+        RValue = RValue / 100
+        GValue = GValue / 100
+        BValue = BValue / 100
+
+        print('--------------------')
+        print(CropImageGrayMean)
         print(CropImageCalculateValue)
+        print(RValue)
+        print(GValue)
+        print(BValue)
+        print('--------------------')
 
 
 def DoWork():
@@ -192,7 +210,7 @@ def DoWork():
 
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
-                    CheckObjectDetect(gray_image)
+                    CheckObjectDetect(gray_image, image)
                     new_image = cv2.resize(image, (480, 320), interpolation=cv2.INTER_AREA)
                     print(ImageGrayMean)
                     frame2base64(new_image)
