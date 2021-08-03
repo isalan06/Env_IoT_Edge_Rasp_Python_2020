@@ -148,10 +148,10 @@ def CheckObjectDetect(gray_image, color_image):
         for y in range(0, _height):
             for x in range(0, _width):
                 if x > 0 :
-                    bufferValue = bufferValue + (((float)crop_image[y, x] - (float)crop_image[y, x-1])/ 100.0)
-                RValue = RValue + (int)crop_colorimage[y, x, 2]
-                GValue = GValue + (int)crop_colorimage[y, x, 1]
-                BValue = BValue + (int)crop_colorimage[y, x, 0]
+                    bufferValue = bufferValue + ((float(crop_image[y, x]) - float(crop_image[y, x-1]))/ 100.0)
+                RValue = RValue + int(crop_colorimage[y, x, 2])
+                GValue = GValue + int(crop_colorimage[y, x, 1])
+                BValue = BValue + int(crop_colorimage[y, x, 0])
         CropImageCalculateValue = bufferValue 
 
         RValue = RValue / 100
