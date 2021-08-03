@@ -4,7 +4,7 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.1.1'
+sSoftwareVersion='1.0.1.2'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -39,6 +39,11 @@ C_EF_Function=0
 C_EF_X1=0
 C_EF_X2=0
 
+C_OD_G_Mean=0.0
+C_OD_G_Light=0.0
+C_OD_G_R=0.0
+C_OD_G_G=0.0
+C_OD_G_B=0.0
 
 
 #Parameter function           
@@ -73,6 +78,12 @@ def CreateParameter():
     global C_EF_Function
     global C_EF_X1
     global C_EF_X2
+
+    global C_OD_G_Mean
+    global C_OD_G_Light
+    global C_OD_G_R
+    global C_OD_G_G
+    global C_OD_G_B
 
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
@@ -150,6 +161,12 @@ def CreateParameter2():
     global C_EF_X1
     global C_EF_X2
 
+    global C_OD_G_Mean
+    global C_OD_G_Light
+    global C_OD_G_R
+    global C_OD_G_G
+    global C_OD_G_B
+
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
@@ -175,11 +192,11 @@ def CreateParameter2():
     config2['CameraIgnition']['Parameter06']=str(C_EF_Function)
     config2['CameraIgnition']['Parameter07']=str(C_EF_X1)
     config2['CameraIgnition']['Parameter08']=str(C_EF_X2)
-    config2['CameraIgnition']['Parameter09']='0'
-    config2['CameraIgnition']['Parameter10']='0'
-    config2['CameraIgnition']['Parameter11']='0'
-    config2['CameraIgnition']['Parameter12']='0'
-    config2['CameraIgnition']['Parameter13']='0'
+    config2['CameraIgnition']['Parameter09']=str(C_OD_G_Mean)
+    config2['CameraIgnition']['Parameter10']=str(C_OD_G_Light)
+    config2['CameraIgnition']['Parameter11']=str(C_OD_G_R)
+    config2['CameraIgnition']['Parameter12']=str(C_OD_G_G)
+    config2['CameraIgnition']['Parameter13']=str(C_OD_G_B)
     config2['CameraIgnition']['Parameter14']='0'
     config2['CameraIgnition']['Parameter15']='0'
     config2['CameraIgnition']['Parameter16']='0'
@@ -190,7 +207,6 @@ def CreateParameter2():
 
     with open(filePathString2, 'w') as configfile2:
         config2.write(configfile2)
-
 
 def LoadParameter():
     #Parameter
@@ -221,6 +237,12 @@ def LoadParameter():
     global C_EF_Function
     global C_EF_X1
     global C_EF_X2
+
+    global C_OD_G_Mean
+    global C_OD_G_Light
+    global C_OD_G_R
+    global C_OD_G_G
+    global C_OD_G_B
 
     filePathString = "/home/pi/Parameter/Parameter.ini"
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
@@ -260,6 +282,11 @@ def LoadParameter():
         C_EF_Function = config2['CameraIgnition'].getint('Parameter06')
         C_EF_X1 = config2['CameraIgnition'].getint('Parameter07')
         C_EF_X2 = config2['CameraIgnition'].getint('Parameter08')
+        C_OD_G_Mean = config2['CameraIgnition'].getfloat('Parameter09')
+        C_OD_G_Light = config2['CameraIgnition'].getfloat('Parameter10')
+        C_OD_G_R = config2['CameraIgnition'].getfloat('Parameter11')
+        C_OD_G_G = config2['CameraIgnition'].getfloat('Parameter12')
+        C_OD_G_B = config2['CameraIgnition'].getfloat('Parameter13')
     else:
         CreateParameter2()
 
@@ -320,6 +347,12 @@ def SaveParameter2():
     global C_EF_X1
     global C_EF_X2
 
+    global C_OD_G_Mean
+    global C_OD_G_Light
+    global C_OD_G_R
+    global C_OD_G_G
+    global C_OD_G_B
+
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
     if os.path.isfile(filePathString2):
         config2 = configparser.ConfigParser()
@@ -343,11 +376,11 @@ def SaveParameter2():
         config2['CameraIgnition']['Parameter06']=str(C_EF_Function)
         config2['CameraIgnition']['Parameter07']=str(C_EF_X1)
         config2['CameraIgnition']['Parameter08']=str(C_EF_X2)
-        config2['CameraIgnition']['Parameter09']='0'
-        config2['CameraIgnition']['Parameter10']='0'
-        config2['CameraIgnition']['Parameter11']='0'
-        config2['CameraIgnition']['Parameter12']='0'
-        config2['CameraIgnition']['Parameter13']='0'
+        config2['CameraIgnition']['Parameter09']=str(C_OD_G_Mean)
+        config2['CameraIgnition']['Parameter10']=str(C_OD_G_Light)
+        config2['CameraIgnition']['Parameter11']=str(C_OD_G_R)
+        config2['CameraIgnition']['Parameter12']=str(C_OD_G_G)
+        config2['CameraIgnition']['Parameter13']=str(C_OD_G_B)
         config2['CameraIgnition']['Parameter14']='0'
         config2['CameraIgnition']['Parameter15']='0'
         config2['CameraIgnition']['Parameter16']='0'

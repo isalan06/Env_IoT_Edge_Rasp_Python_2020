@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.0.1'
+sSoftwareVersion='1.1.0.2'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1223,6 +1223,19 @@ def UpdateLocalPictureInformation():
             InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
             #print(MyCamera.sSmallImageTime)
 
+            SetKey="ODParameter"
+            InformationData[SetKey]={}
+            InformationData[SetKey]['ODGMean']=MyParameter.C_OD_G_Mean
+            InformationData[SetKey]['ODGLight']=MyParameter.C_OD_G_Light
+            InformationData[SetKey]['ODGR']=MyParameter.C_OD_G_R
+            InformationData[SetKey]['ODGG']=MyParameter.C_OD_G_G
+            InformationData[SetKey]['ODGB']=MyParameter.C_OD_G_B
+            InformationData[SetKey]['ODMean']=MyCamera.CropImageGrayMean
+            InformationData[SetKey]['ODLight']=MyCamera.CropImageCalculateValue
+            InformationData[SetKey]['ODR']=MyCamera.CropRCalculateValue
+            InformationData[SetKey]['ODG']=MyCamera.CropGCalculateValue
+            InformationData[SetKey]['ODB']=MyCamera.CropBCalculateValue
+
             TransferJSONData=json.dumps(InformationData)
 
             auth=('token', 'example')
@@ -1431,6 +1444,17 @@ def GetCommandFromCloud():
                     MyParameter.SaveParameter2()
 
                     print("Set Camera Value Completely")
+
+                if _command == "TeachOD":
+                    MyParameter.C_OD_G_Mean=MyCamera.CropImageGrayMean
+                    MyParameter.C_OD_G_Light=MyCamera.CropImageCalculateValue
+                    MyParameter.C_OD_G_R=MyCamera.CropRCalculateValue
+                    MyParameter.C_OD_G_G=MyCamera.CropGCalculateValue
+                    MyParameter.C_OD_G_B=MyCamera.CropBCalculateValue
+
+                    MyParameter.SaveParameter2()
+
+                    print("Execute Command TeachOD Completely")
 
                 #CapturePicture
                 #region
