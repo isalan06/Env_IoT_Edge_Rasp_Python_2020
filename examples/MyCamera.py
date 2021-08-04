@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.2'
+sSoftwareVersion='1.0.3.3'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -60,6 +60,7 @@ CropImageCalculateValue=0.0
 CropRCalculateValue=0
 CropGCalculateValue=0
 CropBCalculateValue=0
+fODResult=1.0
 
 def frame2base64(frame):
     global sSmallImageData
@@ -137,6 +138,7 @@ def CheckObjectDetect(gray_image, color_image):
     global CropRCalculateValue
     global CropGCalculateValue
     global CropBCalculateValue
+    global fODResult
 
     _x = MyParameter.C_OD_X1
     _y = MyParameter.C_OD_Y1
@@ -167,13 +169,31 @@ def CheckObjectDetect(gray_image, color_image):
         CropGCalculateValue=GValue
         CropBCalculateValue=BValue
 
+        if MyParameter.C_OD_G_R != 0:
+            G_P1 = MyParameter.C_OD_G_G / MyParameter.C_OD_G_R
+            G_P2 = MyParameter.C_OD_G_B / MyParameter.C_OD_G_R
+            if RValue != 0:
+                R_P1 = GValue / RValue
+                R_P2 = BValue / RValue
+
+                Result_P1 = G_P1 - R_P1
+                Result_P2 = G_P2 - R_P2
+                if Result_P1 < 0:
+                    Result_P1 = Result_P1 * -1.0
+                if Result_P2 < 0:
+                    Result_P2 = Result_P2 * -1.0
+                fODResult = 1.0 - Result_P1 - Result_P2
+
         print('--------------------')
         print(CropImageGrayMean)
         print(CropImageCalculateValue)
         print(RValue)
         print(GValue)
         print(BValue)
+        print(fODResult)
         print('--------------------')
+
+
 
 
 def DoWork():
