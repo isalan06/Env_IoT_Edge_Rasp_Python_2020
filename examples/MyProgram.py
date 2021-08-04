@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.0.2'
+sSoftwareVersion='1.1.0.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1001,6 +1001,7 @@ def UpdateLocalSensorsInformation():
                 InformationData["Gateway Time"]=datetime.now().strftime("%Y%m%d%H%M%S")	
                 InformationData["Command"]="UpdateStatus"
                 InformationData["MachineIP"]=hostip
+                InformationData["ObjectDetectResult"]=MyCamera.fODResult
                 SetKey="Parameter"
                 InformationData[SetKey]={}
                 InformationData[SetKey]['VibrationWarningValue']=MyParameter.VibrationWarningValue
