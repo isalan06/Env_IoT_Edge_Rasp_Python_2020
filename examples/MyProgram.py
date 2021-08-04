@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.0.3'
+sSoftwareVersion='1.1.0.4'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1236,6 +1236,7 @@ def UpdateLocalPictureInformation():
             InformationData[SetKey]['ODR']=MyCamera.CropRCalculateValue
             InformationData[SetKey]['ODG']=MyCamera.CropGCalculateValue
             InformationData[SetKey]['ODB']=MyCamera.CropBCalculateValue
+            InformationData[SetKey]['ODResult']=MyCamera.fODResult
 
             TransferJSONData=json.dumps(InformationData)
 
