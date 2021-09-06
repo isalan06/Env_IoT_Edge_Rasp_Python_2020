@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.0.4'
+sSoftwareVersion='1.1.1.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -483,6 +483,9 @@ DISK_total = ''
 DISK_used = ''
 DISK_perc = ''
 
+# Reboot Flag
+rebootTrigger = 0
+
 #Vibration - Now make the 6050 up as it starts in sleep mode
 vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
 
@@ -899,6 +902,8 @@ def GetSensorsData():
         checkRaspberryStatus()
 
         bGetData = True
+
+
 
         # Delay for getting Vibration Sensors (0.1 sec)
         time.sleep(0.1)
@@ -1973,6 +1978,15 @@ UpdateInformationToCloudThread.start()
 try:
     while bRunning:
         CheckCameraTimeout()
+
+        if datetime.now().strftime("%H") == 23:
+            rebootTrigger = 1
+        if (datetime.now().strftime("%H") == 1) and (rebootTrigger == 1):
+            rebootTrigger = 0
+            bRebootTrigger = True
+            bRunning = False
+
+
 
         time.sleep(1.0)
     #print("Waiting for Finished!!")
