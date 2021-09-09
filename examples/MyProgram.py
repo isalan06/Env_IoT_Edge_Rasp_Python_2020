@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.0'
+sSoftwareVersion='1.1.1.1'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1979,9 +1979,9 @@ try:
     while bRunning:
         CheckCameraTimeout()
 
-        if datetime.now().strftime("%H") == 23:
+        if datetime.now().strftime("%H") == "23":
             rebootTrigger = 1
-        if (datetime.now().strftime("%H") == 1) and (rebootTrigger == 1):
+        if (datetime.now().strftime("%H") == "1") and (rebootTrigger == 1):
             rebootTrigger = 0
             bRebootTrigger = True
             bRunning = False
