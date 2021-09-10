@@ -1979,9 +1979,10 @@ try:
     while bRunning:
         CheckCameraTimeout()
 
-        if datetime.now().strftime("%H") == "23":
+        if (datetime.now().strftime("%H") != "22") and (rebootTrigger == 0):
+            print("Set Reboot Trigger")
             rebootTrigger = 1
-        if (datetime.now().strftime("%H") == "1") and (rebootTrigger == 1):
+        if (datetime.now().strftime("%H") == "22") and (rebootTrigger == 1):
             rebootTrigger = 0
             bRebootTrigger = True
             bRunning = False
