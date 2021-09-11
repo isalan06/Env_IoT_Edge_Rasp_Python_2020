@@ -18,6 +18,8 @@ def show_window():
 def hide_window():
     window.hide()
 
+print("AAAAAA")
+
 app = App(title="Hello world")
 
 window = Window(app, title="2nd Window")
@@ -43,3 +45,7 @@ close_text2 = PushButton(app2, command=close_app2, text="Close", grid=[0,0])
 
 #app2.full_screen = True
 app2.display()
+
+print("BBBBB")
+
+input()
