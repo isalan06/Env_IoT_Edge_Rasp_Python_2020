@@ -23,7 +23,7 @@ my_cat = Picture(app, image="test.jpg", width=200, height = 100)
 
 app.display()
 
-app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
+app2 = App(title="My second GUI app", width=300, height = 200)
 
 close_text2 = PushButton(app2, command=close_app2, text="Close")
 
