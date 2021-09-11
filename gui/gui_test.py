@@ -21,8 +21,8 @@ def hide_window():
 app = App(title="Hello world")
 
 window = Window(app, title="2nd Window")
-hide_test = PushButton(window, command="hide_window", text="Close")
 window.hide()
+hide_test = PushButton(window, command="hide_window", text="Close")
 
 welcome_message = Text(app, text="Welcome to my app", size=40, font="Times New Roman", color="lightblue")
 my_name = TextBox(app, text="Type here", width=100)
