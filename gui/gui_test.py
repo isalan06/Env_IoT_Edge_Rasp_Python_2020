@@ -1,4 +1,4 @@
-from guizero import App, Text, TextBox, PushButton, Slider, Picture
+from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window
 
 def say_my_name():
     welcome_message.value = my_name.value
@@ -12,11 +12,22 @@ def close_app():
 def close_app2():
     app2.destroy()
 
+def show_window():
+    window.show()
+
+def hide_window():
+    window.hide()
+
 app = App(title="Hello world")
+
+window = Window(title="2nd Window")
+hide_test = PushButton(window, command="hide_window", text="Close")
+window.hide()
 
 welcome_message = Text(app, text="Welcome to my app", size=40, font="Times New Roman", color="lightblue")
 my_name = TextBox(app, text="Type here", width=100)
 update_text = PushButton(app, command=say_my_name, text="Display my name")
+show_text = PushButton(app, command=show_window, text="Popup Window")
 close_text = PushButton(app, command=close_app, text="Close")
 text_size = Slider(app, command=change_text_size, start = 10, end=80)
 my_cat = Picture(app, image="test.jpg", width=200, height = 100)
