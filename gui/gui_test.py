@@ -22,7 +22,7 @@ app = App(title="Hello world")
 
 window = Window(app, title="2nd Window")
 window.hide()
-hide_test = PushButton(window, command="hide_window", text="Close")
+
 
 welcome_message = Text(app, text="Welcome to my app", size=40, font="Times New Roman", color="lightblue")
 my_name = TextBox(app, text="Type here", width=100)
@@ -32,11 +32,14 @@ close_text = PushButton(app, command=close_app, text="Close")
 text_size = Slider(app, command=change_text_size, start = 10, end=80)
 my_cat = Picture(app, image="test.jpg", width=200, height = 100)
 
+hide_test = PushButton(window, command="hide_window", text="Close")
+
 app.display()
 
-app2 = App(title="My second GUI app", width=300, height = 200)
+app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
+app2.set_full_screen()
 
-close_text2 = PushButton(app2, command=close_app2, text="Close")
+close_text2 = PushButton(app2, command=close_app2, text="Close", grid=[0,0])
 
-app2.full_screen = True
+#app2.full_screen = True
 app2.display()
