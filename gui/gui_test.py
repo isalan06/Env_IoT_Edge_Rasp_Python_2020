@@ -37,7 +37,7 @@ hide_test = PushButton(window, command="hide_window", text="Close")
 app.display()
 
 app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
-app2.set_full_screen()
+app2.set_full_screen('Esc')
 
 close_text2 = PushButton(app2, command=close_app2, text="Close", grid=[0,0])
 
