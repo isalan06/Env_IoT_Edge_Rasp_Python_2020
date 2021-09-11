@@ -32,7 +32,7 @@ update_text = PushButton(app, command=say_my_name, text="Display my name")
 show_text = PushButton(app, command=show_window, text="Popup Window")
 close_text = PushButton(app, command=close_app, text="Close")
 text_size = Slider(app, command=change_text_size, start = 10, end=80)
-my_cat = Picture(app, image="test.jpg", width=200, height = 100)
+my_cat = Picture(app, image="/home/pi/Pictures/testshow.jpg", width=200, height = 100)
 
 hide_test = PushButton(window, command="hide_window", text="Close")
 
