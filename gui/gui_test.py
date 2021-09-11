@@ -1,4 +1,4 @@
-from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window
+from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Combo
 
 def say_my_name():
     welcome_message.value = my_name.value
@@ -18,7 +18,7 @@ def show_window():
 def hide_window():
     window.hide()
 
-print("AAAAAA")
+print("Start")
 
 app = App(title="Hello world")
 
@@ -42,10 +42,12 @@ app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
 app2.set_full_screen('Esc')
 
 close_text2 = PushButton(app2, command=close_app2, text="Close", grid=[0,0])
+film_description = Text(app2, text="Which film?", grid=[0,1], align="left")
+film_choice = Combo(app2, options=["Start Wars", "Frozen", "Lion King"], grid=[1,1], align="left")
+
 
 #app2.full_screen = True
 app2.display()
 
-print("BBBBB")
+print("Finish")
 
-input()
