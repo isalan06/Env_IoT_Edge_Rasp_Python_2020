@@ -20,7 +20,7 @@ def hide_window():
 
 app = App(title="Hello world")
 
-window = Window(title="2nd Window")
+window = Window(app, title="2nd Window")
 hide_test = PushButton(window, command="hide_window", text="Close")
 window.hide()
 
