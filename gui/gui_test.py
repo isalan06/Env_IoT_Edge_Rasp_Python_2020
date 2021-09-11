@@ -9,6 +9,9 @@ def change_text_size(slider_value):
 def close_app():
     app.destroy()
 
+def close_app2():
+    app2.destroy()
+
 app = App(title="Hello world")
 
 welcome_message = Text(app, text="Welcome to my app", size=40, font="Times New Roman", color="lightblue")
@@ -22,4 +25,7 @@ app.display()
 
 app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
 
+close_text2 = PushButton(app2, command=close_app2, text="Close")
+
+app2.set_full_screen('Esc')
 app2.display()
