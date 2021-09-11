@@ -27,5 +27,5 @@ app2 = App(title="My second GUI app", width=300, height = 200, layout="grid")
 
 close_text2 = PushButton(app2, command=close_app2, text="Close")
 
-app2.set_full_screen('Esc')
+app2.full_screen = True
 app2.display()
