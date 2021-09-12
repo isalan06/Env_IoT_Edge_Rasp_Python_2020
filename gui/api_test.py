@@ -12,8 +12,7 @@ def index():
 def qrcode():
     print('get qrcode')
     print(request)
-    print(request.data['qrcode'])
-    print(request.data['type'])
+
 
     return "OK"
 
