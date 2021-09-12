@@ -1,5 +1,6 @@
 #!flask/bin/python
 from flask import Flask
+from flask import request
 
 app = Flask(__name__)
 
@@ -10,7 +11,8 @@ def index():
 @app.route('/qrcode', methods=['POST'])
 def qrcode():
     print('get qrcode')
-    return request.values
+    print(request.values)
+    return "OK"
 
 
 if __name__ == '__main__':
