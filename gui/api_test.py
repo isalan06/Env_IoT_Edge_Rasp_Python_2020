@@ -12,8 +12,8 @@ def index():
 def qrcode():
     print('get qrcode')
     print(request)
-    print(request.values)
-    print(request.form)
+    print(request.data)
+    print(request.form['qrcode'])
 
     return "OK"
 
