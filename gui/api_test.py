@@ -11,9 +11,9 @@ def index():
 @app.route('/qrcode', methods=['POST'])
 def qrcode():
     print('get qrcode')
-    print(request)
-    print(request.data)
-    print(request.get_json())
+    data = request.get_json()
+    print(data['rqcode'])
+    print(data['type'])
 
 
     return "OK"
