@@ -7,5 +7,11 @@ app = Flask(__name__)
 def index():
     return "Hello, World!"
 
+@app.route('/qrcode', methods=['POST'])
+def qrcode():
+    print('get qrcode')
+    return request.values
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', debug=True)
+    app.run(host='192.168.10.101', debug=True)
