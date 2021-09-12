@@ -15,8 +15,9 @@ def qrcode():
     data = request.get_json()
     if data and "qrcode" in data:
         qrcode = data["qrcode"]
-    print(qrcode)
-
+    temperature = data["temperature"]
+    print('ID:' + qrcode)
+    print('Temperature:' + str(temperature))
 
     return "OK"
 
