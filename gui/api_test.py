@@ -13,7 +13,7 @@ def qrcode():
     print('get qrcode')
     print(request)
     print(request.data)
-    print(request.form.get('qrcode'))
+    print(request.get_json())
 
 
     return "OK"
