@@ -1,4 +1,4 @@
-from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox
+from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox, Box
 from flask import Flask
 from flask import request
 import threading
@@ -54,7 +54,7 @@ def ExecuteProcedure():
             window_1.set_full_screen('Esc')
             window_1.show()
         else:
-            print('Get Location Error')
+            print('Get Location Error: ' + data_location['ErrorMsg'])
     except:
         print('Get Location Error')
 
@@ -172,7 +172,13 @@ def Window3Next():
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
         data_person = response.json()
-        print(data_person)
+        #print(data_person)
+        if data_person['ErrorMsg'] == '':
+            window_3.hide()
+            window_main.set_full_screen('Esc')
+            window_main.show()
+        else:
+            print('Get Person Information Error: ' + data_person['ErrorMsg'])
     except:
         print('Get Person Information Error')
 
@@ -180,6 +186,9 @@ def Window3Next():
 
 def Window3Cancel():
     window_3.hide()
+
+def WindowMainClose():
+    window_main.hide()
 
 print('TABF KIOSK Program start...')
 
@@ -198,6 +207,9 @@ window_2.hide()
 
 window_3 = Window(app, title="資訊確認", layout="grid", width=500, height=300)
 window_3.hide()
+
+window_main = Window(app, title="報到資訊", layout="grid", width=500, height=300)
+window_main.hide()
 
 _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
 _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
@@ -222,6 +234,12 @@ _win3_title3 = Text(window_3, text="Phase Name: ", size=16, font="Times New Roma
 _win3_value3 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,3], align="left")
 _win_Next3 = PushButton(window_3, grid=[0,4], width=15, command=Window3Next, text='Next', align="left")
 _win_Cancel3 = PushButton(window_3, grid=[0,5], width=15, command=Window3Cancel, text='Cancel', align="left")
+
+_box1 = Box(window_main, layout="grid", width=800, height=40, grid=[0,0])
+_box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
+_box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
+_win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+_win_CancelMain = PushButton(_box1, grid=[1,0], width=30, command=WindowMainClose, text='關閉', align="left")
 
 app.display()
 
