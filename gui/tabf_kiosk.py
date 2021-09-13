@@ -175,7 +175,7 @@ _win_Cancel1 = PushButton(window_1, grid=[0,3], width=40, command=Window1Cancel,
 
 _win_showLabel2 = Text(window_2, text="選擇考試地點", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
 _win_combo2 = ListBox(window_2, grid=[0,1], height=250, width=500, align="left", scrollbar=True)
-_win_combo3 = Combo(window_2, grid=[0,2], width=50, option=["一試", "二試", "三試"])
+_win_combo3 = Combo(window_2, grid=[0,2], width=50, options=["一試", "二試", "三試"])
 _win_Next2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Next, text='Next', align="left")
 _win_Cancel2 = PushButton(window_2, grid=[0,4], width=40, command=Window2Cancel, text='Cancel', align="left")
 
