@@ -1,4 +1,4 @@
-from guizero import app0, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox, Box
+from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox, Box
 from flask import *
 from flask import request
 import threading
@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
 if True:
 
-    app0 = app0(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
+    app0 = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
     window_1 = Window(app0, title="選擇考試項目", layout="grid", width=500, height =300)
     window_1.hide()
