@@ -25,7 +25,7 @@ print('TABF KIOSK Program start...')
 apiserver = Flask(__name__)
 
 ApiServerThread = threading.Thread(target=APIServer_DoWork)
-ApiServerThread.Start()
+ApiServerThread.start()
 
 app = App(title='TABF 報到機 Ver2.0', width=300, height = 200, layout="grid")
 
