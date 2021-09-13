@@ -153,6 +153,9 @@ def Window2Next():
     print('Phase No: ' + str(PhaseNo))
     print("Next2")
 
+    _win3_value1.value = Bot_Name
+    _win3_value2.value = Area_Name
+    _win3_value3.value = Phase_Name
     window_2.hide()
     window_3.set_full_screen('Esc')
     window_3.show()
@@ -205,8 +208,8 @@ _win3_title2 = Text(window_3, text="Area Name: ", size=20, font="Times New Roman
 _win3_value2 = Text(window_3, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,2], align="left")
 _win3_title3 = Text(window_3, text="Phase Name: ", size=20, font="Times New Roman", color="black", grid = [0,3], align="left")
 _win3_value3 = Text(window_3, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,3], align="left")
-_win_Next3 = PushButton(window_3, grid=[0,4], width=40, command=Window3Next, text='Next', align="left")
-_win_Cancel3 = PushButton(window_3, grid=[0,5], width=40, command=Window3Cancel, text='Cancel', align="left")
+_win_Next3 = PushButton(window_3, grid=[0,4], width=20, command=Window3Next, text='Next', align="left")
+_win_Cancel3 = PushButton(window_3, grid=[0,5], width=20, command=Window3Cancel, text='Cancel', align="left")
 
 app.display()
 
