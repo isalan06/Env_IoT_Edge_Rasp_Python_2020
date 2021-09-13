@@ -205,77 +205,86 @@ apiserver = Flask(__name__)
 def index():
     return "Hello, World!"
 
-ApiServerThread = threading.Thread(target=APIServer_DoWork)
-ApiServerThread.start()
 
-app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
-window_1 = Window(app, title="選擇考試項目", layout="grid", width=500, height =300)
-window_1.hide()
+#ApiServerThread = threading.Thread(target=APIServer_DoWork)
+#ApiServerThread.start()
 
-window_2 = Window(app, title="選擇考試地點", layout="grid", width=500, height =300)
-window_2.hide()
+if __name__ == '__Main__':
 
-window_3 = Window(app, title="資訊確認", layout="grid", width=500, height=300)
-window_3.hide()
+    kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
 
-window_main = Window(app, title="報到資訊", layout="grid", width=500, height=300)
-window_main.hide()
+#   running flask thread
+	flaskThread = Thread(target=apiserver.run, daemon=True, kwargs=kwargs).start()
 
-_app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
-_executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
-_opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
-_win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_combo1 = ListBox(window_1, grid=[0,1], height=300, width=500, align="left", scrollbar=True)
-_win_Next1 = PushButton(window_1, grid=[0,2], width=40, command=Window1Next, text='Next', align="left")
-_win_Cancel1 = PushButton(window_1, grid=[0,3], width=40, command=Window1Cancel, text='Cancel', align="left")
+    app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
-_win_showLabel2 = Text(window_2, text="選擇考試地點", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_combo2 = ListBox(window_2, grid=[0,1], height=250, width=500, align="left", scrollbar=True)
-_win_combo3 = Combo(window_2, grid=[0,2], width=50, options=["一試", "二試", "三試"])
-_win_Next2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Next, text='Next', align="left")
-_win_Cancel2 = PushButton(window_2, grid=[0,4], width=40, command=Window2Cancel, text='Cancel', align="left")
+    window_1 = Window(app, title="選擇考試項目", layout="grid", width=500, height =300)
+    window_1.hide()
 
-_win_showLabel3 = Text(window_3, text="資訊確認", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win3_title1 = Text(window_3, text="Bot Name: ", size=16, font="Times New Roman", color="black", grid = [0,1], align="left")
-_win3_value1 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,1], align="left")
-_win3_title2 = Text(window_3, text="Area Name: ", size=16, font="Times New Roman", color="black", grid = [0,2], align="left")
-_win3_value2 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,2], align="left")
-_win3_title3 = Text(window_3, text="Phase Name: ", size=16, font="Times New Roman", color="black", grid = [0,3], align="left")
-_win3_value3 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,3], align="left")
-_win_Next3 = PushButton(window_3, grid=[0,4], width=15, command=Window3Next, text='Next', align="left")
-_win_Cancel3 = PushButton(window_3, grid=[0,5], width=15, command=Window3Cancel, text='Cancel', align="left")
+    window_2 = Window(app, title="選擇考試地點", layout="grid", width=500, height =300)
+    window_2.hide()
 
-_box1 = Box(window_main, layout="grid", width=220, height=40, grid=[0,0])
-_box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
-_box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
-_win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_CancelMain = PushButton(_box1, grid=[1,0], width=4, command=WindowMainClose, text='關閉', align="left")
-_win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
-_win_TitleMain1 = Text(_box3, text="報到狀態", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_ValueMain1 = Text(_box3, text="等待報到", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,0], align="left")
-_win_TitleMain2 = Text(_box3, text="量測溫度", size=24, font="Times New Roman", color="black", grid = [0,1], align="left")
-_win_ValueMain2 = Text(_box3, text="0.0", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,1], align="left")
+    window_3 = Window(app, title="資訊確認", layout="grid", width=500, height=300)
+    window_3.hide()
 
-app.display()
+    window_main = Window(app, title="報到資訊", layout="grid", width=500, height=300)
+    window_main.hide()
 
-if bOpenTestForm == True:
-    app2 = App(title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
-    app2.set_full_screen('Esc')
+    _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
+    _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
+    _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
+    _win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win_combo1 = ListBox(window_1, grid=[0,1], height=300, width=500, align="left", scrollbar=True)
+    _win_Next1 = PushButton(window_1, grid=[0,2], width=40, command=Window1Next, text='Next', align="left")
+    _win_Cancel1 = PushButton(window_1, grid=[0,3], width=40, command=Window1Cancel, text='Cancel', align="left")
 
-    _app2_showLabel = Text(app2, text="TABF 報到測試模式", size=24, font="Times New Roman", color="black", grid = [0,0])
-    _closetestform = PushButton(app2, grid=[1,0], command=CloseTestForm, text='關閉', align="right")
-    _app2_image = Picture(app2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
-    _id_label = Text(app2, text="身分證:", size=20, font="Times New Roman", color="black", grid = [1,1], align="left")
-    _id_text =  Text(app2, text="0000000000", size=20, font="Times New Roman", color="blue", grid = [2,1], align="left")
-    _temperature_label = Text(app2, text="   溫度(C): ", size=20, font="Times New Roman", color="black", grid = [3,1], align="left")
-    _temperature_text =  Text(app2, text="0.0", size=20, font="Times New Roman", color="blue", grid = [4,1], align="left")
-    _time_label = Text(app2, text="時間:", size=20, font="Times New Roman", color="black", grid = [1,2], align="left")
-    _time_text =  Text(app2, text="NA", size=20, font="Times New Roman", color="blue", grid = [2,2], align="left")
+    _win_showLabel2 = Text(window_2, text="選擇考試地點", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win_combo2 = ListBox(window_2, grid=[0,1], height=250, width=500, align="left", scrollbar=True)
+    _win_combo3 = Combo(window_2, grid=[0,2], width=50, options=["一試", "二試", "三試"])
+    _win_Next2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Next, text='Next', align="left")
+    _win_Cancel2 = PushButton(window_2, grid=[0,4], width=40, command=Window2Cancel, text='Cancel', align="left")
 
-    app2.display()
+    _win_showLabel3 = Text(window_3, text="資訊確認", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win3_title1 = Text(window_3, text="Bot Name: ", size=16, font="Times New Roman", color="black", grid = [0,1], align="left")
+    _win3_value1 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,1], align="left")
+    _win3_title2 = Text(window_3, text="Area Name: ", size=16, font="Times New Roman", color="black", grid = [0,2], align="left")
+    _win3_value2 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,2], align="left")
+    _win3_title3 = Text(window_3, text="Phase Name: ", size=16, font="Times New Roman", color="black", grid = [0,3], align="left")
+    _win3_value3 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,3], align="left")
+    _win_Next3 = PushButton(window_3, grid=[0,4], width=15, command=Window3Next, text='Next', align="left")
+    _win_Cancel3 = PushButton(window_3, grid=[0,5], width=15, command=Window3Cancel, text='Cancel', align="left")
 
-if bListenFail == False:
-    shutdown_server()
+    _box1 = Box(window_main, layout="grid", width=220, height=40, grid=[0,0])
+    _box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
+    _box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
+    _win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win_CancelMain = PushButton(_box1, grid=[1,0], width=4, command=WindowMainClose, text='關閉', align="left")
+    _win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
+    _win_TitleMain1 = Text(_box3, text="報到狀態", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win_ValueMain1 = Text(_box3, text="等待報到", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,0], align="left")
+    _win_TitleMain2 = Text(_box3, text="量測溫度", size=24, font="Times New Roman", color="black", grid = [0,1], align="left")
+    _win_ValueMain2 = Text(_box3, text="0.0", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,1], align="left")
 
-print('TABF KIOSK Program finish...')
+    app.display()
+
+    if bOpenTestForm == True:
+        app2 = App(title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
+        app2.set_full_screen('Esc')
+
+        _app2_showLabel = Text(app2, text="TABF 報到測試模式", size=24, font="Times New Roman", color="black", grid = [0,0])
+        _closetestform = PushButton(app2, grid=[1,0], command=CloseTestForm, text='關閉', align="right")
+        _app2_image = Picture(app2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
+        _id_label = Text(app2, text="身分證:", size=20, font="Times New Roman", color="black", grid = [1,1], align="left")
+        _id_text =  Text(app2, text="0000000000", size=20, font="Times New Roman", color="blue", grid = [2,1], align="left")
+        _temperature_label = Text(app2, text="   溫度(C): ", size=20, font="Times New Roman", color="black", grid = [3,1], align="left")
+        _temperature_text =  Text(app2, text="0.0", size=20, font="Times New Roman", color="blue", grid = [4,1], align="left")
+        _time_label = Text(app2, text="時間:", size=20, font="Times New Roman", color="black", grid = [1,2], align="left")
+        _time_text =  Text(app2, text="NA", size=20, font="Times New Roman", color="blue", grid = [2,2], align="left")
+
+        app2.display()
+
+    if bListenFail == False:
+        shutdown_server()
+
+    print('TABF KIOSK Program finish...')
