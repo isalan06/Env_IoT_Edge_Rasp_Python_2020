@@ -33,7 +33,7 @@ def ExecuteProcedure():
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
         data_location = response.json()
-        print(data_location)
+        print('ErrorMsg:' + data_location['ErrorMsg'])
     except:
         print('Get Location Error')
 
