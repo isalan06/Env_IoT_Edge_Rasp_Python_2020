@@ -293,7 +293,7 @@ DisplayThread.start()
 
 if __name__ == '__Main__':
     try:
-        apiserver.run(host=sListenIP, debug=True, Threaded=True)
+        apiserver.run(host=sListenIP, debug=True)
     except:
         bListenFail = True
 
