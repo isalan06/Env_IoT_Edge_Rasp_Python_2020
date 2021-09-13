@@ -11,10 +11,11 @@ def home():
 if __name__ == "__main__":
 	app.run(debug=True)
 
-    print("aaaaa")
 #   Preparing parameters for flask to be given in the thread
 #   so that it doesn't collide with main thread
 	kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': False}
 
 #   running flask thread
 	flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs).start()
+
+    print('AAAAA')    
