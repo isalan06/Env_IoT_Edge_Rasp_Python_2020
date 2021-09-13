@@ -23,6 +23,8 @@ def APIServer_DoWork():
 def ExecuteProcedure():
     print('ExecuteProcedure')
 
+    window_1.show()
+
 def OpenTestForm():
     global bOpenTestForm
     bOpenTestForm = True
@@ -39,6 +41,9 @@ ApiServerThread = threading.Thread(target=APIServer_DoWork)
 ApiServerThread.start()
 
 app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
+
+window_1 = Window(app, title="選擇考場")
+window_1.hide()
 
 _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
 _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
