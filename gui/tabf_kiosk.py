@@ -12,6 +12,7 @@ payload = {}
 headers= {}
 data_location = {}
 Bot_id = 0
+Bot_index = 0
 Bot_Name = ''
 
 def shutdown_server():
@@ -63,19 +64,24 @@ def CloseTestForm():
 def Window1Next():
     global Bot_id
     global Bot_Name
+    global Bot_index
     test_item = _win_combo1.value
     if test_item == None:
         Bot_Name = data_location['Result'][0]['BotName']
-        Bot_id = 0
+        Bot_id = data_location['Result'][0]['BotID']
+        Bot_index = 0
     else:
         Bot_Name = test_item
         _index = 0
         for _data in data_location['Result']:
             if _data['BotName'] == Bot_Name:
-                Bot_id = _index
+                Bot_index = _index
+                Bot_id = _data['BotID']
                 break
             _index = _index + 1
+    
 
+    print("Select Index: " + str(Bot_index))
     print("Select Id: " + str(Bot_id))
     print("Selected: " + Bot_Name)
     print("Next")
