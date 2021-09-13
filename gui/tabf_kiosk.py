@@ -80,7 +80,7 @@ _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Tim
 _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
 _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
 _win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_combo1 = ListBox(window_1, grid=[0,1], height=20, width=60, align="left")
+_win_combo1 = ListBox(window_1, grid=[0,1], height=160, width=500, align="left", scrollbar=True)
 _win_Next1 = PushButton(window_1, grid=[0,2], width=50, command=Window1Next, text='Next', align="left")
 _win_Cancel1 = PushButton(window_1, grid=[0,3], width=50, command=Window1Cancel, text='Cancel', align="left")
 
