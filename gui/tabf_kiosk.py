@@ -211,7 +211,7 @@ def index():
 ApiServerThread = threading.Thread(target=APIServer_DoWork)
 ApiServerThread.start()
 
-if __name__ == '__Main__':
+if True:
 
     #kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
 
