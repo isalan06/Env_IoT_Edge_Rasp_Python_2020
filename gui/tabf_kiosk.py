@@ -75,6 +75,26 @@ def DoWork():
 
         time.sleep(0.5)
     
+def TestFormTimer():
+    triggerfilename = '/home/pi/Data/trigger.txt'
+    infofilename = '/home/pi/Data/info.txt'
+    imagefilename = '/home/pi/Data/person.jpg'
+    if bOpenTestForm:
+        if os.path.exists(triggerfilename):
+            os.remove(triggerfilename)
+
+            if os.path.exists(infofilename):
+                lines = []
+                with open(infofilename) as f:
+                    lines = f.readlines()
+                _id = lines[0]
+                _temperature = float(lines[1])
+                _createdate = lines[2]
+                _type = lines[3]
+
+                _id_text.value = _id
+                _temperature_text.value = str(_temperature)
+                _time_text.value = _createdate
 
 def OpenTestForm():
     global bOpenTestForm
@@ -192,6 +212,7 @@ def Window3Next():
         if data_person['ErrorMsg'] == '':
             window_3.hide()
             window_main.set_full_screen('Esc')
+            _id_text.repeat(time=500, command=TestFormTimer)
             window_main.show()
             bOpenNormalForm = True
         else:
@@ -213,8 +234,8 @@ def WindowMainClose():
 print('TABF KIOSK Program start...')
 
 
-MyThread = Thread(target=DoWork)
-MyThread.start()
+#MyThread = Thread(target=DoWork)
+#MyThread.start()
 
 if True:
 
