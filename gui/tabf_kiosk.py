@@ -214,8 +214,9 @@ if __name__ == '__Main__':
 
     kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
 
-#   running flask thread
-	flaskThread = Thread(target=apiserver.run, daemon=True, kwargs=kwargs).start()
+    #   running flask thread
+	flaskThread = Thread(target=apiserver.run, daemon=True, kwargs=kwargs)
+    flaskThread.start()
 
     app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
