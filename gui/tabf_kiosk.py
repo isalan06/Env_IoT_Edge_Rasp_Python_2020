@@ -15,7 +15,7 @@ def shutdown_server():
 def APIServer_DoWork():
     global bListenFail
     try:
-        apiserver.run((host=sListenIP, debug=True))
+        apiserver.run(host=sListenIP, debug=True)
     except:
         bListenFail = True
 
