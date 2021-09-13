@@ -15,6 +15,11 @@ Bot_id = 0
 Bot_index = 0
 Bot_Name = ''
 Bot_Area = []
+PhaseNo = 2
+Area_index = 0
+Area_id = 0
+Exam_id = 0
+Area_Name = ''
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -67,6 +72,7 @@ def Window1Next():
     global Bot_Name
     global Bot_index
     global Bot_Area
+    
     test_item = _win_combo1.value
     if test_item == None:
         Bot_Name = data_location['Result'][0]['BotName']
@@ -96,6 +102,7 @@ def Window1Next():
         _win_combo2.insert(_index2, location_data['AreaName'])
         _index2=_index2+1
     window_1.hide()
+    _win_combo3.select_default()
     window_2.set_full_screen('Esc')
     window_2.show()
 
@@ -103,6 +110,41 @@ def Window1Cancel():
     window_1.hide()
 
 def Window2Next():
+    global Area_index
+    global PhaseNo
+    global Area_id
+    global Exam_id
+    global Area_Name
+
+    area_item = _win_combo2.value
+    if area_item == None:
+        Area_id = Bot_Area[0]['AreaID']
+        Exam_id = Bot_Area[0]['ExamNo']
+        Area_Name = Bot_Area[0]['AreaName']
+        Area_index = 0
+    else:
+        Area_Name = area_item
+        _index = 0
+        for area_data in Bot_Area:
+            if area_data['AreaName'] == Area_Name:
+                Area_index = _index
+                Area_id = area_data['AreaID']
+                Exam_id = area_data['ExamNo']
+                break
+            _index = _index + 1
+
+
+    if _win_combo3.value == '二試':
+        PhaseNo = 4
+    elif _win_combo3.value == '三試':
+        PhaseNo = 6
+    else:
+        PhaseNo = 2 
+
+    print('Select Index: ' + str(Area_index))
+    print('Area id: ' + str(Area_id))
+    print('Exam id: ' + str(Exam_id))
+    print('Phase No: ' + str(PhaseNo))
     print("Next2")
 
 def Window2Cancel():
@@ -132,9 +174,10 @@ _win_Next1 = PushButton(window_1, grid=[0,2], width=40, command=Window1Next, tex
 _win_Cancel1 = PushButton(window_1, grid=[0,3], width=40, command=Window1Cancel, text='Cancel', align="left")
 
 _win_showLabel2 = Text(window_2, text="選擇考試地點", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_combo2 = ListBox(window_2, grid=[0,1], height=300, width=500, align="left", scrollbar=True)
-_win_Next2 = PushButton(window_2, grid=[0,2], width=40, command=Window2Next, text='Next', align="left")
-_win_Cancel2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Cancel, text='Cancel', align="left")
+_win_combo2 = ListBox(window_2, grid=[0,1], height=250, width=500, align="left", scrollbar=True)
+_win_combo3 = Combo(window_2, grid=[0,2], width=50, option=["一試", "二試", "三試"])
+_win_Next2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Next, text='Next', align="left")
+_win_Cancel2 = PushButton(window_2, grid=[0,4], width=40, command=Window2Cancel, text='Cancel', align="left")
 
 app.display()
 
