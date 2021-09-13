@@ -45,7 +45,7 @@ _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, test='開啟�
 app.display()
 
 if bOpenTestForm == True:
-    app2 = (title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
+    app2 = App(title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
     app2.set_full_screen('Esc')
 
     app2.display()
