@@ -2,10 +2,15 @@ from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Com
 from flask import Flask
 from flask import request
 import threading
+import requests
 
 sListenIP = '127.0.0.1'
 bOpenTestForm = False
 bListenFail = False
+
+payload = {}
+headers= {}
+data_location = {}
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -21,7 +26,17 @@ def APIServer_DoWork():
         bListenFail = True
 
 def ExecuteProcedure():
+    global data_location
     print('ExecuteProcedure')
+
+    url = "http://svc.tabf.org.tw/_webservice/GetBotInfoForIdentityPhoto.ashx"
+    try:
+        response = requests.request("GET", url, headers=headers, data=payload)
+        data_location = response.json()
+        print(data_location)
+    except:
+        print('Get Location Error')
+
 
     window_1.show()
 
