@@ -34,7 +34,7 @@ def ExecuteProcedure():
         response = requests.request("GET", url, headers=headers, data=payload)
         data_location = response.json()
         print('ErrorMsg:' + data_location['ErrorMsg'])
-        print(_win_combo1.children)
+        print(_win_combo1.children['ListBoxScrollbar'])
         if data_location['ErrorMsg'] == '':
             _win_combo1.clear()
             _index=0
