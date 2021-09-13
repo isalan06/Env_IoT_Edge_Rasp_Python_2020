@@ -34,7 +34,7 @@ def shutdown_server():
 def APIServer_DoWork():
     global bListenFail
     try:
-        apiserver.run(host=sListenIP, debug=True)
+        apiserver.run(host=sListenIP, debug=True, Threaded=True)
     except:
         bListenFail = True
     print("test")
@@ -208,15 +208,15 @@ def index():
 
 
 
-#ApiServerThread = threading.Thread(target=APIServer_DoWork)
-#ApiServerThread.start()
+ApiServerThread = threading.Thread(target=APIServer_DoWork)
+ApiServerThread.start()
 
 if __name__ == '__Main__':
 
-    kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
+    #kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
 
     #   running flask thread
-	flaskThread = Thread(target=apiserver.run, daemon=True, kwargs=kwargs).start()
+	#flaskThread = Thread(target=apiserver.run, daemon=True, kwargs=kwargs).start()
 
     app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
