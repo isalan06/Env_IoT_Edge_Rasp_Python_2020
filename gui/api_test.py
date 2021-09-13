@@ -23,13 +23,13 @@ def qrcode():
     print('Temperature:' + str(temperature))
 
     triggerfilename = '/home/pi/Data/trigger.txt'
-    if path.exists(triggerfilename):
+    if os.path.exists(triggerfilename):
         os.remove(triggerfilename)
     infofilename = '/home/pi/Data/info.txt'
-    if path.exists(infofilename):
+    if os.path.exists(infofilename):
         os.remove(infofilename)
     imagefilename = '/home/pi/Data/person.jpg'
-    if path.exists(imagefilename):
+    if os.path.exists(imagefilename):
         os.remove(imagefilename)
 
     f = open(infofilename, 'w')
