@@ -269,7 +269,7 @@ if True:
     app0.display()
 
     if bOpenTestForm == True:
-        app02 = app0(title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
+        app02 = App(title='TABF 報到機 測試畫面', width=600, height =350, layout="grid")
         app02.set_full_screen('Esc')
 
         _app02_showLabel = Text(app02, text="TABF 報到測試模式", size=24, font="Times New Roman", color="black", grid = [0,0])
