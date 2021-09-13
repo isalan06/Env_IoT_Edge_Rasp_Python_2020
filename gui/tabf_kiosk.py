@@ -59,7 +59,7 @@ def CloseTestForm():
     app2.destroy()
 
 def Window1Next():
-    test_item = _win_combo1.Value
+    test_item = _win_combo1.value
     print("Selected: " + test_item)
     print("Next")
 
