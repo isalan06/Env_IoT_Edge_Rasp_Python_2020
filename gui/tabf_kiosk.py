@@ -300,7 +300,7 @@ if True:
         _app02_image = Picture(app02, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
         _id_label = Text(app02, text="身分證:", size=20, font="Times New Roman", color="black", grid = [1,1], align="left")
         _id_text =  Text(app02, text="0000000000", size=20, font="Times New Roman", color="blue", grid = [2,1], align="left")
-        _id_text.repeat(500, TestFormTimer())
+        _id_text.repeat(500, TestFormTimer, args=[])
         _temperature_label = Text(app02, text="   溫度(C): ", size=20, font="Times New Roman", color="black", grid = [3,1], align="left")
         _temperature_text =  Text(app02, text="0.0", size=20, font="Times New Roman", color="blue", grid = [4,1], align="left")
         _time_label = Text(app02, text="時間:", size=20, font="Times New Roman", color="black", grid = [1,2], align="left")
