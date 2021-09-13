@@ -34,7 +34,6 @@ def ExecuteProcedure():
         response = requests.request("GET", url, headers=headers, data=payload)
         data_location = response.json()
         print('ErrorMsg:' + data_location['ErrorMsg'])
-        print(_win_combo1.children.keys())
         if data_location['ErrorMsg'] == '':
             _win_combo1.clear()
             _index=0
@@ -60,6 +59,8 @@ def CloseTestForm():
     app2.destroy()
 
 def Window1Next():
+    test_item = _win_combo1.Value
+    print("Selected: " + test_item)
     print("Next")
 
 def Window1Cancel():
