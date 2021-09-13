@@ -36,6 +36,7 @@ def APIServer_DoWork():
         apiserver.run(host=sListenIP, debug=True)
     except:
         bListenFail = True
+    print("test")
 
 def ExecuteProcedure():
     global data_location
