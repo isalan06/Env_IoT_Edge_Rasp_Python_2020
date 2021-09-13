@@ -200,6 +200,10 @@ print('TABF KIOSK Program start...')
 
 apiserver = Flask(__name__)
 
+@apiserver.route('/')
+def index():
+    return "Hello, World!"
+
 ApiServerThread = threading.Thread(target=APIServer_DoWork)
 ApiServerThread.start()
 
@@ -245,10 +249,12 @@ _box1 = Box(window_main, layout="grid", width=220, height=40, grid=[0,0])
 _box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
 _box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
 _win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_CancelMain = PushButton(_box1, grid=[1,0], width=30, command=WindowMainClose, text='關閉', align="left")
+_win_CancelMain = PushButton(_box1, grid=[1,0], width=4, command=WindowMainClose, text='關閉', align="left")
 _win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
 _win_TitleMain1 = Text(_box3, text="報到狀態", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_ValueMain1 = Text(_box3, text="等待報到", size=24, width=10, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,0], align="left")
+_win_ValueMain1 = Text(_box3, text="等待報到", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,0], align="left")
+_win_TitleMain2 = Text(_box3, text="量測溫度", size=24, font="Times New Roman", color="black", grid = [0,1], align="left")
+_win_ValueMain2 = Text(_box3, text="0.0", size=24, width=16, height=1, font="Times New Roman", bg='#FFFF00' ,color="black", grid = [1,1], align="left")
 
 app.display()
 
