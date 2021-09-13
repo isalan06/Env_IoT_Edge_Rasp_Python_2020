@@ -45,7 +45,7 @@ def qrcode():
     with open(imagefilename, 'wb') as f2:
       f2.write(img_data)
 
-    with open(triggerfilename, 'wb') as f3:
+    with open(triggerfilename, 'w') as f3:
         f3.write('Trigger')
 
 
@@ -55,7 +55,7 @@ def qrcode():
 if __name__ == '__main__':
     apiserverfilename = '/home/pi/Data/apiserver.txt'
     if os.path.exists(apiserverfilename) == False:
-        with open(apiserverfilename, 'wb') as f4:
+        with open(apiserverfilename, 'w') as f4:
             f4.write('API Server')
     app.run(host='192.168.1.163', debug=True)
     print("Test")
