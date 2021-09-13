@@ -71,7 +71,7 @@ def Window1Next():
         Bot_Name = test_item
         _index = 0
         for _data in data_location['Result']:
-            if _data['BotName'] == BotName:
+            if _data['BotName'] == Bot_Name:
                 Bot_id = _index
                 break
             _index = index + 1
