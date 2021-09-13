@@ -40,6 +40,8 @@ def ExecuteProcedure():
             for test_data in data_location['Result']:
                 _win_combo1.insert(_index, test_data['BotName'])
                 _index=_index+1
+            _win_combo1.select_default()
+            window_1.set_full_screen('Esc')
             window_1.show()
         else:
             print('Get Location Error')
@@ -56,6 +58,12 @@ def OpenTestForm():
 
 def CloseTestForm():
     app2.destroy()
+
+def Window1Next():
+    print("Next")
+
+def Window1Cancel():
+    window_1.hide()
 
 print('TABF KIOSK Program start...')
 
@@ -74,6 +82,8 @@ _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='
 _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
 _win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
 _win_combo1 = Combo(window_1, grid=[0,1], width=300, align="left")
+_win_Next1 = PushButton(window_1, grid=[0,2], command=Window1Next, text='Next', align="left")
+_win_Cancel1 = PushButton(window_1, grid=[1,2], command=Window1Cancel, text='Cancel', align="left")
 
 app.display()
 
