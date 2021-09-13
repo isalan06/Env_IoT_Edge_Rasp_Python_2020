@@ -2,6 +2,7 @@
 from flask import Flask
 from flask import request
 import os
+import base64
 
 app = Flask(__name__)
 
@@ -33,11 +34,16 @@ def qrcode():
         os.remove(imagefilename)
 
     f = open(infofilename, 'w')
-    f.write(qrcode)
-    f.write(str(temperature))
-    f.write(createtime)
+    f.write(qrcode + '\n')
+    f.write(str(temperature) + '\n')
+    f.write(createtime + '\n')
     f.write(sensortype)
     f.close()
+
+    img_str = data['imageData']
+    img_data = base64.b64decode(img_str)
+    with open(imagefilename, 'wb') as f2:
+      f2.write(img_data)
 
 
     return "OK"
