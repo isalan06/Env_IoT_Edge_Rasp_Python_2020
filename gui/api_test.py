@@ -55,10 +55,9 @@ def qrcode():
 if __name__ == '__main__':
     apiserverfilename = '/home/pi/Data/apiserver.txt'
     if os.path.exists(apiserverfilename) == False:
-        os.remove(apiserverfilename)
-    with open(apiserverfilename, 'wb') as f3:
-      f3.write('API Server')
+        with open(apiserverfilename, 'wb') as f3:
+            f3.write('API Server')
     app.run(host='192.168.1.163', debug=True)
     print("Test")
-    if os.path.exists(apiserverfilename) == False:
+    if os.path.exists(apiserverfilename):
         os.remove(apiserverfilename)
