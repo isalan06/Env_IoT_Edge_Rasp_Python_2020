@@ -74,7 +74,7 @@ def Window1Next():
             if _data['BotName'] == Bot_Name:
                 Bot_id = _index
                 break
-            _index = index + 1
+            _index = _index + 1
 
     print("Select Id: " + str(Bot_id))
     print("Selected: " + Bot_Name)
