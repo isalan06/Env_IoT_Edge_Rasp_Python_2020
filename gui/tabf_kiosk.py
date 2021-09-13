@@ -11,6 +11,8 @@ bListenFail = False
 payload = {}
 headers= {}
 data_location = {}
+Bot_id = 0
+Bot_Name = ''
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -59,8 +61,23 @@ def CloseTestForm():
     app2.destroy()
 
 def Window1Next():
+    global Bot_id
+    global Bot_Name
     test_item = _win_combo1.value
-    print("Selected: " + test_item)
+    if test_item == None:
+        Bot_Name = data_location['Result'][0]['BotName']
+        Bot_id = 0
+    else:
+        Bot_Name = test_item
+        _index = 0
+        for _data in data_location['Result']:
+            if _data['BotName'] == BotName:
+                Bot_id = _index
+                break
+            _index = index + 1
+
+    print("Select Id: " + str(Bot_id))
+    print("Selected: " + Bot_Name)
     print("Next")
 
 def Window1Cancel():
