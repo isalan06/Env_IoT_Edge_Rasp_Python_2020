@@ -1,9 +1,8 @@
 from guizero import App, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox, Box
-from flask import *
-from flask import request
 import threading
 from threading import Thread
 import requests
+import time
 
 sListenIP = '127.0.0.1'
 bOpenTestForm = False
@@ -25,19 +24,6 @@ Exam_id = 0
 Area_Name = ''
 Phase_Name = ''
 
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-
-def APIServer_DoWork():
-    global bListenFail
-    try:
-        apiserver.run(host=sListenIP, debug=True, Threaded=True)
-    except:
-        bListenFail = True
-    print("test")
 
 def ExecuteProcedure():
     global data_location
@@ -61,7 +47,32 @@ def ExecuteProcedure():
     except:
         print('Get Location Error')
 
+bFinish = False
+def DoWork():
+    while bFinish == False:
 
+        triggerfilename = '/home/pi/Data/trigger.txt'
+        infofilename = '/home/pi/Data/info.txt'
+        imagefilename = '/home/pi/Data/person.jpg'
+        if bOpenTestForm:
+            if os.path.exists(triggerfilename):
+                os.remove(triggerfilename)
+
+                if os.path.exists(infofilename):
+                    lines = []
+                    with open(infofilename) as f:
+                        lines = f.readlines()
+                    _id = lines[0]
+                    _temperature = float(lines[1])
+                    _createdate = lines[2]
+                    _type = lines[3]
+
+                    _id_text.value = _id
+                    _temperature_text.value = str(_temperature)
+                    _time_text.value = _createdate
+
+
+        time.sleep(0.5)
     
 
 def OpenTestForm():
@@ -200,29 +211,8 @@ def WindowMainClose():
 
 print('TABF KIOSK Program start...')
 
-app = Flask(__name__)
-
-@app.route("/", methods=["POST", "GET"])
-def home():
-	return "Hello"
 
 
-
-#ApiServerThread = threading.Thread(target=APIServer_DoWork)
-#ApiServerThread.start()
-
-#def Display_Dowork():
-if __name__ == "__main__":
-	app.run(debug=True)
-
-    print('AAAAA')
-
-#   Preparing parameters for flask to be given in the thread
-#   so that it doesn't collide with main thread
-	kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': False}
-
-#   running flask thread
-	flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs).start()
 
 
 if True:
@@ -293,9 +283,6 @@ if True:
         _time_text =  Text(app02, text="NA", size=20, font="Times New Roman", color="blue", grid = [2,2], align="left")
 
         app02.display()
-
-    if bListenFail == False:
-        shutdown_server()
 
 #DisplayThread = Thread(target=Display_Dowork)
 #DisplayThread.start()
