@@ -240,6 +240,7 @@ _box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
 _box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
 _win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
 _win_CancelMain = PushButton(_box1, grid=[1,0], width=30, command=WindowMainClose, text='關閉', align="left")
+_win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
 
 app.display()
 
