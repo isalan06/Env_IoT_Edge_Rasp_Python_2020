@@ -11,6 +11,7 @@ bListenFail = False
 payload = {}
 headers= {}
 data_location = {}
+data_person = {}
 Bot_id = 0
 Bot_index = 0
 Bot_Name = ''
@@ -73,6 +74,7 @@ def Window1Next():
     global Bot_Name
     global Bot_index
     global Bot_Area
+    
     
     test_item = _win_combo1.value
     if test_item == None:
@@ -164,6 +166,16 @@ def Window2Cancel():
     window_2.hide()
 
 def Window3Next():
+    global data_person
+
+    url = "http://svc.tabf.org.tw/_webservice/GetBotPassInfoForIdentityPhoto.ashx?BotID=" + str(Bot_id) + "&AreaID=" + str(Area_id) + "&ExamNo=" + str(Exam_id)
+    try:
+        response = requests.request("GET", url, headers=headers, data=payload)
+        data_person = response.json()
+        print(data_person)
+    except:
+        print('Get Person Information Error')
+
     print('Next3')
 
 def Window3Cancel():
@@ -202,14 +214,14 @@ _win_Next2 = PushButton(window_2, grid=[0,3], width=40, command=Window2Next, tex
 _win_Cancel2 = PushButton(window_2, grid=[0,4], width=40, command=Window2Cancel, text='Cancel', align="left")
 
 _win_showLabel3 = Text(window_3, text="資訊確認", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win3_title1 = Text(window_3, text="Bot Name: ", size=20, font="Times New Roman", color="black", grid = [0,1], align="left")
-_win3_value1 = Text(window_3, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,1], align="left")
-_win3_title2 = Text(window_3, text="Area Name: ", size=20, font="Times New Roman", color="black", grid = [0,2], align="left")
-_win3_value2 = Text(window_3, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,2], align="left")
-_win3_title3 = Text(window_3, text="Phase Name: ", size=20, font="Times New Roman", color="black", grid = [0,3], align="left")
-_win3_value3 = Text(window_3, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,3], align="left")
-_win_Next3 = PushButton(window_3, grid=[0,4], width=20, command=Window3Next, text='Next', align="left")
-_win_Cancel3 = PushButton(window_3, grid=[0,5], width=20, command=Window3Cancel, text='Cancel', align="left")
+_win3_title1 = Text(window_3, text="Bot Name: ", size=16, font="Times New Roman", color="black", grid = [0,1], align="left")
+_win3_value1 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,1], align="left")
+_win3_title2 = Text(window_3, text="Area Name: ", size=16, font="Times New Roman", color="black", grid = [0,2], align="left")
+_win3_value2 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,2], align="left")
+_win3_title3 = Text(window_3, text="Phase Name: ", size=16, font="Times New Roman", color="black", grid = [0,3], align="left")
+_win3_value3 = Text(window_3, text="NA", size=16, font="Times New Roman", color="blue", grid = [1,3], align="left")
+_win_Next3 = PushButton(window_3, grid=[0,4], width=15, command=Window3Next, text='Next', align="left")
+_win_Cancel3 = PushButton(window_3, grid=[0,5], width=15, command=Window3Cancel, text='Cancel', align="left")
 
 app.display()
 
