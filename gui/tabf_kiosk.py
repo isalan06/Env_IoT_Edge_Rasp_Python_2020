@@ -55,7 +55,7 @@ if bOpenTestForm == True:
     _closetestform = PushButton(app2, grid=[1,0], command=CloseTestForm, text='關閉', align="right")
     _app2_image = Picture(app2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=200, height = 300, grid = [0, 1])
     _id_label = Text(app2, text="身分證: ", size=20, font="Times New Roman", color="black", grid = [1,1])
-    _id_text =  Text(app2, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,1])
+    _id_text =  Text(app2, text="NA", size=20, font="Times New Roman", color="blue", grid = [1,2])
 
     app2.display()
 
