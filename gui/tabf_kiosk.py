@@ -36,8 +36,10 @@ def ExecuteProcedure():
         print('ErrorMsg:' + data_location['ErrorMsg'])
         if data_location['ErrorMsg'] == '':
             _win_combo1.clear()
+            _index=0
             for test_data in data_location['Result']:
-                print(test_data)
+                _win_combo1.insert(_index, test_data['BotName'])
+                _index=_index+1
             window_1.show()
         else:
             print('Get Location Error')
@@ -64,14 +66,14 @@ ApiServerThread.start()
 
 app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
-window_1 = Window(app, title="選擇考試項目", layout="grid", width=600, height =350)
+window_1 = Window(app, title="選擇考試項目", layout="grid", width=500, height =300)
 window_1.hide()
 
 _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
 _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
 _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
 _win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-_win_combo1 = Combo(window_1, grid=[0,1], width=500, align="left")
+_win_combo1 = Combo(window_1, grid=[0,1], width=300, align="left")
 
 app.display()
 
