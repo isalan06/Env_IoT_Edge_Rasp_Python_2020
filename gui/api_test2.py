@@ -18,4 +18,4 @@ if __name__ == "__main__":
 #   running flask thread
 	flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs).start()
 
-    print('AAAAA')    
+print('AAAAA')    
