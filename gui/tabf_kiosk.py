@@ -1,5 +1,5 @@
 from guizero import app0, Text, TextBox, PushButton, Slider, Picture, Window, Combo, ListBox, Box
-from flask import Flask
+from flask import *
 from flask import request
 import threading
 from threading import Thread
