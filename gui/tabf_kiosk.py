@@ -212,8 +212,8 @@ def WindowMainClose():
 print('TABF KIOSK Program start...')
 
 
-
-
+MyThread = Thread(target=DoWork)
+MyThread.start()
 
 if True:
 
