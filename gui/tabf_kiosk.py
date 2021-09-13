@@ -208,10 +208,10 @@ def index():
 
 
 
-ApiServerThread = threading.Thread(target=APIServer_DoWork)
-ApiServerThread.start()
+#ApiServerThread = threading.Thread(target=APIServer_DoWork)
+#ApiServerThread.start()
 
-if True:
+def Display_Dowork():
 
     #kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
 
@@ -288,4 +288,14 @@ if True:
     if bListenFail == False:
         shutdown_server()
 
-    print('TABF KIOSK Program finish...')
+DisplayThread = Thread(target=Display_Dowork)
+DisplayThread.start()
+
+if __name__ == '__Main__':
+    try:
+        apiserver.run(host=sListenIP, debug=True, Threaded=True)
+    except:
+        bListenFail = True
+
+
+print('TABF KIOSK Program finish...')
