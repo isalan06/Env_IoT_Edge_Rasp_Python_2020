@@ -34,11 +34,15 @@ def ExecuteProcedure():
         response = requests.request("GET", url, headers=headers, data=payload)
         data_location = response.json()
         print('ErrorMsg:' + data_location['ErrorMsg'])
+        if data_location['ErrorMsg'] == '':
+            window_1.show()
+        else:
+            print('Get Location Error')
     except:
         print('Get Location Error')
 
 
-    window_1.show()
+    
 
 def OpenTestForm():
     global bOpenTestForm
@@ -57,13 +61,14 @@ ApiServerThread.start()
 
 app = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
-window_1 = Window(app, title="選擇考場")
+window_1 = Window(app, title="選擇考試項目", layout="grid")
 window_1.hide()
 
 _app_showLabel = Text(app, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
 _executeProcedure = PushButton(app, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
 _opentestform = PushButton(app, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
-
+_win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+_win_combo1 = Combo(window_1, grid=[0,1], width=500, align="left")
 
 app.display()
 
