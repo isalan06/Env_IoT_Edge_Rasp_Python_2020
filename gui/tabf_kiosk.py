@@ -222,7 +222,8 @@ if __name__ == "__main__":
 #   running flask thread
 	flaskThread = Thread(target=app.run, daemon=True, kwargs=kwargs).start()
 
-    print('Show Display')
+
+if True:
 
     app0 = app0(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
 
