@@ -26,6 +26,9 @@ Exam_id = 0
 Area_Name = ''
 Phase_Name = ''
 
+NoTriggerCount = 0
+ResetStatusCount = 2
+bResetFlag = True
 
 def ExecuteProcedure():
     global data_location
@@ -100,6 +103,56 @@ def TestFormTimer():
 
             if os.path.exists(imagefilename):
                 _app02_image.image = imagefilename
+
+def NormalFormTimer():
+    global NoTriggerCount
+    global bResetFlag 
+    print("Normal Form Timer")
+    triggerfilename = '/home/pi/Data/trigger.txt'
+    infofilename = '/home/pi/Data/info.txt'
+    imagefilename = '/home/pi/Data/person.jpg'
+
+    NoTriggerCount = NoTriggerCount + 1
+
+    if bOpenNormalForm:
+        if os.path.exists(triggerfilename):
+            os.remove(triggerfilename)
+            NoTriggerCount = 0
+            bResetFlag = False
+
+            if os.path.exists(infofilename):
+                lines = []
+                with open(infofilename) as f:
+                    lines = f.readlines()
+                _id = lines[0]
+                _id = _id[:10]
+                _temperature = float(lines[1])
+                _createdate = lines[2]
+                _type = lines[3]
+
+                _win_ValueMain2.value = format(_temperature, '.1f')
+                if _temperature > 37.5:
+                    _win_ValueMain2.bg = '#FF0000'
+                elif _temperature > 35:
+                    _win_ValueMain2.bg = '#32CD32'
+                else
+                    _win_ValueMain2.bg = '#FFFF00'
+
+                
+
+            if os.path.exists(imagefilename):
+                _win_ImageMain.image = imagefilename
+    
+    if (NoTriggerCount > ResetStatusCount) and (bResetFlag == False):
+        bResetFlag = True
+        _win_ValueMain1.value = "等待報到"
+        _win_ValueMain1.bg = '#FFFF00'
+        _win_ImageMain.image = "/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png"
+        _win_ValueMain2.value = '0.0'
+        _win_ValueMain2.bg = '#FFFF00'
+
+
+
 
 def UpdateTestImage():
     updatetestimagefilename = '/home/pi/Pictures/Test/401375_802406_7307_1_2_1.jpg'
@@ -307,6 +360,7 @@ if True:
     _box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
     _box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
     _win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
+    _win_showLabelMain.repeat(500, NormalFormTimer, args=[])
     _win_CancelMain = PushButton(_box1, grid=[1,0], width=4, command=WindowMainClose, text='關閉', align="left")
     _win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
     _win_TitleMain1 = Text(_box3, text="報到狀態", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
