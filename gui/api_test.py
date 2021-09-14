@@ -35,7 +35,8 @@ def qrcode():
 
     f = open(infofilename, 'w')
     f.write(qrcode + '\n')
-    f.write(str(temperature) + '\n')
+    #f.write(str(temperature) + '\n')
+    f.write(format(value, '.1f') + '\n')
     f.write(createtime + '\n')
     f.write(sensortype)
     f.close()
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     if os.path.exists(apiserverfilename) == False:
         with open(apiserverfilename, 'w') as f4:
             f4.write('API Server')
-    app.run(host='192.168.1.163', debug=True)
+    app.run(host='192.168.2.100', debug=True)
     print("Test")
     if os.path.exists(apiserverfilename):
         os.remove(apiserverfilename)
