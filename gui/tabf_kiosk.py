@@ -51,8 +51,10 @@ def ExecuteProcedure():
             window_1.show()
         else:
             print('Get Location Error: ' + data_location['ErrorMsg'])
+            app0.error('取得考場資訊失敗', data_location['ErrorMsg'])
     except:
         print('Get Location Error')
+        app0.error('取得考場資訊失敗', '程序失敗')
 
 bFinish = False
 def DoWork():
@@ -186,6 +188,16 @@ def NormalFormTimer():
                 if bIsCorrectPerson:
                     _win_ValueMain1.value = "報到成功"
                     _win_ValueMain1.bg = '#32CD32'
+                    url = "https://svc.tabf.org.tw/_WebService/SendIdentityPhoto.ashx"
+
+                    try:
+                        payload={}
+                        files=[('PhotoFile',(_saveimagefilename,open(updateimagefilename,'rb'),'image/jpeg'))]
+
+                        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                        print(response)
+                    except:
+                        print('Update Test Image Error')
                 else:
                     _win_ValueMain1.value = "非本場考生"
                     _win_ValueMain1.bg = '#FF0000'
@@ -348,8 +360,10 @@ def Window3Next():
             bOpenNormalForm = True
         else:
             print('Get Person Information Error: ' + data_person['ErrorMsg'])
+            window_3.error('下載考生資料失敗', data_person['ErrorMsg'])
     except:
         print('Get Person Information Error')
+        window_3.error('下載考生資料失敗', '程序失敗')
 
     print('Next3')
 
