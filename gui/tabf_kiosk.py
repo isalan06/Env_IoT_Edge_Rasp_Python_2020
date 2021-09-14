@@ -176,7 +176,7 @@ def NormalFormTimer():
                 
 
             if os.path.exists(imagefilename):
-                _win_ImageMain.image = sImageFileName
+                _win_ImageMain.image = imagefilename
                 if bIsCorrectPerson:
                     _win_ValueMain1.value = "報到成功"
                     _win_ValueMain1.bg = '#32CD32'
