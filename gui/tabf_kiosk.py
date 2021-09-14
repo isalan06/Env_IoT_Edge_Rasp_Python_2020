@@ -100,7 +100,9 @@ def TestFormTimer():
                 _temperature_text.value = str(_temperature)
                 _time_text.value = _createdate
 
+            print('Check Image')
             if os.path.exist(imagefilename):
+                    print("Image")
                     _app02_image.image = imagefilename
 
 def OpenTestForm():
