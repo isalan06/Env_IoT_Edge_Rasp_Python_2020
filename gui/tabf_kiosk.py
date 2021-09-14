@@ -5,6 +5,7 @@ import requests
 import time
 import os
 import shutil
+import datetime
 
 sListenIP = '127.0.0.1'
 bOpenTestForm = False
@@ -29,6 +30,7 @@ Phase_Name = ''
 NoTriggerCount = 0
 ResetStatusCount = 2
 bResetFlag = True
+
 
 def ExecuteProcedure():
     global data_location
@@ -111,14 +113,30 @@ def NormalFormTimer():
     triggerfilename = '/home/pi/Data/trigger.txt'
     infofilename = '/home/pi/Data/info.txt'
     imagefilename = '/home/pi/Data/person.jpg'
+    bIsCorrectPerson = False
 
     NoTriggerCount = NoTriggerCount + 1
+
+    _productid = ''
+    _phoneno = ''
+    _pid = ''
+    _areaid = ''
+    _phaseno = ''
+    _photostatus = '1'
+
+    _saveimagefilename = ''
 
     if bOpenNormalForm:
         if os.path.exists(triggerfilename):
             os.remove(triggerfilename)
             NoTriggerCount = 0
             bResetFlag = False
+
+            nowtime = datetime.now()
+            datestring = nowtime.strftime('%Y%m%d')
+            fileString ="/home/pi/Pictures/Log/" + datestring + "/"
+            if not os.path.isdir(fileString):
+                os.mkdir(fileString)
 
             if os.path.exists(infofilename):
                 lines = []
@@ -129,7 +147,23 @@ def NormalFormTimer():
                 _temperature = float(lines[1])
                 _createdate = lines[2]
                 _type = lines[3]
+                _saveimagefilename = _id + datetime.now().strftime('%Y-%m-%d %H-%M-%S') + '.jpg'
 
+
+                for persondata in data_person['Result']:
+                    _get_id = persondata['SecurityNo']
+                    _get_id = _get_id[:10]
+                    if _get_id == _id:
+                        bIsCorrectPerson = True
+                        _productid = str(persondata['ProductID'])
+                        _pid = _id[4:]
+                        _phoneno = persondata['MobilePhone']
+                        _phoneno = _phoneno[6:]
+                        _areaid = persondata['AreaID']
+                        _phaseno = str(PhaseNo)
+                        _saveimagefilename = _productid + '_' + _phoneno + '_' + _pid + '_' + _areaid + '_' + _phaseno + '_' + _photostatus + 'jpg'
+
+                print(_saveimagefilename)
                 _win_ValueMain2.value = format(_temperature, '.1f')
                 if _temperature > 37.5:
                     _win_ValueMain2.bg = '#FF0000'
