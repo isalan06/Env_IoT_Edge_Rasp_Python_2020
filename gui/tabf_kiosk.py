@@ -4,6 +4,7 @@ from threading import Thread
 import requests
 import time
 import os
+import shutil
 
 sListenIP = '127.0.0.1'
 bOpenTestForm = False
@@ -99,6 +100,27 @@ def TestFormTimer():
 
             if os.path.exists(imagefilename):
                 _app02_image.image = imagefilename
+
+def UpdateTestImage():
+    updatetestimagefilename = '/home/pi/Pictures/Test/401375_802406_7307_1_2_1.jpg'
+    originalimagefilename = '/home/pi/Data/person.jpg'
+
+    if os.path.exists(updatetestimagefilename):
+        os.remove(updatetestimagefilename)
+    shutil.copy(originalimagefilename, updatetestimagefilename)
+
+    url = "https://svc.tabf.org.tw/_WebService/SendIdentityPhoto.ashx"
+
+    try:
+        payload={}
+        files=[('PhotoFile',('401375_789113_4771_3_1_1.jpg',open(updatetestimagefilename,'rb'),'image/jpeg'))]
+
+        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+        print(response)
+    except:
+        print('Update Test Image Error')
+
+    
 
 def OpenTestForm():
     global bOpenTestForm
@@ -308,6 +330,7 @@ if True:
         _temperature_text =  Text(app02, text="0.0", size=10, font="Times New Roman", color="blue", grid = [4,1], align="left")
         _time_label = Text(app02, text="時間:", size=10, font="Times New Roman", color="black", grid = [1,2], align="left")
         _time_text =  Text(app02, text="NA", size=10, font="Times New Roman", color="blue", grid = [2,2], align="left")
+        _UpdateTestImage = PushButton(app02, text="上傳圖片", grid=[0,3], command=UpdateTestImage, align="left")
 
         app02.display()
 
