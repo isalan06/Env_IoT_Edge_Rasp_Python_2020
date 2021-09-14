@@ -28,7 +28,7 @@ Area_Name = ''
 Phase_Name = ''
 
 NoTriggerCount = 0
-ResetStatusCount = 2
+ResetStatusCount = 4
 bResetFlag = True
 
 
@@ -165,6 +165,9 @@ def NormalFormTimer():
 
                 print(_saveimagefilename)
 
+                if bIsCorrectPerson:
+
+
                 _win_ValueMain2.value = format(_temperature, '.1f')
                 if _temperature > 37.5:
                     _win_ValueMain2.bg = '#FF0000'
@@ -176,7 +179,16 @@ def NormalFormTimer():
                 
 
             if os.path.exists(imagefilename):
-                _win_ImageMain.image = imagefilename
+                _win_ImageMain.image = sImageFileName
+                if bIsCorrectPerson:
+                    _win_ValueMain1.value = "報到成功"
+                    _win_ValueMain1.bg = '#32CD32'
+                else:
+                    _win_ValueMain1.value = "非本場考生"
+                    _win_ValueMain1.bg = '#FF0000'
+            else
+                _win_ValueMain1.value = "無影像資料"
+                _win_ValueMain1.bg = '#FF0000'
     
     if (NoTriggerCount > ResetStatusCount) and (bResetFlag == False):
         bResetFlag = True
