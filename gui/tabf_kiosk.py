@@ -72,11 +72,14 @@ def DoWork():
                     _temperature_text.value = str(_temperature)
                     _time_text.value = _createdate
 
+                if os.path.exist(imagefilename):
+                    _app02_image.image = imagefilename
+
 
         time.sleep(0.5)
     
 def TestFormTimer():
-    print("Test Form Timer")
+    #print("Test Form Timer")
     triggerfilename = '/home/pi/Data/trigger.txt'
     infofilename = '/home/pi/Data/info.txt'
     imagefilename = '/home/pi/Data/person.jpg'
@@ -96,6 +99,9 @@ def TestFormTimer():
                 _id_text.value = _id
                 _temperature_text.value = str(_temperature)
                 _time_text.value = _createdate
+
+            if os.path.exist(imagefilename):
+                    _app02_image.image = imagefilename
 
 def OpenTestForm():
     global bOpenTestForm
@@ -298,13 +304,13 @@ if True:
         _app02_showLabel = Text(app02, text="TABF 報到測試模式", size=24, font="Times New Roman", color="black", grid = [0,0])
         _closetestform = PushButton(app02, grid=[1,0], command=CloseTestForm, text='關閉', align="right")
         _app02_image = Picture(app02, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
-        _id_label = Text(app02, text="身分證:", size=20, font="Times New Roman", color="black", grid = [1,1], align="left")
-        _id_text =  Text(app02, text="0000000000", size=20, font="Times New Roman", color="blue", grid = [2,1], align="left")
+        _id_label = Text(app02, text="身分證:", size=10, font="Times New Roman", color="black", grid = [1,1], align="left")
+        _id_text =  Text(app02, text="0000000000", size=10, font="Times New Roman", color="blue", grid = [2,1], align="left")
         _id_text.repeat(500, TestFormTimer, args=[])
-        _temperature_label = Text(app02, text="   溫度(C): ", size=20, font="Times New Roman", color="black", grid = [3,1], align="left")
-        _temperature_text =  Text(app02, text="0.0", size=20, font="Times New Roman", color="blue", grid = [4,1], align="left")
-        _time_label = Text(app02, text="時間:", size=20, font="Times New Roman", color="black", grid = [1,2], align="left")
-        _time_text =  Text(app02, text="NA", size=20, font="Times New Roman", color="blue", grid = [2,2], align="left")
+        _temperature_label = Text(app02, text="   溫度(C): ", size=10, font="Times New Roman", color="black", grid = [3,1], align="left")
+        _temperature_text =  Text(app02, text="0.0", size=10, font="Times New Roman", color="blue", grid = [4,1], align="left")
+        _time_label = Text(app02, text="時間:", size=10, font="Times New Roman", color="black", grid = [1,2], align="left")
+        _time_text =  Text(app02, text="NA", size=10, font="Times New Roman", color="blue", grid = [2,2], align="left")
 
         app02.display()
 
