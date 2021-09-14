@@ -183,7 +183,7 @@ def NormalFormTimer():
                 else:
                     _win_ValueMain1.value = "非本場考生"
                     _win_ValueMain1.bg = '#FF0000'
-            else
+            else:
                 _win_ValueMain1.value = "無影像資料"
                 _win_ValueMain1.bg = '#FF0000'
     
