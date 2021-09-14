@@ -109,7 +109,7 @@ def TestFormTimer():
 def NormalFormTimer():
     global NoTriggerCount
     global bResetFlag 
-    print("Normal Form Timer")
+    #print("Normal Form Timer")
     triggerfilename = '/home/pi/Data/trigger.txt'
     infofilename = '/home/pi/Data/info.txt'
     imagefilename = '/home/pi/Data/person.jpg'
@@ -132,7 +132,7 @@ def NormalFormTimer():
             NoTriggerCount = 0
             bResetFlag = False
 
-            nowtime = datetime.now()
+            nowtime = datetime.datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/Log/" + datestring + "/"
             if not os.path.isdir(fileString):
@@ -161,9 +161,10 @@ def NormalFormTimer():
                         _phoneno = _phoneno[6:]
                         _areaid = persondata['AreaID']
                         _phaseno = str(PhaseNo)
-                        _saveimagefilename = _productid + '_' + _phoneno + '_' + _pid + '_' + _areaid + '_' + _phaseno + '_' + _photostatus + 'jpg'
+                        _saveimagefilename = _productid + '_' + _phoneno + '_' + _pid + '_' + _areaid + '_' + _phaseno + '_' + _photostatus + '.jpg'
 
                 print(_saveimagefilename)
+
                 _win_ValueMain2.value = format(_temperature, '.1f')
                 if _temperature > 37.5:
                     _win_ValueMain2.bg = '#FF0000'
