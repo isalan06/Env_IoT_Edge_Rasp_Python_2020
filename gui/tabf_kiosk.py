@@ -163,7 +163,7 @@ def NormalFormTimer():
                         _phaseno = str(PhaseNo)
                         _saveimagefilename = _productid + '_' + _phoneno + '_' + _pid + '_' + _areaid + '_' + _phaseno + '_' + _photostatus + '.jpg'
 
-                print(_saveimagefilename)
+                #print(_saveimagefilename)
 
                 _win_ValueMain2.value = format(_temperature, '.1f')
                 if _temperature > 37.5:
@@ -177,12 +177,20 @@ def NormalFormTimer():
 
             if os.path.exists(imagefilename):
                 _win_ImageMain.image = imagefilename
+
+                updateimagefilename = os.path.join(fileString, _saveimagefilename)
+                if os.path.exists(updateimagefilename):
+                    updateimagefilename = updateimagefilename + '_' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S') + '.jpg'
+                shutil.copy(imagefilename, updateimagefilename)
+
                 if bIsCorrectPerson:
                     _win_ValueMain1.value = "報到成功"
                     _win_ValueMain1.bg = '#32CD32'
                 else:
                     _win_ValueMain1.value = "非本場考生"
                     _win_ValueMain1.bg = '#FF0000'
+
+                
             else:
                 _win_ValueMain1.value = "無影像資料"
                 _win_ValueMain1.bg = '#FF0000'
