@@ -305,7 +305,8 @@ if True:
 
         _app02_showLabel = Text(app02, text="TABF 報到測試模式", size=24, font="Times New Roman", color="black", grid = [0,0])
         _closetestform = PushButton(app02, grid=[1,0], command=CloseTestForm, text='關閉', align="right")
-        _app02_image = Picture(app02, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
+        #_app02_image = Picture(app02, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=150, height = 200, grid = [0, 3])
+        _app02_image = Picture(app02, image='/home/pi/Data/person.jpg', width=150, height = 200, grid = [0, 3])
         _id_label = Text(app02, text="身分證:", size=10, font="Times New Roman", color="black", grid = [1,1], align="left")
         _id_text =  Text(app02, text="0000000000", size=10, font="Times New Roman", color="blue", grid = [2,1], align="left")
         _id_text.repeat(500, TestFormTimer, args=[])
