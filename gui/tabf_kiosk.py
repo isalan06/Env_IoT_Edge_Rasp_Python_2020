@@ -135,7 +135,7 @@ def NormalFormTimer():
                     _win_ValueMain2.bg = '#FF0000'
                 elif _temperature > 35:
                     _win_ValueMain2.bg = '#32CD32'
-                else
+                else:
                     _win_ValueMain2.bg = '#FFFF00'
 
                 
