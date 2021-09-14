@@ -362,6 +362,9 @@ def WindowMainClose():
     bOpenNormalForm = False
     window_main.hide()
 
+def CloseMainForm():
+    app0.destroy()
+
 print('TABF KIOSK Program start...')
 
 
@@ -387,6 +390,7 @@ if True:
     _app0_showLabel = Text(app0, text="TABF 報到機操作介面", size=24, font="Times New Roman", color="black", grid = [0,0])
     _executeProcedure = PushButton(app0, grid=[0,1], command=ExecuteProcedure, text='執行報到資料下載', align="left")
     _opentestform = PushButton(app0, grid=[0,2], command=OpenTestForm, text='開啟報到測試模式', align="left")
+    _closemainform = PushButton(app0, grid=[0,3], command=CloseMainForm, text='關閉報到機主程式', align="left")
     _win_showLabel1 = Text(window_1, text="選擇考試項目", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
     _win_combo1 = ListBox(window_1, grid=[0,1], height=300, width=500, align="left", scrollbar=True)
     _win_Next1 = PushButton(window_1, grid=[0,2], width=40, command=Window1Next, text='Next', align="left")
