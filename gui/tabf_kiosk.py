@@ -165,9 +165,6 @@ def NormalFormTimer():
 
                 print(_saveimagefilename)
 
-                if bIsCorrectPerson:
-
-
                 _win_ValueMain2.value = format(_temperature, '.1f')
                 if _temperature > 37.5:
                     _win_ValueMain2.bg = '#FF0000'
