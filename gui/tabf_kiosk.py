@@ -147,7 +147,7 @@ def NormalFormTimer():
                 _temperature = float(lines[1])
                 _createdate = lines[2]
                 _type = lines[3]
-                _saveimagefilename = _id + datetime.now().strftime('%Y-%m-%d %H-%M-%S') + '.jpg'
+                _saveimagefilename = _id + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S') + '.jpg'
 
 
                 for persondata in data_person['Result']:
