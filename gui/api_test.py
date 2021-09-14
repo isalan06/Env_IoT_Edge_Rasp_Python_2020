@@ -36,7 +36,7 @@ def qrcode():
     f = open(infofilename, 'w')
     f.write(qrcode + '\n')
     #f.write(str(temperature) + '\n')
-    f.write(format(value, '.1f') + '\n')
+    f.write(format(temperature, '.1f') + '\n')
     f.write(createtime + '\n')
     f.write(sensortype)
     f.close()
