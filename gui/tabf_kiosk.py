@@ -28,7 +28,7 @@ Area_Name = ''
 Phase_Name = ''
 
 NoTriggerCount = 0
-ResetStatusCount = 4
+ResetStatusCount = 10
 bResetFlag = True
 
 
@@ -130,6 +130,9 @@ def NormalFormTimer():
 
     if bOpenNormalForm:
         if os.path.exists(triggerfilename):
+
+            print("Get Data From Camera")
+
             os.remove(triggerfilename)
             NoTriggerCount = 0
             bResetFlag = False
@@ -175,9 +178,10 @@ def NormalFormTimer():
                 else:
                     _win_ValueMain2.bg = '#FFFF00'
 
-                
-
+            
+            print("Check Image")
             if os.path.exists(imagefilename):
+                print("Image Exist")
                 _win_ImageMain.image = imagefilename
 
                 updateimagefilename = os.path.join(fileString, _saveimagefilename)
