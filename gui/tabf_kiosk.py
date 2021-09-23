@@ -130,6 +130,7 @@ def NormalFormTimer():
     _saveimagefilename = ''
 
     if bOpenNormalForm:
+        print('Check Trigger' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
         if os.path.exists(triggerfilename):
             time.sleep(100)
             print("Get Data From Camera")
@@ -379,6 +380,8 @@ def Window3Cancel():
 
 def WindowMainClose():
     global bOpenNormalForm
+
+    print('Close Main Window')
     
     bOpenNormalForm = False
     window_main.hide()
