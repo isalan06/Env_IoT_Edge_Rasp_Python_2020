@@ -59,29 +59,26 @@ def ExecuteProcedure():
         app0.error('取得考場資訊失敗', '程序失敗')
 
 bFinish = False
+bTriggerUpdateImage = False
+sSaveImageFileName = ''
+sUpdateImageFileName = ''
+
 def DoWork():
+    global bTriggerUpdateImage
     while bFinish == False:
 
-        triggerfilename = '/home/pi/Data/trigger.txt'
-        infofilename = '/home/pi/Data/info.txt'
-        imagefilename = '/home/pi/Data/person.jpg'
-        if bOpenTestForm:
-            if os.path.exists(triggerfilename):
-                os.remove(triggerfilename)
+        if bTriggerUpdateImage:
+            bTriggerUpdateImage = False
+            url = "https://svc.tabf.org.tw/_WebService/SendIdentityPhoto.ashx"
 
-                if os.path.exists(infofilename):
-                    lines = []
-                    with open(infofilename) as f:
-                        lines = f.readlines()
-                    _id = lines[0]
-                    _temperature = float(lines[1])
-                    _createdate = lines[2]
-                    _type = lines[3]
+            try:
+                payload={}
+                files=[('PhotoFile',(sSaveImageFileName,open(sUpdateImageFileName,'rb'),'image/jpeg'))]
 
-                    _id_text.value = _id
-                    _temperature_text.value = str(_temperature)
-                    _time_text.value = _createdate
-
+                response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                    print('Update Picture - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+            except:
+                    print('Update Test Image Error')
 
         time.sleep(0.5)
     
@@ -115,6 +112,9 @@ def NormalFormTimer():
     global NoTriggerCount
     global bResetFlag 
     global bDoNothing
+    global sSaveImageFileName
+    global sUpdateImageFileName
+    global bTriggerUpdateImage
     #print("Normal Form Timer")
     triggerfilename = '/home/pi/Data/trigger.txt'
     infofilename = '/home/pi/Data/info.txt'
@@ -196,16 +196,11 @@ def NormalFormTimer():
                 if bIsCorrectPerson:
                     _win_ValueMain1.value = "報到成功"
                     _win_ValueMain1.bg = '#32CD32'
-                    url = "https://svc.tabf.org.tw/_WebService/SendIdentityPhoto.ashx"
 
-                    try:
-                        payload={}
-                        files=[('PhotoFile',(_saveimagefilename,open(updateimagefilename,'rb'),'image/jpeg'))]
-
-                        response = requests.request("POST", url, headers=headers, data=payload, files=files)
-                        print('Update Picture - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
-                    except:
-                        print('Update Test Image Error')
+                    sSaveImageFileName = _saveimagefilename
+                    sUpdateImageFileName = updateimagefilename
+                    bTriggerUpdateImage = True
+                    
                 else:
                     _win_ValueMain1.value = "非本場考生"
                     _win_ValueMain1.bg = '#FF0000'
@@ -256,6 +251,8 @@ def OpenTestForm():
     app0.destroy()
 
 def CloseTestForm():
+    global bFinish
+    bFinish = True
     app02.destroy()
 
 def Window1Next():
@@ -393,13 +390,16 @@ def WindowMainClose():
     window_main.hide()
 
 def CloseMainForm():
+    global bFinish
+    bFinish = True
     app0.destroy()
 
+print('TABF KIOSK Program Version: 1.0')
 print('TABF KIOSK Program start...')
 
 
-#MyThread = Thread(target=DoWork)
-#MyThread.start()
+MyThread = Thread(target=DoWork)
+MyThread.start()
 
 if True:
 
