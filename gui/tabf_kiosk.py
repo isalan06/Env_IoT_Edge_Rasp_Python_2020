@@ -288,7 +288,7 @@ def Window1Next():
     _win_combo2.clear()
     _index2=0
     for location_data in Bot_Area:
-        _win_combo2.insert(_index2, location_data['AreaName'])
+        _win_combo2.insert(_index2, str(location_data['ExamNo']) + '試 - ' + location_data['AreaName'])
         _index2=_index2+1
     window_1.hide()
     _win_combo3.select_default()
@@ -394,7 +394,7 @@ def CloseMainForm():
     bFinish = True
     app0.destroy()
 
-print('TABF KIOSK Program Version: 1.0')
+print('TABF KIOSK Program Version: 2.0')
 print('TABF KIOSK Program start...')
 
 
