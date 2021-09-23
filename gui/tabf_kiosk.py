@@ -90,7 +90,7 @@ def TestFormTimer():
     imagefilename = '/home/pi/Data/person.jpg'
     if bOpenTestForm:
         if os.path.exists(triggerfilename):
-            time.sleep(200)
+            time.sleep(1)
             os.remove(triggerfilename)
 
             if os.path.exists(infofilename):
@@ -130,9 +130,9 @@ def NormalFormTimer():
     _saveimagefilename = ''
 
     if bOpenNormalForm:
-        print('Check Trigger' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+        #print('Check Trigger' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
         if os.path.exists(triggerfilename):
-            time.sleep(100)
+            time.sleep(1)
             print("Get Data From Camera")
 
             os.remove(triggerfilename)
