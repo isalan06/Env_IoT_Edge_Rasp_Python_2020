@@ -28,8 +28,10 @@ Area_Name = ''
 Phase_Name = ''
 
 NoTriggerCount = 0
-ResetStatusCount = 6
+ResetStatusCount = 30
 bResetFlag = True
+
+bDoNothing = True
 
 
 def ExecuteProcedure():
@@ -112,6 +114,7 @@ def TestFormTimer():
 def NormalFormTimer():
     global NoTriggerCount
     global bResetFlag 
+    global bDoNothing
     #print("Normal Form Timer")
     triggerfilename = '/home/pi/Data/trigger.txt'
     infofilename = '/home/pi/Data/info.txt'
@@ -129,10 +132,11 @@ def NormalFormTimer():
 
     _saveimagefilename = ''
 
-    if bOpenNormalForm:
+    if bOpenNormalForm and bDoNothing:
         #print('Check Trigger' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+        bDoNothing = False
         if os.path.exists(triggerfilename):
-            time.sleep(1)
+            time.sleep(0.05)
             print("Get Data From Camera - " + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 
             os.remove(triggerfilename)
@@ -219,6 +223,8 @@ def NormalFormTimer():
             _win_ImageMain.image = "/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png"
             _win_ValueMain2.value = '0.0'
             _win_ValueMain2.bg = '#FFFF00'
+
+        bDoNothing = True
 
 
 
@@ -440,7 +446,7 @@ if True:
     _box2 = Box(window_main, layout="grid", width=220, height=340, grid=[0,1])
     _box3 = Box(window_main, layout="grid", width=560, height=340, grid=[1,1])
     _win_showLabelMain = Text(_box1, text="報到資訊", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
-    _win_showLabelMain.repeat(500, NormalFormTimer, args=[])
+    _win_showLabelMain.repeat(100, NormalFormTimer, args=[])
     _win_CancelMain = PushButton(_box1, grid=[1,0], width=4, command=WindowMainClose, text='關閉', align="left")
     _win_ImageMain = Picture(_box2, image="/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png", width=210, height = 330, grid = [0, 0])
     _win_TitleMain1 = Text(_box3, text="報到狀態", size=24, font="Times New Roman", color="black", grid = [0,0], align="left")
