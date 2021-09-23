@@ -76,7 +76,10 @@ def DoWork():
                 files=[('PhotoFile',(sSaveImageFileName,open(sUpdateImageFileName,'rb'),'image/jpeg'))]
 
                 response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                print(sSaveImageFileName)
+                print(sUpdateImageFileName)
                 print('Update Picture - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+                print(response.json())
             except:
                 print('Update Test Image Error')
 
