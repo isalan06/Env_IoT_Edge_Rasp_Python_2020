@@ -351,6 +351,8 @@ def Window3Next():
     global data_person
     global bOpenNormalForm
 
+    print('Next3')
+
     url = "http://svc.tabf.org.tw/_webservice/GetBotPassInfoForIdentityPhoto.ashx?BotID=" + str(Bot_id) + "&AreaID=" + str(Area_id) + "&ExamNo=" + str(Exam_id)
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
@@ -362,6 +364,7 @@ def Window3Next():
             
             window_main.show()
             bOpenNormalForm = True
+            print('Open Main Window')
         else:
             print('Get Person Information Error: ' + data_person['ErrorMsg'])
             window_3.error('下載考生資料失敗', data_person['ErrorMsg'])
@@ -369,7 +372,7 @@ def Window3Next():
         print('Get Person Information Error')
         window_3.error('下載考生資料失敗', '程序失敗')
 
-    print('Next3')
+    
 
 def Window3Cancel():
     window_3.hide()
