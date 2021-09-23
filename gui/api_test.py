@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 import os
 import base64
+import time
 
 app = Flask(__name__)
 
@@ -12,7 +13,7 @@ def index():
 
 @app.route('/qrcode', methods=['POST'])
 def qrcode():
-    print('get qrcode')
+    print('get qrcode' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
     qrcode = None
     data = request.get_json()
     if data and "qrcode" in data:
@@ -40,14 +41,18 @@ def qrcode():
     f.write(createtime + '\n')
     f.write(sensortype)
     f.close()
+    print('Write Information File')
 
     img_str = data['imageData']
     img_data = base64.b64decode(img_str)
     with open(imagefilename, 'wb') as f2:
-      f2.write(img_data)
+        f2.write(img_data)
+        print('Write Image File')
+        
 
     with open(triggerfilename, 'w') as f3:
         f3.write('Trigger')
+        print('Write Trigger File - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 
 
     return "OK"

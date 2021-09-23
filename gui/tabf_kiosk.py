@@ -28,7 +28,7 @@ Area_Name = ''
 Phase_Name = ''
 
 NoTriggerCount = 0
-ResetStatusCount = 10
+ResetStatusCount = 6
 bResetFlag = True
 
 
@@ -90,6 +90,7 @@ def TestFormTimer():
     imagefilename = '/home/pi/Data/person.jpg'
     if bOpenTestForm:
         if os.path.exists(triggerfilename):
+            time.sleep(200)
             os.remove(triggerfilename)
 
             if os.path.exists(infofilename):
@@ -130,7 +131,7 @@ def NormalFormTimer():
 
     if bOpenNormalForm:
         if os.path.exists(triggerfilename):
-
+            time.sleep(100)
             print("Get Data From Camera")
 
             os.remove(triggerfilename)
@@ -178,10 +179,8 @@ def NormalFormTimer():
                 else:
                     _win_ValueMain2.bg = '#FFFF00'
 
-            
-            print("Check Image")
             if os.path.exists(imagefilename):
-                print("Image Exist")
+                print("Show Information - " + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
                 _win_ImageMain.image = imagefilename
 
                 updateimagefilename = os.path.join(fileString, _saveimagefilename)
@@ -199,7 +198,7 @@ def NormalFormTimer():
                         files=[('PhotoFile',(_saveimagefilename,open(updateimagefilename,'rb'),'image/jpeg'))]
 
                         response = requests.request("POST", url, headers=headers, data=payload, files=files)
-                        print(response)
+                        print('Update Picture - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
                     except:
                         print('Update Test Image Error')
                 else:
@@ -210,14 +209,15 @@ def NormalFormTimer():
             else:
                 _win_ValueMain1.value = "無影像資料"
                 _win_ValueMain1.bg = '#FF0000'
-    
-    if (NoTriggerCount > ResetStatusCount) and (bResetFlag == False):
-        bResetFlag = True
-        _win_ValueMain1.value = "等待報到"
-        _win_ValueMain1.bg = '#FFFF00'
-        _win_ImageMain.image = "/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png"
-        _win_ValueMain2.value = '0.0'
-        _win_ValueMain2.bg = '#FFFF00'
+
+        elif (NoTriggerCount > ResetStatusCount) and (bResetFlag == False):
+            print('Reset Information - ' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
+            bResetFlag = True
+            _win_ValueMain1.value = "等待報到"
+            _win_ValueMain1.bg = '#FFFF00'
+            _win_ImageMain.image = "/home/pi/project/test/Env_IoT_Edge_Rasp_Python_2020/gui/user.png"
+            _win_ValueMain2.value = '0.0'
+            _win_ValueMain2.bg = '#FFFF00'
 
 
 
