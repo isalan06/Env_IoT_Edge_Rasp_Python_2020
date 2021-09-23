@@ -133,7 +133,7 @@ def NormalFormTimer():
         #print('Check Trigger' + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
         if os.path.exists(triggerfilename):
             time.sleep(1)
-            print("Get Data From Camera")
+            print("Get Data From Camera - " + datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S'))
 
             os.remove(triggerfilename)
             NoTriggerCount = 0
