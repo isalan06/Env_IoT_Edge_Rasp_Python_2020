@@ -330,12 +330,15 @@ def Window2Next():
 
 
     if _win_combo3.value == '二試':
+        Exam_id = 2
         Phase_Name = '二試'
         PhaseNo = 4
     elif _win_combo3.value == '三試':
+        Exam_id = 3
         Phase_Name = '三試'
         PhaseNo = 6
     else:
+        Exam_id = 1
         Phase_Name = '一試'
         PhaseNo = 2 
 
