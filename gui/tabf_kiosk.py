@@ -310,14 +310,16 @@ def Window2Next():
     global Phase_Name
 
     area_item = _win_combo2.value
+    
     if area_item == None:
         Area_id = Bot_Area[0]['AreaID']
         Exam_id = Bot_Area[0]['ExamNo']
         Area_Name = Bot_Area[0]['AreaName']
         Area_index = 0
     else:
-        Area_Name = area_item
+        Area_Name = area_item.split(' - ')[1]
         _index = 0
+        print(Area_Name)
         for area_data in Bot_Area:
             if area_data['AreaName'] == Area_Name:
                 Area_index = _index
