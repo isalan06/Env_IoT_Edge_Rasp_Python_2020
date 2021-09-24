@@ -329,30 +329,15 @@ def Window2Next():
             _index = _index + 1
 
 
-    #if _win_combo3.value == '二試':
-        #Phase_Name = '二試'
-        #PhaseNo = 4
-    #elif _win_combo3.value == '三試':
-        #Phase_Name = '三試'
-        #PhaseNo = 6
-    #else:
-        #Phase_Name = '一試'
-        #PhaseNo = 2 
-
-    if Exam_id == 2:
+    if _win_combo3.value == '二試':
         Phase_Name = '二試'
         PhaseNo = 4
-    elif Exam_id == 3:
+    elif _win_combo3.value == '三試':
         Phase_Name = '三試'
         PhaseNo = 6
     else:
         Phase_Name = '一試'
         PhaseNo = 2 
-
-    print(Exam_id)
-    print(PhaseNo)
-
-
 
     print('Select Index: ' + str(Area_index))
     print('Area id: ' + str(Area_id))
