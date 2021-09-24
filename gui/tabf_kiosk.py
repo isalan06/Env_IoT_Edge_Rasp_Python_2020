@@ -349,6 +349,9 @@ def Window2Next():
         Phase_Name = '一試'
         PhaseNo = 2 
 
+    print(Exam_id)
+    print(PhaseNo)
+
 
 
     print('Select Index: ' + str(Area_index))
