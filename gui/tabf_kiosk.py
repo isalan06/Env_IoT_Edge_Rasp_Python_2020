@@ -170,9 +170,9 @@ def NormalFormTimer():
                     if _get_id == _id:
                         bIsCorrectPerson = True
                         _productid = str(persondata['ProductID'])
-                        _pid = _id[4:]
+                        _pid = _id[6:]
                         _phoneno = persondata['MobilePhone']
-                        _phoneno = _phoneno[6:]
+                        _phoneno = _phoneno[4:]
                         _areaid = str(persondata['AreaID'])
                         _phaseno = str(PhaseNo)
                         _saveimagefilename = _productid + '_' + _phoneno + '_' + _pid + '_' + _areaid + '_' + _phaseno + '_' + _photostatus + '.jpg'
