@@ -361,6 +361,7 @@ def Window3Next():
     print('Next3')
 
     url = "http://svc.tabf.org.tw/_webservice/GetBotPassInfoForIdentityPhoto.ashx?BotID=" + str(Bot_id) + "&AreaID=" + str(Area_id) + "&ExamNo=" + str(Exam_id)
+    print(url)
     try:
         response = requests.request("GET", url, headers=headers, data=payload)
         data_person = response.json()
