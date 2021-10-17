@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.1'
+sSoftwareVersion='1.1.1.2'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1901,7 +1901,8 @@ def UpdateLocalPicture():
         intervalTime = tEnd - tStart
         if intervalTime >= MyParameter.CameraFValue:
             tStart=time.time()
-            bUpdate=True
+            if (datetime.now().hour >= 5) and (datetime.now().hour <= 21):
+                bUpdate=True
 
         #endregion
 
