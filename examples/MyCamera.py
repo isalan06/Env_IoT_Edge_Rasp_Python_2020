@@ -32,7 +32,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.3'
+sSoftwareVersion='1.0.3.4'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -275,7 +275,7 @@ def DoWork():
         try:
             cap = cv2.VideoCapture(0)
             encode = cv2.VideoWriter_fourcc(*'mp4v')
-            out = cv2.VideoWriter(sVideoFileName, encode, 15.0, (640, 480))
+            out = cv2.VideoWriter(sVideoFileName, encode, 2.0, (1920, 1080))
 
             start_time=time.time()
             while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
