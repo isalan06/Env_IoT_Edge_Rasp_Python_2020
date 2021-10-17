@@ -16,6 +16,8 @@ import base64
 from PIL import Image
 from io import BytesIO
 
+from imutils.video import VideoStream
+
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
     ANSI_GREEN = ''
@@ -32,7 +34,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.4'
+sSoftwareVersion='1.0.3.5'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -273,32 +275,62 @@ def DoWork():
     if bCaptureVideoTrigger == True:
         bCaptureVideoTrigger = False
         try:
-            cap = cv2.VideoCapture(0)
-            encode = cv2.VideoWriter_fourcc(*'mp4v')
-            out = cv2.VideoWriter(sVideoFileName, encode, 2.0, (1920, 1080))
+            #cap = cv2.VideoCapture(0)
+            #encode = cv2.VideoWriter_fourcc(*'mp4v')
+            #out = cv2.VideoWriter(sVideoFileName, encode, 2.0, (1920, 1080))
 
-            start_time=time.time()
-            while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
-                ret, frame = cap.read()
-                if ret == True:
+            with picamera.PiCamera() as camera:
+                camera.resolution = (1920, 1088)
+                camera.framerate = 2
+                rawCapture = PiRGBArray(camera, size=(1920, 1088))
+
+                fps_out = 2
+
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                out = cv2.VideoWriter(sVideoFileName, fourcc, fps_out, (1920, 1088))
+                start_time=time.time()
+
+                for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+                    image = frame.array
+                    #save the frame to a file
+                    out.write(image)
+
+                    # clear the stream in preparation for the next frame
+                    rawCapture.truncate(0)
+
+                    if int(time.time()-start_time)>=MyParameter.CaptureVideoSecond:
+                        break
+
+                out.release()
+                bCaptureVideoDone = True
+            print(ANSI_GREEN + "Capture Video Success!" + ANSI_OFF)
+        except:
+            bCaptureVideoError = True
+            print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
+                
+
+            #start_time=time.time()
+            #while(int(time.time()-start_time)<MyParameter.CaptureVideoSecond):
+                #ret, frame = cap.read()
+                #if ret == True:
                     #showString3 = "Time:" + datetime.now().strftime('%Y-%m-%d %H:%M:%S')# + "; Location: (260.252, 23.523)"
                     #showString = "EnvTemp(" + str(temp_c) + "C), EnvHumidity(" + str(humidity) + "%RH)" 
                     #showString2 = "Max Temp(" + str(thermalmaxValue) + "C), Min Temp(" + str(thermalminValue) + "C)"
                     #cv2.putText(frame, showString3, (0, 420), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
                     #cv2.putText(frame, showString, (0, 440), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
                     #cv2.putText(frame, showString2, (0, 460), cv2.FONT_HERSHEY_COMPLEX_SMALL , 1, (0, 255, 255), 1)
-                    out.write(frame)
-                else:
-                    break
+                    #out.write(frame)
+                #else:
+                    #break
 
-            cap.release()
-            out.release()
-            cv2.destroyAllWindows()
-            bCaptureVideoDone = True
-            print(ANSI_GREEN + "Capture Video Success!" + ANSI_OFF)
-        except:
-            bCaptureVideoError = True
-            print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
+            #cap.release()
+            #out.release()
+            #cv2.destroyAllWindows()
+            #bCaptureVideoDone = True
+            #print(ANSI_GREEN + "Capture Video Success!" + ANSI_OFF)
+        #except:
+            #bCaptureVideoError = True
+            #print(ANSI_RED + "Capture Video Failure!" + ANSI_OFF)
 
     iCameraCount = iCameraCount + 1
     if iCameraCount >= 1000:
