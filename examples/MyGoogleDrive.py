@@ -174,7 +174,7 @@ def UpdateImageToGoogleDrive2(sn, filename, recordtime):
 
     try:
         if MyCamera.bNormalImageTransferSuccess:
-            url = MyParameter.C_Image_Update_API + "?sn=" + str(sn) + "&filename=" + str(filename)　+ "&datetime=" + str(recordtime)
+            url = MyParameter.C_Image_Update_API + "?sn=" + str(sn) + "&filename=" + str(filename) + "&datetime=" + str(recordtime)
 
             payload=MyCamera.NormalImageByteArray
             headers = { 'Content-Type': 'image/jpeg' }
