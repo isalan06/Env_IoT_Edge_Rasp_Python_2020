@@ -134,6 +134,19 @@ def CreateImageFileName(folderString, nowtime, baseFolderString="/home/pi/Pictur
     bCapturePictureTrigger = True
     return filename
 
+def CreateImageFileName2(nowtime):
+    global bCameraUsed
+    global sImageFileName
+    global bCapturePictureTrigger
+    global bCapturePictureDone
+    global bCapturePictureError
+
+    bCapturePictureDone = False
+    bCapturePictureError = False
+    filename = "sn_" + nowtime.strftime('%Y-%m-%d %H-%M-%S') + ".jpg"
+    bCapturePictureTrigger = True
+    return filename
+
 def CreateVideoFileName(folderString, nowtime, baseFolderString="/home/pi/Pictures/CapVideo/"):
     global sVideoFileName
     global bCaptureVideoTrigger

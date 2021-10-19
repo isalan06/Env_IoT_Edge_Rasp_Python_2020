@@ -34,7 +34,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-from MyGoogleDrive import UpdateImageToGoogleDrive
+from MyGoogleDrive import UpdateImageToGoogleDrive2
 from MyGoogleDrive import UpdateVideoToGoogleDrive
 
 from MyParameter import DIO_Initialize
@@ -1718,7 +1718,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/Pictures/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString, nowtime)
+            filename = MyCamera.CreateImageFileName2(nowtime)
             fileString += filename
 
         if (bUpdateKeep and MyCamera.bCapturePictureError):
@@ -1735,7 +1735,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateImageToGoogleDrive(filename, fileString, True)
+            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             MyCamera.bCapturePictureDone = False   
             bUsed = False
 
@@ -1753,7 +1753,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/CapPictures/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/CapPictures/")
+            filename = MyCamera.CreateImageFileName2(nowtime)
             fileString += filename
 
         if (bManualCaptureImageKeep and MyCamera.bCapturePictureError):
@@ -1769,7 +1769,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateImageToGoogleDrive(filename, fileString, False)
+            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             MyCamera.bCapturePictureDone = False  
             bUsed = False
 
@@ -1823,7 +1823,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
+            filename = MyCamera.CreateImageFileName2(nowtime)
             fileString += filename
             
 
@@ -1843,7 +1843,7 @@ def UpdateLocalPicture():
             VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
             VibrationAlarmData["PhotoFileName"]=filename
             VibrationAlarmData["VideoFileName"]="NA"
-            UpdateImageToGoogleDrive(filename, fileString, True)
+            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             #VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
             #VibrationAlarmTriggerThread.start()
             bVibrationAlarmUpdateTrigger = True
@@ -1865,7 +1865,7 @@ def UpdateLocalPicture():
             nowtime = datetime.now()
             datestring = nowtime.strftime('%Y%m%d')
             fileString ="/home/pi/Pictures/VibrationAlarmPictures/" + datestring + "/"
-            filename = MyCamera.CreateImageFileName(fileString, nowtime, "/home/pi/Pictures/VibrationAlarmPictures/")
+            filename = MyCamera.CreateImageFileName2(nowtime)
             fileString += filename
             
 
@@ -1885,7 +1885,7 @@ def UpdateLocalPicture():
             FireAlarmData["Command"]="UpdateFireAlarmTrigger"
             FireAlarmData["PhotoFileName"]=filename
             FireAlarmData["VideoFileName"]="NA"
-            UpdateImageToGoogleDrive(filename, fileString, True)
+            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             #FireAlarmTriggerThread = threading.Thread(target=FireAlarmTrigger)
             #FireAlarmTriggerThread.start()
             bFireAlarmUpdateTrigger = True
