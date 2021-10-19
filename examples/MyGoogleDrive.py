@@ -27,7 +27,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.0.2'
+sSoftwareVersion='1.0.1.0'
 
 sFileUpdateStatus='Stop'
 
@@ -101,8 +101,6 @@ def UpdateImageToGoogleDrive(filename, fileString, deletefile):
             print(ANSI_GREEN + "    Delete Picture Success" + ANSI_OFF)
         except:
             print(ANSI_RED + "    Delete Picture Failure" + ANSI_OFF)
-
-
 
 def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
     global sFileUpdateStatus

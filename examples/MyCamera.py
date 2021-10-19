@@ -34,7 +34,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.3.5'
+sSoftwareVersion='1.0.4.0'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -63,6 +63,19 @@ CropRCalculateValue=0
 CropGCalculateValue=0
 CropBCalculateValue=0
 fODResult=1.0
+NormalImageByteArray=0
+
+def frame2ByteArray(frame):
+    global NormalImageByteArray
+
+    try:
+        img = Image.fromarray(frame) #將每一幀轉為Image
+        output_buffer = BytesIO() #建立一個BytesIO
+        img.save(output_buffer, format='JPEG') #寫入output_buffer
+        NormalImageByteArray = output_buffer.getvalue() #在記憶體中讀取
+        print('Transfer Normal Image Data Success')
+    except:
+        print(ANSI_RED + 'Transfer Normal Image Data Failure' + ANSI_OFF)
 
 def frame2base64(frame):
     global sSmallImageData
@@ -88,9 +101,9 @@ def frame2base64(frame):
         except:
             print(ANSI_RED + 'Transfer Base64 Failure' + ANSI_OFF)
 
-        print('Transfer Image Data Success')
+        print('Transfer Small Image Data Success')
     except:
-        print(ANSI_RED + 'Transfer Image Data Failure' + ANSI_OFF)
+        print(ANSI_RED + 'Transfer Small Image Data Failure' + ANSI_OFF)
 
 def CheckCameraRunning():
     bResult = bCapturePictureTrigger or bCapturePictureDone or bCapturePictureError or bCaptureVideoTrigger or bCaptureVideoDone or bCaptureVideoError
@@ -239,6 +252,8 @@ def DoWork():
                     camera.capture(rawCapture, format="bgr")
                     image = rawCapture.array
 
+                    frame2ByteArray(image)
+
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
                     CheckObjectDetect(gray_image, image)
@@ -277,7 +292,7 @@ def DoWork():
         try:
             #cap = cv2.VideoCapture(0)
             #encode = cv2.VideoWriter_fourcc(*'mp4v')
-            #out = cv2.VideoWriter(sVideoFileName, encode, 2.0, (1920, 1080))
+            #out = cv2.VideoWriter(sVideoFileName, encode, 2.0, (640, 480))
 
             with picamera.PiCamera() as camera:
                 camera.resolution = (1920, 1088)
