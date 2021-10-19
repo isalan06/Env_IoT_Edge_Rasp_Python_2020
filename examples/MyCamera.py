@@ -64,17 +64,21 @@ CropGCalculateValue=0
 CropBCalculateValue=0
 fODResult=1.0
 NormalImageByteArray=0
+bNormalImageTransferSuccess=False
 
 def frame2ByteArray(frame):
     global NormalImageByteArray
+    global bNormalImageTransferSuccess
 
     try:
         img = Image.fromarray(frame) #將每一幀轉為Image
         output_buffer = BytesIO() #建立一個BytesIO
         img.save(output_buffer, format='JPEG') #寫入output_buffer
         NormalImageByteArray = output_buffer.getvalue() #在記憶體中讀取
+        bNormalImageTransferSuccess = True
         print('Transfer Normal Image Data Success')
     except:
+        bNormalImageTransferSuccess = False
         print(ANSI_RED + 'Transfer Normal Image Data Failure' + ANSI_OFF)
 
 def frame2base64(frame):
@@ -272,7 +276,9 @@ def DoWork():
 
     if bCapturePictureTrigger == True:
         bCapturePictureTrigger = False
-
+        if bNormalImageTransferSuccess:
+            bCapturePictureDone = True
+        '''
         try:
             with picamera.PiCamera() as camera:
                 camera.shutter_speed=MyParameter.C_ShutterSpeed
@@ -286,6 +292,7 @@ def DoWork():
         except:
             bCapturePictureError = True
             print(ANSI_RED + "Capture Picture Failure!" + ANSI_OFF)
+        '''
 
     if bCaptureVideoTrigger == True:
         bCaptureVideoTrigger = False

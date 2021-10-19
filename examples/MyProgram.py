@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.2'
+sSoftwareVersion='1.1.1.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1030,6 +1030,8 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['ShutterSpeed']=MyParameter.C_ShutterSpeed
                 InformationData[SetKey]['ISO']=MyParameter.C_ISO
                 InformationData[SetKey]['Rotation']=MyParameter.C_Rotation
+                InformationData[SetKey]['ImageAPI']=MyParameter.C_Image_Update_API
+                InformationData[SetKey]['VideoAPI']=MyParameter.C_Video_Update_API
                 InformationData[SetKey]['OD_Function']=MyParameter.C_OD_Funciton
                 InformationData[SetKey]['OD_X1']=MyParameter.C_OD_X1
                 InformationData[SetKey]['OD_Y1']=MyParameter.C_OD_Y1
@@ -1447,6 +1449,8 @@ def GetCommandFromCloud():
                     MyParameter.C_EF_Function=data['CameraParameter']['EF_Function']
                     MyParameter.C_EF_X1=data['CameraParameter']['EF_X1']
                     MyParameter.C_EF_X2=data['CameraParameter']['EF_X2']
+                    MyParameter.C_Image_Update_API=data['CameraParameter']['ImageAPI']
+                    MyParameter.C_Video_Update_API=data['CameraParameter']['VideoAPI']
 
                     MyParameter.SaveParameter2()
 

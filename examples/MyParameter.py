@@ -4,7 +4,7 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.1.2'
+sSoftwareVersion='1.0.1.4'
 
 #Parameter
 VibrationWarningValue=30.0
@@ -44,6 +44,9 @@ C_OD_G_Light=0.0
 C_OD_G_R=0.0
 C_OD_G_G=0.0
 C_OD_G_B=0.0
+
+C_Image_Update_API=''
+C_Video_Update_API=''
 
 
 #Parameter function           
@@ -167,6 +170,9 @@ def CreateParameter2():
     global C_OD_G_G
     global C_OD_G_B
 
+    global C_Image_Update_API
+    global C_Video_Update_API
+
     if not os.path.isdir("/home/pi/Parameter/"):
         os.mkdir("/home/pi/Parameter/")
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
@@ -176,8 +182,8 @@ def CreateParameter2():
     config2['CameraSetting']['Parameter01'] = str(C_ISO)
     config2['CameraSetting']['Parameter02'] = str(C_ShutterSpeed)
     config2['CameraSetting']['Parameter03'] = str(C_Rotation)
-    config2['CameraSetting']['Parameter04'] = '0'
-    config2['CameraSetting']['Parameter05'] = '0'
+    config2['CameraSetting']['Parameter04'] = str(C_Image_Update_API)
+    config2['CameraSetting']['Parameter05'] = str(C_Video_Update_API)
     config2['CameraSetting']['Parameter06'] = '0'
     config2['CameraSetting']['Parameter07'] = '0'
     config2['CameraSetting']['Parameter08'] = '0'
@@ -244,6 +250,9 @@ def LoadParameter():
     global C_OD_G_G
     global C_OD_G_B
 
+    global C_Image_Update_API
+    global C_Video_Update_API
+
     filePathString = "/home/pi/Parameter/Parameter.ini"
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
 
@@ -274,6 +283,8 @@ def LoadParameter():
         C_ISO = config2['CameraSetting'].getint('Parameter01')
         C_ShutterSpeed = config2['CameraSetting'].getint('Parameter02')
         C_Rotation = config2['CameraSetting'].getint('Parameter03')
+        C_Image_Update_API = str(config2['CameraSetting'].get('Parameter04'))
+        C_Video_Update_API = str(config2['CameraSetting'].get('Parameter05'))
         C_OD_Funciton = config2['CameraIgnition'].getint('Parameter01')
         C_OD_X1 = config2['CameraIgnition'].getint('Parameter02')
         C_OD_Y1 = config2['CameraIgnition'].getint('Parameter03')
@@ -353,6 +364,9 @@ def SaveParameter2():
     global C_OD_G_G
     global C_OD_G_B
 
+    global C_Image_Update_API
+    global C_Video_Update_API
+
     filePathString2 = "/home/pi/Parameter/CameraParameter.ini"
     if os.path.isfile(filePathString2):
         config2 = configparser.ConfigParser()
@@ -360,8 +374,8 @@ def SaveParameter2():
         config2['CameraSetting']['Parameter01'] = str(C_ISO)
         config2['CameraSetting']['Parameter02'] = str(C_ShutterSpeed)
         config2['CameraSetting']['Parameter03'] = str(C_Rotation)
-        config2['CameraSetting']['Parameter04'] = '0'
-        config2['CameraSetting']['Parameter05'] = '0'
+        config2['CameraSetting']['Parameter04'] = str(C_Image_Update_API)
+        config2['CameraSetting']['Parameter05'] = str(C_Video_Update_API)
         config2['CameraSetting']['Parameter06'] = '0'
         config2['CameraSetting']['Parameter07'] = '0'
         config2['CameraSetting']['Parameter08'] = '0'

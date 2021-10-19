@@ -4,6 +4,9 @@
 import os
 
 import MyParameter
+import MyCamera
+
+import requests
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -166,4 +169,28 @@ def UpdateVideoToGoogleDrive(filename, fileString, deletefile):
         except:
             print(ANSI_RED + "    Delete Video Failure" + ANSI_OFF)
 
+def UpdateImageToGoogleDrive2(sn, filename, recordtime):
+    global sFileUpdateStatus
 
+    try:
+        if MyCamera.bNormalImageTransferSuccess:
+            url = MyParameter.C_Image_Update_API + "?sn=" + str(sn) + "&filename=" +　str(filename)　+ "&datetime=" + str(recordtime)
+
+            payload=MyCamera.NormalImageByteArray
+            headers = { 'Content-Type': 'image/jpeg' }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+            print("\033[1;34mUpdate Picture To Google Drive Success\033[0m")
+            sFileUpdateStatus='Running'
+        else:
+            print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
+            sFileUpdateStatus='Stop'
+
+                                    
+        
+
+    except Exception as e:
+        print(e)
+        print("\033[1;31mUpdate Picture To Google Drive Failure\033[0m")
+        sFileUpdateStatus='Stop'
