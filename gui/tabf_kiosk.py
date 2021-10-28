@@ -352,7 +352,7 @@ def Window2Next():
     print('Exam id: ' + str(Exam_id))
     print('Phase No: ' + str(PhaseNo))
     print("Next2")
-    TestLocation = _win_combo1.value + '-' + _win_combo2.value
+    TestLocation = Bot_Name + '-' + Area_Name + '-' + Phase_Name
     print(TestLocation)
 
     _win3_value1.value = Bot_Name
@@ -432,7 +432,7 @@ def CloseMainForm():
     bFinish = True
     app0.destroy()
 
-print('TABF KIOSK Program Version: 2.0')
+print('TABF KIOSK Program Version: 1.1')
 print('TABF KIOSK Program start...')
 
 
@@ -441,7 +441,7 @@ MyThread.start()
 
 if True:
 
-    app0 = App(title='TABF 報到機 Ver2.0', width=600, height =350, layout="grid")
+    app0 = App(title='TABF 報到機 Ver1.1', width=600, height =350, layout="grid")
 
     window_1 = Window(app0, title="選擇考試項目", layout="grid", width=500, height =300)
     window_1.hide()
