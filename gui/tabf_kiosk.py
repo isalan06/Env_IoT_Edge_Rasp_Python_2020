@@ -35,6 +35,7 @@ bDoNothing = True
 
 FolderID = ''
 TestLocation = ''
+TestTime = ''
 
 
 def ExecuteProcedure():
@@ -331,6 +332,7 @@ def Window2Next():
     global Area_Name
     global Phase_Name
     global TestLocation
+    
 
     area_item = _win_combo2.value
     
@@ -388,6 +390,7 @@ def Window3Next():
     global data_person
     global bOpenNormalForm
     global FolderID
+    global TestTime
 
     print('Next3')
 
