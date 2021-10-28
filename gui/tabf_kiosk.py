@@ -404,7 +404,7 @@ def Window3Next():
 
             # Get Folder ID
             TestTime = datetime.datetime.now().strftime('%Y%m%d')
-            MachineID = 'Kiosk-2'
+            MachineID = 'Kiosk_2'
             try:
                 print('Get Folder ID')
                 url2 = "http://isalan06.asuscomm.com:13000/TABFKIOSKAPI/GetGoogleDriveFolderID?MachineID=" + MachineID + "&TestTime=" + TestTime + "&TestLocation=" + TestLocation
