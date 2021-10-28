@@ -410,8 +410,9 @@ def Window3Next():
         else:
             print('Get Person Information Error: ' + data_person['ErrorMsg'])
             window_3.error('下載考生資料失敗', data_person['ErrorMsg'])
-    except:
+    except Exception as e:
         print('Get Person Information Error')
+        print(e)
         window_3.error('下載考生資料失敗', '程序失敗')
 
     
