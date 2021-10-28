@@ -33,6 +33,9 @@ bResetFlag = True
 
 bDoNothing = True
 
+FolderID = ''
+TestLocation = ''
+
 
 def ExecuteProcedure():
     global data_location
@@ -308,6 +311,7 @@ def Window2Next():
     global Exam_id
     global Area_Name
     global Phase_Name
+    global TestLocation
 
     area_item = _win_combo2.value
     
@@ -348,6 +352,8 @@ def Window2Next():
     print('Exam id: ' + str(Exam_id))
     print('Phase No: ' + str(PhaseNo))
     print("Next2")
+    TestLocation = _win_combo1.value + '-' + _win_combo2.value
+    print(TestLocation)
 
     _win3_value1.value = Bot_Name
     _win3_value2.value = Area_Name
@@ -362,6 +368,7 @@ def Window2Cancel():
 def Window3Next():
     global data_person
     global bOpenNormalForm
+    global FolderID
 
     print('Next3')
 
@@ -372,6 +379,28 @@ def Window3Next():
         data_person = response.json()
         #print(data_person)
         if data_person['ErrorMsg'] == '':
+
+            # Get Folder ID
+            TestTime = datetime.datetime.now().strftime('%Y%m%d')
+            MachineID = 'Kiosk-2'
+            try:
+                print('Get Folder ID')
+                url = "http://isalan06.asuscomm.com:13000/TABFKIOSKAPI/GetGoogleDriveFolderID?MachineID=" + MachineID + "&TestTime=" + TestTime + "&TestLocation=" + TestLocation
+
+                payload={}
+                headers = {}
+
+                response = requests.request("GET", url, headers=headers, data=payload)
+                folderid_data = response.json()
+                if folderid_data['result'] == 'success':
+                    FolderID = folderid_data['folderid']
+                    print('Get Folder Success')
+                else:
+                    FolderID = ''
+                    print('Get Folder Failure')
+            except:
+                print('Get Folder ID Unknown Failure')
+
             window_3.hide()
             window_main.set_full_screen('Esc')
             
