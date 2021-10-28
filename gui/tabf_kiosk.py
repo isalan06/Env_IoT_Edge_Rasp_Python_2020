@@ -385,13 +385,13 @@ def Window3Next():
             MachineID = 'Kiosk-2'
             try:
                 print('Get Folder ID')
-                url = "http://isalan06.asuscomm.com:13000/TABFKIOSKAPI/GetGoogleDriveFolderID?MachineID=" + MachineID + "&TestTime=" + TestTime + "&TestLocation=" + TestLocation
+                url2 = "http://isalan06.asuscomm.com:13000/TABFKIOSKAPI/GetGoogleDriveFolderID?MachineID=" + MachineID + "&TestTime=" + TestTime + "&TestLocation=" + TestLocation
 
-                payload={}
-                headers = {}
+                payload2={}
+                headers2 = {}
 
-                response = requests.request("GET", url, headers=headers, data=payload)
-                folderid_data = response.json()
+                response2 = requests.request("GET", url2, headers=headers2, data=payload2)
+                folderid_data = response2.json()
                 if folderid_data['result'] == 'success':
                     FolderID = folderid_data['folderid']
                     print('Get Folder Success')
