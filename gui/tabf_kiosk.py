@@ -86,8 +86,27 @@ def DoWork():
             except:
                 print('Update Test Image Error')
 
+            UpdateImageToGoogleDrive()
+
         time.sleep(0.5)
     
+def UpdateImageToGoogleDrive():
+    print('Update Image To Google Drive')
+    try:
+        url = "http://isalan06.asuscomm.com:13000/TABFKIOSKAPI/UpdatePersonImage?MachineID=Kiosk_2&Filename=" + sSaveImageFileName + "&TestTime=" + TestTime + "&TestLocation=" + TestLocation + "&FolderID=" + FolderID
+        print(url)
+
+        payload=open(sUpdateImageFileName,'rb')
+        headers = {
+            'Content-Type': 'image/jpeg'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print('Update Image To Google Success')
+    except Exception as ex:
+        print('Update Image To Google Drive Failure')
+        print(ex)
+
 def TestFormTimer():
     #print("Test Form Timer")
     triggerfilename = '/home/pi/Data/trigger.txt'
@@ -395,6 +414,7 @@ def Window3Next():
                 if folderid_data['result'] == 'success':
                     FolderID = folderid_data['folderid']
                     print('Get Folder Success')
+                    print(FolderID)
                 else:
                     FolderID = ''
                     print('Get Folder Failure')
