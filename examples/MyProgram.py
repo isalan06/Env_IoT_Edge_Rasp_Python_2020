@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.3'
+sSoftwareVersion='1.1.1.4'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -674,6 +674,10 @@ def GetSensorsData():
 
     # Light Sensors Data (Remote)
 
+    # Exist Flag
+    bDHT22DeviceExist = True
+    bThermalCameraExist = True
+
 
     print("Get Local Sensors Thread Start")
 
@@ -703,6 +707,7 @@ def GetSensorsData():
         dhtDevice = 0
         print(ANSI_RED + "Create DHT Device Fail" + ANSI_OFF)
         sDHT22Status="Stop"
+        bDHT22DeviceExist = False
 
     #AMG8833 Attribute
     thermalImage = 0
@@ -714,6 +719,7 @@ def GetSensorsData():
         thermalImage = 0
         print(ANSI_RED + "Connect to Theraml Camera Fail" + ANSI_OFF)
         sThermalStatus = "Stop"
+        bThermalCameraExist = False
 
     while bRunning:
         tEndTime = time.time()
@@ -845,7 +851,7 @@ def GetSensorsData():
 
         #Thermal Image
         try:
-            if thermalImage != 0:
+            if (thermalImage != 0) and bThermalCameraExist:
                 checkvalue = tEndTime - tStartTime_Thermal
                 if (checkvalue >= fIntervalTime_Thermal) or (checkvalue < 0):
                     tStartTime_Thermal = time.time()
@@ -880,6 +886,7 @@ def GetSensorsData():
             print("Get TermalPixels Failure")
 
         #Light Sensors Remote by RS485
+        '''
         ser.write(outputCommand)
         lightdatabuffer = b''
 
@@ -897,6 +904,7 @@ def GetSensorsData():
                 lightdata = int.from_bytes(lightdatabuffer[6:8], byteorder='big')
             except:
                 print(ANSI_RED + "Transfer Light Sensor Data Failure" + ANSI_OFF)
+        '''
 
         #Check Raspberry Pi 4 Status
         checkRaspberryStatus()
@@ -1199,7 +1207,7 @@ def UpdateLocalSensorsInformation():
                 i = 0
                 while i < 3:
                     try:
-                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=10)
+                        r = requests.post('https://script.google.com/macros/s/AKfycbyaqQfJagU3KR5ccgIfWkD99dLLtn-NQJbwNJ9siPdVU7VJsoA/exec',headers=headers, data=TransferJSONData, auth=auth, timeout=30)
                         print("\033[1;32mUpdate Sensors Information Success\033[0m")
                         break
                     except requests.exceptions.RequestException as e:
