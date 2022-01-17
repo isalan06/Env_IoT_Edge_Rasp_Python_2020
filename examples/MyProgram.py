@@ -2016,6 +2016,8 @@ try:
         time.sleep(1.0)
     #print("Waiting for Finished!!")
     #input()
+
+    print(ANSI_YELLOW + "Main Threading is finished!" + ANSI_OFF)
 except KeyboardInterrupt:
     bRunning=False
 
