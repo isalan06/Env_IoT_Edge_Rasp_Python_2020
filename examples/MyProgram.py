@@ -2024,7 +2024,7 @@ except KeyboardInterrupt:
 bRunning=False
 myBLEDevice.Stop()
 
-time.sleep(10.0)
+time.sleep(15.0)
 
 print("\033[1;33mProgram Finish\033[0m")
 DIO_Finish()
