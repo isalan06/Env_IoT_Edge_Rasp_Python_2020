@@ -918,6 +918,7 @@ def GetSensorsData():
         # Delay for getting Vibration Sensors (0.1 sec)
         time.sleep(0.1)
         #time.sleep(SensorsFValue)
+    print(ANSI_YELLOW + "Get Sensor Module is finished!")
 #endregion
 
 #Update Local Sensors Information
@@ -1554,6 +1555,8 @@ def GetCommandFromCloud():
 
         DIO_Green(False)
 
+    print(ANSI_YELLOW + "Get Command Module is finished!" + ANSI_OFF)
+
 #endregion
 
 #Update Information To Cloud
@@ -1617,6 +1620,8 @@ def UpdateInformationToCloud():
             UpdateLocalPictureInformation()
 
         time.sleep(2.0)
+
+    print(ANSI_YELLOW + "Update Module is finished!")
 
 #endregion
 
@@ -1921,6 +1926,8 @@ def UpdateLocalPicture():
         #endregion
 
         time.sleep(0.1)
+
+    print(ANSI_YELLOW + "Update Picture Module is finsihed!")
 #endregion
 
 #CameraFunction
@@ -1931,6 +1938,8 @@ def CameraFunction():
         MyCamera.DoWork()
 
         time.sleep(0.1)
+
+    print(ANSI_YELLOW + "Camera Module is finished!" + ANSI_OFF)
 
 #endregion
 
