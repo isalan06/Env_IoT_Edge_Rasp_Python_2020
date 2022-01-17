@@ -43,7 +43,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.4'
+sSoftwareVersion='1.1.1.5'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -742,6 +742,8 @@ def GetSensorsData():
                     humidity = dhtDevice.humidity
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
+        except as e
+            print("Get DHT Module Error: " + e)
 
         #Vibration Status Return Normal Check
         if sVibrationStatus == "Normal":
