@@ -743,7 +743,7 @@ def GetSensorsData():
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
         except Exception as e:
-            print("Get DHT Module Error: " + e)
+            print(ANSI_RED +"Get DHT Module Error" +ANSI_OFF)
 
         #Vibration Status Return Normal Check
         if sVibrationStatus == "Normal":
