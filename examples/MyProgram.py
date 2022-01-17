@@ -2022,10 +2022,12 @@ except KeyboardInterrupt:
 bRunning=False
 myBLEDevice.Stop()
 
+time.sleep(10.0)
+
 print("\033[1;33mProgram Finish\033[0m")
 DIO_Finish()
 
-time.sleep(5.0)
+
 
 if bRebootTrigger:
     print("\033[1;33mSystem Reboot\033[0m")
