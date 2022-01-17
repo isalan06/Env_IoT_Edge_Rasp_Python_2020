@@ -1621,7 +1621,7 @@ def UpdateInformationToCloud():
 
         time.sleep(2.0)
 
-    print(ANSI_YELLOW + "Update Module is finished!")
+    print(ANSI_YELLOW + "Update Module is finished!" + ANSI_OFF)
 
 #endregion
 
@@ -2025,9 +2025,9 @@ myBLEDevice.Stop()
 print("\033[1;33mProgram Finish\033[0m")
 DIO_Finish()
 
-time.sleep(2.0)
+time.sleep(5.0)
 
 if bRebootTrigger:
     print("\033[1;33mSystem Reboot\033[0m")
-    time.sleep(5.0)
+    time.sleep(15.0)
     os.system("sudo reboot")
