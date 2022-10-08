@@ -65,6 +65,7 @@ def getMachineInformation(macaddress):
             requestData['UserToken']=''
             requestData['Longitude']=0
             requestData['Latitude']=0
+            TransferJSONData=json.dumps(requestData)
             response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
             data = response.json()
             if result==0:
