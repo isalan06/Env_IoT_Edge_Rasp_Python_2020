@@ -20,6 +20,7 @@ import picamera
 import MyParameter
 import MyCamera
 import MyGoogleDrive
+import MyCommunication
 
 import sys
 import struct
@@ -43,7 +44,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.1.5'
+sSoftwareVersion='1.1.2.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1986,6 +1987,8 @@ myBLEDevice.Start()
 
 time.sleep(30.0)
 
+MyCommunication.getMachineInformation(local_mac_address)
+
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
@@ -2008,8 +2011,8 @@ try:
             rebootTrigger = 1
         if (datetime.now().strftime("%H") == "22") and (rebootTrigger == 1):
             rebootTrigger = 0
-            bRebootTrigger = True
-            bRunning = False
+            #bRebootTrigger = True
+            #bRunning = False
 
 
 

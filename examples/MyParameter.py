@@ -4,7 +4,15 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.1.4'
+sSoftwareVersion='1.0.2.0'
+
+#API
+Token=""
+UseCloud=False
+UserToken=""
+CloudType=0
+CloudUrl=""
+
 
 #Parameter
 VibrationWarningValue=30.0
