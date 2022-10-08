@@ -50,4 +50,4 @@ def getMachineInformation(macaddress):
         print(data)
                         
     except requests.exceptions.RequestException as e:
-        print(ANSI_RED + '[Error] ' str(e) + ANSI_OFF)
+        print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
