@@ -7,6 +7,7 @@ import RPi.GPIO as GPIO
 sSoftwareVersion='1.0.2.0'
 
 #API
+IsDataPlatformConnected=False
 Token=""
 UseCloud=False
 UserToken=""

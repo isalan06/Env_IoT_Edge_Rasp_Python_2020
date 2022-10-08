@@ -46,8 +46,38 @@ def getMachineInformation(macaddress):
     try:
         response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
         data = response.json()
-        print(ANSI_WHITE + '[Info] Finish getting machine information from data platform!' + ANSI_OFF)
+        
         print(data)
+        result = data['result']
+        if result==0:
+            MyParameter.IsDataPlatformConnected=True
+            MyParameter.Token = data['Token']
+            MyParameter.UseCloud = False if (data['UseCloud'] == 0) else True
+            MyParameter.UserToken = data['UserToken']
+            MyParameter.CloudUrl = data['CloudUrl']
+            MyParameter.CloudType = data['CloudType']
+        elif result == 3:
+            url = basicUrl + '/AddMacAddress'
+            requestData['Location']=''
+            requestData['UseCloud']=0
+            requestData['CloudUrl']=''
+            requestData['CloudType']=0
+            requestData['UserToken']=''
+            requestData['Longitude']=0
+            requestData['Latitude']=0
+            response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
+            data = response.json()
+            if result==0:
+                MyParameter.IsDataPlatformConnected=True
+                MyParameter.Token = data['Token']
+
+
+        print(ANSI_WHITE + '[Info] Finish getting machine information from data platform!' + ANSI_OFF)
+        if MyParameter.IsDataPlatformConnected:
+            print(ANSI_WHITE + '[Info] Start to update data to data platform!' + ANSI_OFF)
+        else:
+            print(ANSI_RED + '[Error] Cannot update data to data platform' + ANSI_OFF)
+
                         
     except requests.exceptions.RequestException as e:
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
