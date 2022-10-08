@@ -65,9 +65,9 @@ def getMachineInformation(macaddress):
             requestData['UserToken']=''
             requestData['Longitude']=0
             requestData['Latitude']=0
-            TransferJSONData=json.dumps(requestData)
-            response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
-            data = response.json()
+            TransferJSONData2=json.dumps(requestData)
+            response2 = requests.request("POST", url, headers=headers, data=TransferJSONData2, timeout=10)
+            data = response2.json()
             if result==0:
                 MyParameter.IsDataPlatformConnected=True
                 MyParameter.Token = data['Token']
