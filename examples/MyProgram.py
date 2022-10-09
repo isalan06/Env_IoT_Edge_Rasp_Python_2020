@@ -2006,6 +2006,7 @@ GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
 UpdateLocalPictureThread = threading.Thread(target=UpdateLocalPicture)
 GetCommandFromCloudThread = threading.Thread(target=GetCommandFromCloud)
 UpdateInformationToCloudThread = threading.Thread(target=UpdateInformationToCloud)
+CommunicationThread = threading.Thread(target=CommunicationFunction)
 
 
 CameraThread.start()
@@ -2013,6 +2014,7 @@ GetLocalSensorsThread.start()
 UpdateLocalPictureThread.start()
 GetCommandFromCloudThread.start()
 UpdateInformationToCloudThread.start()
+CommunicationThread.start()
 
 try:
     while bRunning:
