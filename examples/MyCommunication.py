@@ -133,9 +133,9 @@ def AnaylsisCommand(response):
 def DoWork(macaddress):
     global tCheckTimer_Start
 
-    checkFunctionIntervalTime = time.time() - tCheckImageTimer_Start
+    checkFunctionIntervalTime = time.time() - tCheckTimer_Start
 
     if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 2):
-        tCheckImageTimer_Start = time.time()
+        tCheckTimer_Start = time.time()
         print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
         UpdateMachineStatus(macaddress)

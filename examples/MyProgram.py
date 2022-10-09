@@ -1970,6 +1970,7 @@ def CheckCameraTimeout():
         sCameraStatus = 'Running'
     else:
         sCameraStatus = 'Stop'
+    MyParameter.sCameraStatus = sCameraStatus
 
 print("\033[1;33mProgram Start\033[0m")
 
@@ -1977,6 +1978,7 @@ DIO_Initialize()
 
 #Load Parameter
 MyParameter.LoadParameter()
+MyParameter.sProgramSoftwareVersion = sSoftwareVersion
 
 #Get Mac Address
 hostname=socket.gethostname()
