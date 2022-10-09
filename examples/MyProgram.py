@@ -1944,6 +1944,16 @@ def CameraFunction():
 
 #endregion
 
+#Communication Function
+#region
+
+def CommunicationFunction():
+    while bRunning:
+        MyCommunication.DoWork()
+
+        time.sleep(0.1)
+
+#endregion
 
 def CheckCameraTimeout():
     global sCameraStatus

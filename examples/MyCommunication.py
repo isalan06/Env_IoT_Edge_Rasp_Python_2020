@@ -1,13 +1,24 @@
+#!/usr/bin/python3
+#MyCommunication.py
+
 from pathlib import Path
 import MyParameter
+import MyCamera
+import MyProgram
 
 import json
 import requests
 import os
 import ssl
+import time
+
+sSoftwareVersion='1.0.0.0'
+
 
 basicUrl='http://211.75.141.1:40080/Gateway'
 _macaddress=''
+
+tCheckTimer_Start = time.time()
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -27,6 +38,7 @@ else:
 
 def getMachineInformation(macaddress):
 
+    global sSoftwareVersion
     global _macaddress
     global basicUrl
 
@@ -36,6 +48,11 @@ def getMachineInformation(macaddress):
 
     requestData={}
     requestData['MacAddress']=_macaddress
+    requestData['ProgramVersion']=MyProgram.sSoftwareVersion
+    requestData['ParameterVersion']=MyParameter.sSoftwareVersion
+    requestData['CameraVersion']=MyParameter.sSoftwareVersion
+    requestData['CommunicationVersion']=sSoftwareVersion
+    requestData['CloudVersion']='NA'
 
     TransferJSONData=json.dumps(requestData)
     url = basicUrl + '/GetTokenByMacAddress'
@@ -65,6 +82,7 @@ def getMachineInformation(macaddress):
             requestData['UserToken']=''
             requestData['Longitude']=0
             requestData['Latitude']=0
+
             TransferJSONData=json.dumps(requestData)
             response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
             data = response.json()
@@ -82,3 +100,43 @@ def getMachineInformation(macaddress):
                         
     except requests.exceptions.RequestException as e:
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
+
+def UpdateMachineStatus():
+    global basicUrl
+
+    _macaddress = MyProgram.local_mac_address
+    auth=('token', 'example')
+    ssl._create_default_https_context = ssl._create_unverified_context
+    headers = {'Content-Type': 'application/json'}
+    headers['Token']=MyParameter.Token
+    requestData={}
+    requestData['MacAddress']=_macaddress
+    requestData['CameraStatus']=MyProgram.sCameraStatus
+    if MyProgram.sCameraStatus == 'Running':
+        if MyCamera.iSmallImageIndex == 0:
+            requestData['CameraSmallImage']=MyCamera.sSmallImageData
+        if MyCamera.iSmallImageIndex == 1:
+            requestData['CameraSmallImage']=MyCamera.sSmallImageData2
+    TransferJSONData=json.dumps(requestData)
+    url = basicUrl + '/UpdateMachineStatus'
+    try:
+        response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
+        data = response.json()
+        print(data)
+        AnaylsisCommand(data)
+    except requests.exceptions.RequestException as e:
+        print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)  
+
+def AnaylsisCommand(response):
+    print(ANSI_WHITE + '[Info] Start to anaylsis response from data platform!' + ANSI_OFF)
+
+
+def DoWork():
+    global tCheckTimer_Start
+
+    checkFunctionIntervalTime = time.time() - tCheckImageTimer_Start
+
+    if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 2):
+        tCheckImageTimer_Start = time.time()
+        print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
+        UpdateMachineStatus()
