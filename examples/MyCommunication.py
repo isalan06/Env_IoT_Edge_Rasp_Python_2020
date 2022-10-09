@@ -4,7 +4,6 @@
 from pathlib import Path
 import MyParameter
 import MyCamera
-import MyProgram
 
 import json
 import requests
@@ -48,7 +47,7 @@ def getMachineInformation(macaddress):
 
     requestData={}
     requestData['MacAddress']=_macaddress
-    requestData['ProgramVersion']=MyProgram.sSoftwareVersion
+    requestData['ProgramVersion']=MyParameter.sProgramSoftwareVersion
     requestData['ParameterVersion']=MyParameter.sSoftwareVersion
     requestData['CameraVersion']=MyParameter.sSoftwareVersion
     requestData['CommunicationVersion']=sSoftwareVersion
@@ -101,18 +100,18 @@ def getMachineInformation(macaddress):
     except requests.exceptions.RequestException as e:
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
-def UpdateMachineStatus():
+def UpdateMachineStatus(macaddress):
     global basicUrl
 
-    _macaddress = MyProgram.local_mac_address
+    _macaddress = macaddress
     auth=('token', 'example')
     ssl._create_default_https_context = ssl._create_unverified_context
     headers = {'Content-Type': 'application/json'}
     headers['Token']=MyParameter.Token
     requestData={}
     requestData['MacAddress']=_macaddress
-    requestData['CameraStatus']=MyProgram.sCameraStatus
-    if MyProgram.sCameraStatus == 'Running':
+    requestData['CameraStatus']=MyParameter.sCameraStatus
+    if MyParameter.sCameraStatus == 'Running':
         if MyCamera.iSmallImageIndex == 0:
             requestData['CameraSmallImage']=MyCamera.sSmallImageData
         if MyCamera.iSmallImageIndex == 1:
@@ -131,7 +130,7 @@ def AnaylsisCommand(response):
     print(ANSI_WHITE + '[Info] Start to anaylsis response from data platform!' + ANSI_OFF)
 
 
-def DoWork():
+def DoWork(macaddress):
     global tCheckTimer_Start
 
     checkFunctionIntervalTime = time.time() - tCheckImageTimer_Start
@@ -139,4 +138,4 @@ def DoWork():
     if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 2):
         tCheckImageTimer_Start = time.time()
         print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
-        UpdateMachineStatus()
+        UpdateMachineStatus(macaddress)

@@ -5,6 +5,8 @@ import configparser
 import RPi.GPIO as GPIO
 
 sSoftwareVersion='1.0.2.0'
+sProgramSoftwareVersion='1.0.0.0'
+sCameraStatus='Stop'
 
 #API
 IsDataPlatformConnected=False

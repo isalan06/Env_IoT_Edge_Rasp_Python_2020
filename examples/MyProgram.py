@@ -1949,7 +1949,7 @@ def CameraFunction():
 
 def CommunicationFunction():
     while bRunning:
-        MyCommunication.DoWork()
+        MyCommunication.DoWork(local_mac_address)
 
         time.sleep(0.1)
 
