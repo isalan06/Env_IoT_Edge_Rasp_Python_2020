@@ -1264,6 +1264,7 @@ def UpdateLocalPictureInformation():
             InformationData[SetKey]['ODG']=MyCamera.CropGCalculateValue
             InformationData[SetKey]['ODB']=MyCamera.CropBCalculateValue
             InformationData[SetKey]['ODResult']=MyCamera.fODResult
+            MyCommunication.aODParameter=InformationData[SetKey]
 
             TransferJSONData=json.dumps(InformationData)
 
@@ -1759,7 +1760,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
+            #UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             MyCamera.bCapturePictureDone = False   
             bUsed = False
 
@@ -1793,7 +1794,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
+            #UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             MyCamera.bCapturePictureDone = False  
             bUsed = False
 
@@ -1828,7 +1829,7 @@ def UpdateLocalPicture():
             setfilename=filename
             setdatetime=nowtime.strftime('%Y%m%d%H%M%S')   
 
-            UpdateVideoToGoogleDrive(filename, fileString, False)
+            #UpdateVideoToGoogleDrive(filename, fileString, False)
             MyCamera.bCaptureVideoDone = False  
             bUsed = False
 
@@ -1867,7 +1868,7 @@ def UpdateLocalPicture():
             VibrationAlarmData["Command"]="UpdateVibrationAlarmTrigger"
             VibrationAlarmData["PhotoFileName"]=filename
             VibrationAlarmData["VideoFileName"]="NA"
-            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
+            #UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             #VibrationAlarmTriggerThread = threading.Thread(target=VibrationAlarmTrigger)
             #VibrationAlarmTriggerThread.start()
             bVibrationAlarmUpdateTrigger = True
@@ -1909,7 +1910,7 @@ def UpdateLocalPicture():
             FireAlarmData["Command"]="UpdateFireAlarmTrigger"
             FireAlarmData["PhotoFileName"]=filename
             FireAlarmData["VideoFileName"]="NA"
-            UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
+            #UpdateImageToGoogleDrive2(local_mac_address, filename, setdatetime)
             #FireAlarmTriggerThread = threading.Thread(target=FireAlarmTrigger)
             #FireAlarmTriggerThread.start()
             bFireAlarmUpdateTrigger = True

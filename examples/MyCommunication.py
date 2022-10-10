@@ -26,6 +26,7 @@ aSensorData={}
 aParameter={}
 aCameraParameter={}
 aMachineOperation={}
+aODParameter={}
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -136,6 +137,7 @@ def UpdateMachineStatus(macaddress):
     requestData['CloudParameter']['UserToken']=MyParameter.UserToken
     requestData['CloudParameter']['CloudType']=MyParameter.CloudType
     requestData['CloudParameter']['CloudUrl']=MyParameter.CloudUrl
+    requestData['ODParameter']=aODParameter
     
     #print(ANSI_GREEN + '[INFO] ' + str(requestData) + ANSI_OFF)
     TransferJSONData=json.dumps(requestData)
