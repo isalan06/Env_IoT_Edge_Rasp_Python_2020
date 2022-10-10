@@ -709,6 +709,7 @@ def GetSensorsData():
         print(ANSI_RED + "Create DHT Device Fail" + ANSI_OFF)
         sDHT22Status="Stop"
         bDHT22DeviceExist = False
+    MyCommunication.sDHT22Status = sDHT22Status
 
     #AMG8833 Attribute
     thermalImage = 0
@@ -721,6 +722,7 @@ def GetSensorsData():
         print(ANSI_RED + "Connect to Theraml Camera Fail" + ANSI_OFF)
         sThermalStatus = "Stop"
         bThermalCameraExist = False
+    MyCommunication.sThermalStatus=sThermalStatus
 
     while bRunning:
         tEndTime = time.time()
@@ -850,6 +852,7 @@ def GetSensorsData():
             print("Get G Sensor Failure")
             #print(error)
             sAccelGaugeStatus = "Stop"
+        MyCommunication.sAccelGaugeStatus=sAccelGaugeStatus
             
 
         #Thermal Image
@@ -1196,6 +1199,8 @@ def UpdateLocalSensorsInformation():
                     setIDIndex = setIDIndex + 1
                     ThermalDataList["Value"].append(ThermalDataValue)
                 InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
+
+                MyCommunication.aSensorData=InformationData[SetKey]
 
                 TransferJSONData=json.dumps(InformationData)
                 #print(TransferJSONData)
