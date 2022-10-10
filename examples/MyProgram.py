@@ -1039,6 +1039,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['PhotoFolderID']=MyParameter.PhotoFolderID
                 InformationData[SetKey]['VideoFolderID']=MyParameter.VideoFolderID
                 InformationData[SetKey]['CameraFunction']=MyParameter.CameraFunctionFlag
+                MyCommunication.aParameter = InformationData[SetKey]
 
                 SetKey="CameraParameter"
                 InformationData[SetKey]={}
@@ -1055,6 +1056,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['EF_Function']=MyParameter.C_EF_Function
                 InformationData[SetKey]['EF_X1']=MyParameter.C_EF_X1
                 InformationData[SetKey]['EF_X2']=MyParameter.C_EF_X2
+                MyCommunication.aCameraParameter=InformationData[SetKey]
 
                 SetKey="Status"
                 InformationData[SetKey]={}
@@ -1068,6 +1070,7 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey]['DISK_Total']=DISK_total
                 InformationData[SetKey]['DISK_Used']=DISK_used
                 InformationData[SetKey]['DISK_Perc']=DISK_perc
+                MyCommunication.aMachineOperation=InformationData[SetKey]
 
                 #SetKey="CameraImage"
                 #InformationData[SetKey]={}

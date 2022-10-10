@@ -23,6 +23,9 @@ sDHT22Status='Stop'
 sThermalStatus='Stop'
 sAccelGaugeStatus='Stop'
 aSensorData={}
+aParameter={}
+aCameraParameter={}
+aMachineOperation={}
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -125,6 +128,15 @@ def UpdateMachineStatus(macaddress):
     requestData['ThermalStatus']=sThermalStatus
     requestData['AccelGaugeStatus']=sAccelGaugeStatus
     requestData['SensorData']=aSensorData
+    requestData['Parameter']=aParameter
+    requestData['CameraParameter']=aCameraParameter
+    requestData['MachineOperation']=aMachineOperation
+    requestData['CloudParameter']={}
+    requestData['CloudParameter']['UseCloud']=MyParameter.UseCloud
+    requestData['CloudParameter']['UserToken']=MyParameter.UserToken
+    requestData['CloudParameter']['CloudType']=MyParameter.CloudType
+    requestData['CloudParameter']['CloudUrl']=MyParameter.CloudUrl
+    
     #print(ANSI_GREEN + '[INFO] ' + str(requestData) + ANSI_OFF)
     TransferJSONData=json.dumps(requestData)
     url = basicUrl + '/UpdateMachineStatus'
