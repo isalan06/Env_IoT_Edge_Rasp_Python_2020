@@ -125,6 +125,7 @@ def UpdateMachineStatus(macaddress):
     requestData['ThermalStatus']=sThermalStatus
     requestData['AccelGaugeStatus']=sAccelGaugeStatus
     requestData['SensorData']=aSensorData
+    print(ANSI_GREEN + '[INFO] ' + requestData + ANSI_OFF)
     TransferJSONData=json.dumps(requestData)
     url = basicUrl + '/UpdateMachineStatus'
     try:
