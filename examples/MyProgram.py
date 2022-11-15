@@ -191,7 +191,7 @@ class MyTest():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 180
+    ReconnectIntervalSecond = 60
     bFirstOneFlag=False
 
     start_time2=time.time()
@@ -203,7 +203,7 @@ class MyTest():
         self.mac_address=mac_address
 
     def Connect(self):
-        print("[MI Info]Start To Connect BLE-" + str(self.index))
+        print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
             self.p = Peripheral(self.mac_address)
             self.p.setDelegate(MyDelegate(self.index))
