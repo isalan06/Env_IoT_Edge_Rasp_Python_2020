@@ -203,7 +203,7 @@ class MyTest():
         self.mac_address=mac_address
 
     def Connect(self):
-        print("Start To Connect BLE-" + str(self.index))
+        print("[MI Info]Start To Connect BLE-" + str(self.index))
         try:
             self.p = Peripheral(self.mac_address)
             self.p.setDelegate(MyDelegate(self.index))
