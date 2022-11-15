@@ -159,7 +159,7 @@ def DoWork(macaddress):
 
     checkFunctionIntervalTime = time.time() - tCheckTimer_Start
 
-    if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 5):
+    if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 10):
         tCheckTimer_Start = time.time()
         print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
         UpdateMachineStatus(macaddress)
