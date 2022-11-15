@@ -2002,15 +2002,12 @@ except:
 
 print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
 
-MyCommunication.getMachineInformation(local_mac_address)
-
-
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()
 
 time.sleep(30.0)
 
-
+MyCommunication.getMachineInformation(local_mac_address)
 
 CameraThread = threading.Thread(target=CameraFunction)
 GetLocalSensorsThread = threading.Thread(target=GetSensorsData)
