@@ -191,7 +191,7 @@ class MyTest():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 1800
+    ReconnectIntervalSecond = 180
     bFirstOneFlag=False
 
     start_time2=time.time()
