@@ -1153,6 +1153,8 @@ def UpdateLocalSensorsInformation():
                             mithlist["BUnit"]="%"
                             mithlist["BValue"]=get_mi_data_battery[index]
 
+                            print("\t" + ANSI_YELLOW + "Create MI Device-" + str(Count) + ANSI_OFF)
+
                             InformationData[SetKey][SetKey2][SetKey3].append(mithlist)
 
             
