@@ -1561,7 +1561,7 @@ def GetCommandFromCloud():
 
         #endregion
 
-        time.sleep(30.0)
+        time.sleep(20.0)
 
         DIO_Green(False)
 
@@ -1629,7 +1629,7 @@ def UpdateInformationToCloud():
             UpdateLocalSensorsInformation()
             UpdateLocalPictureInformation()
 
-        time.sleep(30.0)
+        time.sleep(31.0)
 
     print(ANSI_YELLOW + "Update Module is finished!" + ANSI_OFF)
 
