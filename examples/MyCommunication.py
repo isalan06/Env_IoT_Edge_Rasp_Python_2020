@@ -128,10 +128,10 @@ def UpdateMachineStatus(macaddress):
     requestData['MacAddress']=_macaddress
     requestData['CameraStatus']=MyParameter.sCameraStatus
     if MyParameter.sCameraStatus == 'Running':
-        if MyCamera.iSmallImageIndex == 0:
-            requestData['CameraSmallImage']=MyCamera.sSmallImageData
-        if MyCamera.iSmallImageIndex == 1:
-            requestData['CameraSmallImage']=MyCamera.sSmallImageData2
+        if MyCamera.iNormalImageIndex == 0:
+            requestData['CameraSmallImage']=MyCamera.sNormalImageData
+        if MyCamera.iNormalImageIndex == 1:
+            requestData['CameraSmallImage']=MyCamera.sNormalImageData2
     requestData['DHT22Status']=sDHT22Status
     requestData['ThermalStatus']=sThermalStatus
     requestData['AccelGaugeStatus']=sAccelGaugeStatus

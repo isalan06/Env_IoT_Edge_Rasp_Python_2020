@@ -34,7 +34,7 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-sSoftwareVersion='1.0.4.0'
+sSoftwareVersion='1.0.4.1'
 bCameraUsed = False
 sImageFileName=''
 bCapturePictureTrigger = False
@@ -57,6 +57,11 @@ sSmallImageData2=''
 iSmallImageIndex=-1
 sSmallImageTime='NA'
 bSmallImageTrigger = 0
+sNormalImageData=''
+sNormalImageData2=''
+iNormalImageIndex=-1
+sNormalImageTime='NA'
+bNormalImageTrigger = 0
 CropImageGrayMean=0.0
 CropImageCalculateValue=0.0
 CropRCalculateValue=0
@@ -70,12 +75,32 @@ def frame2ByteArray(frame):
     global NormalImageByteArray
     global bNormalImageTransferSuccess
 
+    global sNormalImageData
+    global sNormalImageData2
+    global iNormalImageIndex
+    global sNormalImageTime
+    global bNormalImageTrigger
+
     try:
         img = Image.fromarray(frame) #將每一幀轉為Image
         output_buffer = BytesIO() #建立一個BytesIO
         img.save(output_buffer, format='JPEG') #寫入output_buffer
         NormalImageByteArray = output_buffer.getvalue() #在記憶體中讀取
         bNormalImageTransferSuccess = True
+
+        try:   
+            if iNormalImageIndex != 0:
+                sNormalImageData = (base64.b64encode(NormalImageByteArray)).decode('utf-8') #轉為BASE64
+                iNormalImageIndex = 0
+            else:
+                sNormalImageData2 = (base64.b64encode(NormalImageByteArray)).decode('utf-8') #轉為BASE64
+                iNormalImageIndex = 1
+
+            sNormalImageTime=datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        except:
+            print(ANSI_RED + 'Transfer Base64 Failure' + ANSI_OFF)
+
+
         print('Transfer Normal Image Data Success')
     except:
         bNormalImageTransferSuccess = False
