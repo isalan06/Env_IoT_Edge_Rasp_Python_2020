@@ -162,9 +162,10 @@ def CloudType0_GetThresholdValue():
     payload={}
     headers={}
     response = requests.request('GET', url, headers=headers, data=payload)
-    data = response.json()
+    print(response)
+    getData = response.json()
     
-    CloudType0_AnaylsisGetThresholdValue(data)
+    CloudType0_AnaylsisGetThresholdValue(getData)
 
 def CloudType0_AnaylsisGetThresholdValue(response):
     print(response)
