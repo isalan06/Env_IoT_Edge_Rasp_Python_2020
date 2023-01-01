@@ -159,17 +159,36 @@ def AnaylsisCommand(response):
 
 def CloudType0_GetThresholdValue():
     url = MyParameter.CloudUrl + '/getAntiquitiesWarningValue?token=' + MyParameter.UserToken
-    print(url)
+
     payload={}
     headers={}
-    response = requests.request('GET', url, headers=headers, data=payload)
-    print(response)
-    getData = response.json()
+
+    try:
+        response = requests.request('GET', url, headers=headers, data=payload)
+        getData = response.json()
     
-    CloudType0_AnaylsisGetThresholdValue(getData)
+        CloudType0_AnaylsisGetThresholdValue(getData)
+    except requests.exceptions.RequestException as e:
+        print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
 def CloudType0_AnaylsisGetThresholdValue(response):
-    print(response)
+    res = response['res']
+
+    if res == 1:
+        MyParameter.VibrationWarningValue = response['VibrationWarningValue']
+        MyParameter.VibrationAlarmValue = response['VibrationAlarmValue']
+        MyParameter.FireWarningTempValue = response['FireWarningTempValue']
+        MyParameter.FireWarningCountValue = response['FireWarningCountValue']
+        MyParameter.FireAlarmTempValue = response['FireAlarmTempValue']
+        MyParameter.FireAlarmCountValue = response['FireAlarmCountValue']
+        MyParameter.CapturePictureRH = response['CapturePictureRH']
+        MyParameter.CapturePictureRV = response['CapturePictureRV']
+        MyParameter.CaptureVideoSecond = response['CaptureVideoSecond']
+        MyParameter.SensorsFValue = response['SensorsFValue']
+        MyParameter.CameraFValue = response['CamereaFValue']
+        MyParameter.UpdateFValue = response['UpdateFValue']
+    else:
+        print(ANSI_RED + '[Error] Transfer Cloud Type 0 Get Function Error!' + ANSI_OFF)
 
 
 
