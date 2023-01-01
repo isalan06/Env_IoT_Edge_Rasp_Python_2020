@@ -132,6 +132,7 @@ def UpdateMachineStatus(macaddress):
             requestData['CameraSmallImage']=MyCamera.sSmallImageData
         if MyCamera.iSmallImageIndex == 1:
             requestData['CameraSmallImage']=MyCamera.sSmallImageData2
+    
             
     requestData['DHT22Status']=sDHT22Status
     requestData['ThermalStatus']=sThermalStatus

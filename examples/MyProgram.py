@@ -2033,6 +2033,7 @@ except:
     hostip = '0.0.0.0'
 
 print(ANSI_YELLOW + "Get Local Mac Address: " + local_mac_address + ANSI_OFF)
+print(MyCamera.iNormalImageIndex)
 
 myBLEDevice = BLEDeviceForMi(True)
 myBLEDevice.Start()

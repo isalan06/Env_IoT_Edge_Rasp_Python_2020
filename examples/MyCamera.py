@@ -57,11 +57,13 @@ sSmallImageData2=''
 iSmallImageIndex=-1
 sSmallImageTime='NA'
 bSmallImageTrigger = 0
+
 sNormalImageData=''
 sNormalImageData2=''
 iNormalImageIndex=-1
 sNormalImageTime='NA'
 bNormalImageTrigger = 0
+
 CropImageGrayMean=0.0
 CropImageCalculateValue=0.0
 CropRCalculateValue=0
