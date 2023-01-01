@@ -75,12 +75,14 @@ def getMachineInformation(macaddress):
         print(data)
         result = data['result']
         if result==0:
-            MyParameter.IsDataPlatformConnected=True
+            MyParameter.IsDataPlatformConnected=1
             MyParameter.Token = data['Token']
-            MyParameter.UseCloud = False if (data['UseCloud'] == 0) else True
+            MyParameter.UseCloud = 0 if (data['UseCloud'] == 0) else 1
             MyParameter.UserToken = data['UserToken']
             MyParameter.CloudUrl = data['CloudUrl']
             MyParameter.CloudType = data['CloudType']
+
+            MyParameter.SaveParameter()
         elif result == 3:
             url = basicUrl + '/AddMacAddress'
             requestData['Location']=''

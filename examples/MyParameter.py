@@ -4,14 +4,14 @@ import os
 import configparser
 import RPi.GPIO as GPIO
 
-sSoftwareVersion='1.0.2.0'
+sSoftwareVersion='1.0.2.1'
 sProgramSoftwareVersion='1.0.0.0'
 sCameraStatus='Stop'
 
 #API
-IsDataPlatformConnected=False
+IsDataPlatformConnected=0
 Token=""
-UseCloud=False
+UseCloud=0
 UserToken=""
 CloudType=0
 CloudUrl=""
@@ -81,6 +81,13 @@ def CreateParameter():
     global VideoFolderID
     global CameraFunctionFlag
 
+    global IsDataPlatformConnected
+    global Token
+    global UseCloud
+    global UserToken
+    global CloudType
+    global CloudUrl
+
     global C_ISO
     global C_ShutterSpeed
     global C_Rotation
@@ -121,6 +128,13 @@ def CreateParameter():
     config['Parameter']['PhotoFolderID'] = PhotoFolderID
     config['Parameter']['VideoFolderID'] = VideoFolderID
     config['Parameter']['CameraFunction'] = str(CameraFunctionFlag)
+
+    config['Parameter']['IsDataPlatformConnected']=str(IsDataPlatformConnected)
+    config['Parameter']['Token']=Token
+    config['Parameter']['UseCloud']=str(UseCloud)
+    config['Parameter']['UserToken']=UserToken
+    config['Parameter']['CloudType']=str(CloudType)
+    config['Parameter']['CloudUrl']=CloudUrl
 
     config2 = configparser.ConfigParser()
     config2['CameraSetting']={}
@@ -243,6 +257,13 @@ def LoadParameter():
     global VideoFolderID
     global CameraFunctionFlag
 
+    global IsDataPlatformConnected
+    global Token
+    global UseCloud
+    global UserToken
+    global CloudType
+    global CloudUrl
+
     global C_ISO
     global C_ShutterSpeed
     global C_Rotation
@@ -285,6 +306,13 @@ def LoadParameter():
         PhotoFolderID = config['Parameter']['PhotoFolderID']
         VideoFolderID = config['Parameter']['VideoFolderID']
         CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
+
+        IsDataPlatformConnected=config['Parameter'].getint('IsDataPlatformConnected')
+        Token=config['Parameter']['Token']
+        UseCloud=config['Parameter'].getint('UseCloud')
+        UserToken=config['Parameter']['UserToken']
+        CloudType=config['Parameter'].getint('CloudType')
+        CloudUrl=config['Parameter']['CloudUrl']
     else:
         CreateParameter()
 
@@ -330,6 +358,13 @@ def SaveParameter():
     global VideoFolderID
     global CameraFunctionFlag
 
+    global IsDataPlatformConnected
+    global Token
+    global UseCloud
+    global UserToken
+    global CloudType
+    global CloudUrl
+
     filePathString = "/home/pi/Parameter/Parameter.ini"
     if os.path.isfile(filePathString):
         config = configparser.ConfigParser()
@@ -349,6 +384,13 @@ def SaveParameter():
         config['Parameter']['PhotoFolderID'] = PhotoFolderID
         config['Parameter']['VideoFolderID'] = VideoFolderID
         config['Parameter']['CameraFunction'] = str(CameraFunctionFlag)
+
+        config['Parameter']['IsDataPlatformConnected']=str(IsDataPlatformConnected)
+        config['Parameter']['Token']=Token
+        config['Parameter']['UseCloud']=str(UseCloud)
+        config['Parameter']['UserToken']=UserToken
+        config['Parameter']['CloudType']=str(CloudType)
+        config['Parameter']['CloudUrl']=CloudUrl
 
         with open(filePathString, 'w') as configfile:
             config.write(configfile)
