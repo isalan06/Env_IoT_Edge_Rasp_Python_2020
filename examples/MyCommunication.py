@@ -247,3 +247,4 @@ def DoWork(macaddress):
                     bCloudType0UpdateTrigger = False
                     print(ANSI_YELLOW + '[Info] Start to update value to cloud!' + ANSI_OFF)
                     tCheckTimer_CloudType0_Update = time.time()
+                    CloudType0_UpdateValue()
