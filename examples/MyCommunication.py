@@ -199,6 +199,7 @@ def CloudType0_UpdateValue():
 
     url = MyParameter.CloudUrl + '/addSensorValue'
 
+    aCloudType0UpdateData['token']=MyParameter.UserToken
     payload = json.dumps(aCloudType0UpdateData)
     print(payload)
     headers={'Content-Type':'application/json'}
