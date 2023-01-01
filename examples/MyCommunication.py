@@ -30,6 +30,9 @@ aCameraParameter={}
 aMachineOperation={}
 aODParameter={}
 
+aCloudType0UpdateData={}
+bCloudType0UpdateTrigger=False
+
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
     ANSI_GREEN = ''
@@ -185,13 +188,32 @@ def CloudType0_AnaylsisGetThresholdValue(response):
         MyParameter.CapturePictureRV = response['CapturePictureRV']
         MyParameter.CaptureVideoSecond = response['CaptureVideoSecond']
         MyParameter.SensorsFValue = response['SensorsFValue']
-        MyParameter.CameraFValue = response['CamereaFValue']
+        MyParameter.CameraFValue = response['CameraFValue']
         MyParameter.UpdateFValue = response['UpdateFValue']
     else:
         print(ANSI_RED + '[Error] Transfer Cloud Type 0 Get Function Error!' + ANSI_OFF)
 
+def CloudType0_UpdateValue():
+    url = MyParameter.CloudUrl + '/addSensorValue'
 
+    payload = json.dumps(aCloudType0UpdateData)
+    print(payload)
+    headers={'Content-Type':'application/json'}
 
+    try:
+        response= requests.request('POST', url, headers=headers, data=payload)
+
+        print(response)
+
+        getData = response.json()
+
+        CloudType0_AnalysisUpdateValue(getData)
+
+    except requests.exceptions.RequestException as e:
+        print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
+
+def CloudType0_AnalysisUpdateValue(response):
+    result = response['res']
 
 def DoWork(macaddress):
     global tCheckTimer_Start
@@ -213,3 +235,9 @@ def DoWork(macaddress):
                 print(ANSI_YELLOW + '[Info] Start to get threshold value from cloud!' + ANSI_OFF)
                 tCheckTimer_CloudType0_Get = time.time()
                 CloudType0_GetThresholdValue()
+
+            if checkCloudType0_Update_IntervalTime >= 30:
+                if bCloudType0UpdateTrigger:
+                    bCloudType0UpdateTrigger = False
+                    print(ANSI_YELLOW + '[Info] Start to update value to cloud!' + ANSI_OFF)
+                    tCheckTimer_CloudType0_Update = time.time()

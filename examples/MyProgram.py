@@ -1000,6 +1000,16 @@ def UpdateLocalSensorsInformation():
             bGetData = False
 
             try:
+                #Cloud Type 0 Update Data
+                CloudType0_UpdateData={}
+                CloudType0_UpdateData['token']=''
+                CloudType0_UpdateData['DataRecordTime']=datetime.now().strftime("%Y-%m-%d %H:%M:%S")	
+                CloudType0_UpdateData['IsAlert']=False
+                CloudType0_UpdateData['ThermalValue']
+                CloudType0_UpdateData['VibrationXValue']
+                CloudType0_UpdateData['VibrationYValue']
+                CloudType0_UpdateData['VibrationZValue']
+
                 #JSON
                 SetKey="Machine"
                 SetValue="IoT Edge"
@@ -1098,6 +1108,7 @@ def UpdateLocalSensorsInformation():
                 templist["Address"]="NA"
                 templist["Value"]=temp_c
                 InformationData[SetKey][SetKey2][SetKey3].append(templist)
+                CloudType0_UpdateData['TempValue']=temp_c
                 
                 SetKey2="Humidity"
                 InformationData[SetKey][SetKey2]={}
@@ -1109,6 +1120,7 @@ def UpdateLocalSensorsInformation():
                 humiditylist["Unit"]="%RH"
                 humiditylist["Value"]=humidity
                 InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
+                CloudType0_UpdateData['HumidityValue']=humidity
 
                 SetKey2="LightSensor"
                 InformationData[SetKey][SetKey2]={}
@@ -1185,6 +1197,20 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey][SetKey2][SetKey3].append(VibrationList)
                 InformationData[SetKey][SetKey2]["History"]=vibrationDataList
 
+                CloudType0_UpdateData['VibrationJsonArray']=[]
+                vibrationDataListCount = len(vibrationDataList['Data'])
+                if vibrationDataListCount > 0:
+                    for i in range(vibrationDataListCount):
+                        singleVibrationData={}
+                        singleVibrationData['No'] = (i+1)
+                        singleVibrationData['GxScaled']=gyro_xout_scaled
+                        singleVibrationData['GyScaled']=gyro_yout_scaled
+                        singleVibrationData['GzScaled']=gyro_zout_scaled
+                        singleVibrationData['AxScaled']=accel_xout_scaled
+                        singleVibrationData['AyScaled']=accel_yout_scaled
+                        singleVibrationData['AzScaled']=accel_zout_scaled
+                        CloudType0_UpdateData['VibrationJsonArray'].append(singleVibrationData)
+
                 SetKey2="ThermalCamera"
                 InformationData[SetKey][SetKey2]={}
                 InformationData[SetKey][SetKey2]["Count"]=1
@@ -1197,15 +1223,19 @@ def UpdateLocalSensorsInformation():
                 ThermalDataList["Length"]=thermalDataLength
                 ThermalDataList["Value"]=[]
                 setIDIndex=1
+                CloudType0_UpdateData['ThermalValueArray']=[]
                 for thermalpoint in thermalpixels:
                     ThermalDataValue={}
                     ThermalDataValue["ID"]=setIDIndex
                     ThermalDataValue["Value"]=thermalpoint
                     setIDIndex = setIDIndex + 1
                     ThermalDataList["Value"].append(ThermalDataValue)
+                    CloudType0_UpdateData['ThermalValueArray'].append(ThermalDataValue)
                 InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
 
                 MyCommunication.aSensorData=InformationData[SetKey]
+                MyCommunication.aCloudType0UpdateData = CloudType0_UpdateData
+                MyCommunication.bCloudType0UpdateTrigger=True
 
                 TransferJSONData=json.dumps(InformationData)
                 #print(TransferJSONData)
