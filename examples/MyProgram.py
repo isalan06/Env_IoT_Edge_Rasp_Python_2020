@@ -1276,11 +1276,11 @@ def UpdateLocalPictureInformation():
             InformationData[SetKey]['ImageGrayMean']=MyCamera.ImageGrayMean
                 
             InformationData[SetKey]['SmallImage']=''
-            if MyCamera.iSmallImageIndex == 0:
-                InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData
-            if MyCamera.iSmallImageIndex == 1:
-                InformationData[SetKey]['SmallImage']=MyCamera.sSmallImageData2
-            InformationData[SetKey]['SmallImageTime']=MyCamera.sSmallImageTime
+            if MyCamera.iNormalImageIndex == 0:
+                InformationData[SetKey]['SmallImage']=MyCamera.sNormalImageData
+            if MyCamera.iNormalImageIndex == 1:
+                InformationData[SetKey]['SmallImage']=MyCamera.sNormalImageData2
+            InformationData[SetKey]['SmallImageTime']=MyCamera.sNormalImageTime
             #print(MyCamera.sSmallImageTime)
 
             SetKey="ODParameter"
