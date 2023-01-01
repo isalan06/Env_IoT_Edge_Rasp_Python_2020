@@ -1005,10 +1005,10 @@ def UpdateLocalSensorsInformation():
                 CloudType0_UpdateData['token']=''
                 CloudType0_UpdateData['DataRecordTime']=datetime.now().strftime("%Y-%m-%d %H:%M:%S")	
                 CloudType0_UpdateData['IsAlert']=False
-                CloudType0_UpdateData['ThermalValue']
-                CloudType0_UpdateData['VibrationXValue']
-                CloudType0_UpdateData['VibrationYValue']
-                CloudType0_UpdateData['VibrationZValue']
+                CloudType0_UpdateData['ThermalValue']=None
+                CloudType0_UpdateData['VibrationXValue']=None
+                CloudType0_UpdateData['VibrationYValue']=None
+                CloudType0_UpdateData['VibrationZValue']=None
 
                 #JSON
                 SetKey="Machine"
