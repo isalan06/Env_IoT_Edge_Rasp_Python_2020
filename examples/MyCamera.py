@@ -301,7 +301,8 @@ def DoWork():
                     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     ImageGrayMean = gray_image.mean()
                     CheckObjectDetect(gray_image, image)
-                    new_image = cv2.resize(image, (480, 320), interpolation=cv2.INTER_AREA)
+                    #new_image = cv2.resize(image, (480, 320), interpolation=cv2.INTER_AREA)
+                    new_image = cv2.resize(image, (960, 640), interpolation=cv2.INTER_AREA)
                     print(ImageGrayMean)
                     frame2base64(new_image)
                     bSmallImageTrigger = 1
