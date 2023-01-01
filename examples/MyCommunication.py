@@ -207,8 +207,6 @@ def CloudType0_UpdateValue():
     try:
         response= requests.request('POST', url, headers=headers, data=payload)
 
-        print(response)
-
         getData = response.json()
 
         CloudType0_AnalysisUpdateValue(getData)
@@ -217,6 +215,7 @@ def CloudType0_UpdateValue():
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
 def CloudType0_AnalysisUpdateValue(response):
+    print(response)
     result = response['res']
 
 def DoWork(macaddress):
