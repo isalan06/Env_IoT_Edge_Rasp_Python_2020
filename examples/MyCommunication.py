@@ -158,7 +158,8 @@ def AnaylsisCommand(response):
     print(ANSI_WHITE + '[Info] Start to anaylsis response from data platform!' + ANSI_OFF)
 
 def CloudType0_GetThresholdValue():
-    url = MyParameter.CloudUrl + '/getAntiquitiesWarningValue?tken=' + MyParameter.UserToken
+    url = MyParameter.CloudUrl + '/getAntiquitiesWarningValue?token=' + MyParameter.UserToken
+    print(url)
     payload={}
     headers={}
     response = requests.request('GET', url, headers=headers, data=payload)
