@@ -201,7 +201,7 @@ def CloudType0_UpdateValue():
 
     aCloudType0UpdateData['token']=MyParameter.UserToken
     payload = json.dumps(aCloudType0UpdateData)
-    print(payload)
+    #print(payload)
     headers={'Content-Type':'application/json'}
 
     try:
@@ -215,7 +215,7 @@ def CloudType0_UpdateValue():
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
 def CloudType0_AnalysisUpdateValue(response):
-    print(response)
+    #print(response)
     result = response['res']
 
 def DoWork(macaddress):
