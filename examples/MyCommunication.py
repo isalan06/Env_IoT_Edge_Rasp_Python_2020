@@ -194,6 +194,9 @@ def CloudType0_AnaylsisGetThresholdValue(response):
         print(ANSI_RED + '[Error] Transfer Cloud Type 0 Get Function Error!' + ANSI_OFF)
 
 def CloudType0_UpdateValue():
+
+    global aCloudType0UpdateData
+
     url = MyParameter.CloudUrl + '/addSensorValue'
 
     payload = json.dumps(aCloudType0UpdateData)
@@ -219,6 +222,9 @@ def DoWork(macaddress):
     global tCheckTimer_Start
     global tCheckTimer_CloudType0_Get
     global tCheckTimer_CloudType0_Update
+
+
+    global bCloudType0UpdateTrigger
 
     checkFunctionIntervalTime = time.time() - tCheckTimer_Start
     checkCloudType0_Get_IntervalTime = time.time() - tCheckTimer_CloudType0_Get
