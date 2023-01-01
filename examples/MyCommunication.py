@@ -11,7 +11,7 @@ import os
 import ssl
 import time
 
-sSoftwareVersion='1.0.0.0'
+sSoftwareVersion='1.1.0.0'
 
 
 basicUrl='http://211.75.141.1:40080/Gateway'

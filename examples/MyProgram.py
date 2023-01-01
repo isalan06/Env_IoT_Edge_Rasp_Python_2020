@@ -44,7 +44,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.1.2.0'
+sSoftwareVersion='1.2.0.0'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1230,7 +1230,7 @@ def UpdateLocalSensorsInformation():
                     ThermalDataValue["Value"]=thermalpoint
                     setIDIndex = setIDIndex + 1
                     ThermalDataList["Value"].append(ThermalDataValue)
-                    CloudType0_UpdateData['ThermalValueArray'].append(ThermalDataValue)
+                    CloudType0_UpdateData['ThermalValueArray'].append(thermalpoint)
                 InformationData[SetKey][SetKey2][SetKey3].append(ThermalDataList)
 
                 MyCommunication.aSensorData=InformationData[SetKey]
