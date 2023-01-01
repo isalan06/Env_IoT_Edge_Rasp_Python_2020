@@ -230,7 +230,7 @@ def DoWork(macaddress):
     checkCloudType0_Get_IntervalTime = time.time() - tCheckTimer_CloudType0_Get
     checkCloudType0_Update_IntervalTime = time.time() - tCheckTimer_CloudType0_Update
 
-    if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 10):
+    if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 30):
         tCheckTimer_Start = time.time()
         print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
         UpdateMachineStatus(macaddress)
