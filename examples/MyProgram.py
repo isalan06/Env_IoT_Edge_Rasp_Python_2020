@@ -44,7 +44,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.2.0.0'
+sSoftwareVersion='1.2.0.1'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1152,6 +1152,12 @@ def UpdateLocalSensorsInformation():
                     for index in range(get_mi_device_number):
                         if get_mi_data_flag[index]:
                             get_mi_data_flag[index] = False
+
+                            if Count == 0:
+                                CloudType0_UpdateData['TempValue'] = get_mi_data_temp[index]
+                                CloudType0_UpdateData['HumidityValue'] = get_mi_data_humidity[index]
+
+
                             Count = Count + 1
                             InformationData[SetKey][SetKey2]["Count"]=Count
 
