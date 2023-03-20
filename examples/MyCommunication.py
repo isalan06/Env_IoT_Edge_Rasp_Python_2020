@@ -240,19 +240,19 @@ def DoWork(macaddress):
 
     if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 30):
         tCheckTimer_Start = time.time()
-        print(ANSI_WHITE + '[Info] Start to communication data platform!' + ANSI_OFF)
+        print(ANSI_BLUE + '[Info] Start to communication data platform!' + ANSI_OFF)
         UpdateMachineStatus(macaddress)
 
     if MyParameter.UseCloud > 0:
         if MyParameter.CloudType == 0:
             if checkCloudType0_Get_IntervalTime >= 60:
-                print(ANSI_YELLOW + '[Info] Start to get threshold value from cloud!' + ANSI_OFF)
+                print(ANSI_BLUE + '[Info] Start to get threshold value from cloud!' + ANSI_OFF)
                 tCheckTimer_CloudType0_Get = time.time()
                 CloudType0_GetThresholdValue()
 
             if checkCloudType0_Update_IntervalTime >= 30:
                 if bCloudType0UpdateTrigger==True:
                     bCloudType0UpdateTrigger = False
-                    print(ANSI_YELLOW + '[Info] Start to update value to cloud!' + ANSI_OFF)
+                    print(ANSI_BLUE + '[Info] Start to update value to cloud!' + ANSI_OFF)
                     tCheckTimer_CloudType0_Update = time.time()
                     CloudType0_UpdateValue()
