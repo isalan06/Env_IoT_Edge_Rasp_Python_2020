@@ -47,7 +47,7 @@ else:
     ANSI_RED = ANSI_CSI + '31m'
     ANSI_GREEN = ANSI_CSI + '32m'
     ANSI_YELLOW = ANSI_CSI + '33m'
-    ANSI_BLUE = ANSI_CSI + '34m'
+    ANSI_BLUE = ANSI_CSI + '1;34;40m'
     ANSI_MAGENTA = ANSI_CSI + '35m'
     ANSI_CYAN = ANSI_CSI + '36m'
     ANSI_WHITE = ANSI_CSI + '37m'
@@ -61,7 +61,7 @@ def getMachineInformation(macaddress):
 
     _macaddress = macaddress
 
-    print(ANSI_WHITE + '[Info] Start to get machine information from data platform!' + ANSI_OFF)
+    print(ANSI_BLUE + '[Info] Start to get machine information from data platform!' + ANSI_OFF)
 
     requestData={}
     requestData['MacAddress']=_macaddress
@@ -110,9 +110,9 @@ def getMachineInformation(macaddress):
                 MyParameter.Token = data['Token']
 
 
-        print(ANSI_WHITE + '[Info] Finish getting machine information from data platform!' + ANSI_OFF)
+        print(ANSI_BLUE + '[Info] Finish getting machine information from data platform!' + ANSI_OFF)
         if MyParameter.IsDataPlatformConnected:
-            print(ANSI_WHITE + '[Info] Start to update data to data platform!' + ANSI_OFF)
+            print(ANSI_BLUE + '[Info] Start to update data to data platform!' + ANSI_OFF)
         else:
             print(ANSI_RED + '[Error] Cannot update data to data platform' + ANSI_OFF)
 
@@ -157,7 +157,7 @@ def UpdateMachineStatus(macaddress):
     url = basicUrl + '/UpdateMachineStatus'
     try:
         response = requests.request("POST", url, headers=headers, data=TransferJSONData, timeout=10)
-        print(response)
+        #print(response)
 
         data = response.json()
         #print(data)
@@ -166,7 +166,7 @@ def UpdateMachineStatus(macaddress):
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)  
 
 def AnaylsisCommand(response):
-    print(ANSI_WHITE + '[Info] Start to anaylsis response from data platform!' + ANSI_OFF)
+    print(ANSI_BLUE + '[Info] Start to anaylsis response from data platform!' + ANSI_OFF)
 
 def CloudType0_GetThresholdValue():
     url = MyParameter.CloudUrl + '/getAntiquitiesWarningValue?token=' + MyParameter.UserToken
@@ -183,23 +183,26 @@ def CloudType0_GetThresholdValue():
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
 def CloudType0_AnaylsisGetThresholdValue(response):
-    res = response['res']
+    try:
+        res = response['res']
 
-    if res == 1:
-        MyParameter.VibrationWarningValue = response['VibrationWarningValue']
-        MyParameter.VibrationAlarmValue = response['VibrationAlarmValue']
-        MyParameter.FireWarningTempValue = response['FireWarningTempValue']
-        MyParameter.FireWarningCountValue = response['FireWarningCountValue']
-        MyParameter.FireAlarmTempValue = response['FireAlarmTempValue']
-        MyParameter.FireAlarmCountValue = response['FireAlarmCountValue']
-        MyParameter.CapturePictureRH = response['CapturePictureRH']
-        MyParameter.CapturePictureRV = response['CapturePictureRV']
-        MyParameter.CaptureVideoSecond = response['CaptureVideoSecond']
-        MyParameter.SensorsFValue = response['SensorsFValue']
-        MyParameter.CameraFValue = response['CameraFValue']
-        MyParameter.UpdateFValue = response['UpdateFValue']
-    else:
-        print(ANSI_RED + '[Error] Transfer Cloud Type 0 Get Function Error!' + ANSI_OFF)
+        if res == 1:
+            MyParameter.VibrationWarningValue = response['VibrationWarningValue']
+            MyParameter.VibrationAlarmValue = response['VibrationAlarmValue']
+            MyParameter.FireWarningTempValue = response['FireWarningTempValue']
+            MyParameter.FireWarningCountValue = response['FireWarningCountValue']
+            MyParameter.FireAlarmTempValue = response['FireAlarmTempValue']
+            MyParameter.FireAlarmCountValue = response['FireAlarmCountValue']
+            MyParameter.CapturePictureRH = response['CapturePictureRH']
+            MyParameter.CapturePictureRV = response['CapturePictureRV']
+            MyParameter.CaptureVideoSecond = response['CaptureVideoSecond']
+            MyParameter.SensorsFValue = response['SensorsFValue']
+            MyParameter.CameraFValue = response['CameraFValue']
+            MyParameter.UpdateFValue = response['UpdateFValue']
+        else:
+            print(ANSI_RED + '[Error] Transfer Cloud Type 0 Get Function Error!' + ANSI_OFF)
+    except:
+        print(ANSI_RED + '[Error] Anaylsis Threshold Value happen error!'+ ANSI_OFF)
 
 def CloudType0_UpdateValue():
 
@@ -224,7 +227,10 @@ def CloudType0_UpdateValue():
 
 def CloudType0_AnalysisUpdateValue(response):
     #print(response)
-    result = response['res']
+    try:
+        result = response['res']
+    except:
+        print(ANSI_RED + '[Error] Anaylsis Update Value happen error!'+ ANSI_OFF)
 
 def DoWork(macaddress):
     global tCheckTimer_Start
@@ -237,6 +243,15 @@ def DoWork(macaddress):
     checkFunctionIntervalTime = time.time() - tCheckTimer_Start
     checkCloudType0_Get_IntervalTime = time.time() - tCheckTimer_CloudType0_Get
     checkCloudType0_Update_IntervalTime = time.time() - tCheckTimer_CloudType0_Update
+
+    if checkFunctionIntervalTime < 0:
+        tCheckTimer_Start = time.time()
+
+    if checkCloudType0_Get_IntervalTime < 0:
+        tCheckTimer_CloudType0_Get = time.time()
+    
+    if checkCloudType0_Update_IntervalTime < 0:
+        tCheckTimer_CloudType0_Update = time.time()
 
     if MyParameter.IsDataPlatformConnected and (checkFunctionIntervalTime >= 30):
         tCheckTimer_Start = time.time()
