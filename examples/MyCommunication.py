@@ -11,7 +11,7 @@ import os
 import ssl
 import time
 
-sSoftwareVersion='1.1.0.0'
+sSoftwareVersion='1.1.0.1'
 
 
 basicUrl='http://211.75.141.1:40080/Gateway'
@@ -37,6 +37,8 @@ if os.getenv('C', '1') == '0':
     ANSI_RED = ''
     ANSI_GREEN = ''
     ANSI_YELLOW = ''
+    ANSI_BLUE = ''
+    ANSI_MAGENTA = ''
     ANSI_CYAN = ''
     ANSI_WHITE = ''
     ANSI_OFF = ''
@@ -45,6 +47,8 @@ else:
     ANSI_RED = ANSI_CSI + '31m'
     ANSI_GREEN = ANSI_CSI + '32m'
     ANSI_YELLOW = ANSI_CSI + '33m'
+    ANSI_BLUE = ANSI_CSI + '34m'
+    ANSI_MAGENTA = ANSI_CSI + '35m'
     ANSI_CYAN = ANSI_CSI + '36m'
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
