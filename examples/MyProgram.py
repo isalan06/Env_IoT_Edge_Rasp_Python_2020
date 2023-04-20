@@ -44,7 +44,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.2.0.1'
+sSoftwareVersion='1.2.0.2'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -1004,7 +1004,7 @@ def UpdateLocalSensorsInformation():
                 CloudType0_UpdateData={}
                 CloudType0_UpdateData['token']=''
                 CloudType0_UpdateData['DataRecordTime']=datetime.now().strftime("%Y-%m-%d %H:%M:%S")	
-                CloudType0_UpdateData['IsAlert']=False
+                CloudType0_UpdateData['IsAlert']=True
                 CloudType0_UpdateData['ThermalValue']=None
                 CloudType0_UpdateData['VibrationXValue']=None
                 CloudType0_UpdateData['VibrationYValue']=None
