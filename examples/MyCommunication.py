@@ -267,7 +267,7 @@ def DoWork(macaddress):
                 tCheckTimer_CloudType0_Get = time.time()
                 CloudType0_GetThresholdValue()
 
-            if checkCloudType0_Update_IntervalTime >= 60: #1800:
+            if checkCloudType0_Update_IntervalTime >= 1800: #1800:
                 if bCloudType0UpdateTrigger==True:
                     bCloudType0UpdateTrigger = False
                     print(ANSI_BLUE + '[Info] Start to update value to cloud!' + ANSI_OFF)
