@@ -214,6 +214,8 @@ def CloudType0_UpdateValue():
     payload = json.dumps(aCloudType0UpdateData)
     #print(payload)
     headers={'Content-Type':'application/json'}
+    print(payload)
+    print(ANSI_YELLOW + '[Update] Start to update data to cloud!'+ ANSI_OFF)
 
     try:
         response= requests.request('POST', url, headers=headers, data=payload)
