@@ -1108,7 +1108,7 @@ def UpdateLocalSensorsInformation():
                 templist["Address"]="NA"
                 templist["Value"]=temp_c
                 InformationData[SetKey][SetKey2][SetKey3].append(templist)
-                CloudType0_UpdateData['TempValue']=temp_c
+                
                 
                 SetKey2="Humidity"
                 InformationData[SetKey][SetKey2]={}
@@ -1120,7 +1120,13 @@ def UpdateLocalSensorsInformation():
                 humiditylist["Unit"]="%RH"
                 humiditylist["Value"]=humidity
                 InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
-                CloudType0_UpdateData['HumidityValue']=humidity
+                
+                try:
+                    CloudType0_UpdateData['TempValue'] = get_mi_data_temp[0]
+                    CloudType0_UpdateData['HumidityValue'] = get_mi_data_humidity[0]
+                except:
+                    CloudType0_UpdateData['TempValue']=temp_c
+                    CloudType0_UpdateData['HumidityValue']=humidity
 
                 SetKey2="LightSensor"
                 InformationData[SetKey][SetKey2]={}
@@ -1153,9 +1159,9 @@ def UpdateLocalSensorsInformation():
                         if get_mi_data_flag[index]:
                             get_mi_data_flag[index] = False
 
-                            if Count == 0:
-                                CloudType0_UpdateData['TempValue'] = get_mi_data_temp[index]
-                                CloudType0_UpdateData['HumidityValue'] = get_mi_data_humidity[index]
+                            #if Count == 0:
+                            #    CloudType0_UpdateData['TempValue'] = get_mi_data_temp[index]
+                            #    CloudType0_UpdateData['HumidityValue'] = get_mi_data_humidity[index]
 
 
                             Count = Count + 1
