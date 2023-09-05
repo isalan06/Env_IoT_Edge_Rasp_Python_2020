@@ -549,6 +549,10 @@ def GetSensorsData():
     tStartTime_ShowInformation = time.time()
     fIntervalTime_ShowInformation = 10.0
 
+    #Mi 
+    global get_mi_data_temp
+    global get_mi_data_humidity
+
     print("Get Local Sensors Thread Start")
 
     # DHT22 Attribute
@@ -598,6 +602,7 @@ def GetSensorsData():
                 temp_c = get_mi_data_temp[0]
                 humidity = get_mi_data_humidity[0]
             except RuntimeError as error2:
+                print("Get DHT Error2: " + error2.args[0])
                 temp_c = 0
                 humidity = 0
 
