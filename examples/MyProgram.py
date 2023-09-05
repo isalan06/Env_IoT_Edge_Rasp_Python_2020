@@ -1138,11 +1138,11 @@ def UpdateLocalSensorsInformation():
                 InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
                 
                 if get_mi_singledata_temp == 0:
-                    CloudType0_UpdateData['TempValue'] = get_mi_singledata_temp
-                    CloudType0_UpdateData['HumidityValue'] = get_mi_singledata_humidity
+                    CloudType0_UpdateData['TempValue'] = temp_c
+                    CloudType0_UpdateData['HumidityValue'] = humidity
                 else:
-                    CloudType0_UpdateData['TempValue']=temp_c
-                    CloudType0_UpdateData['HumidityValue']=humidity
+                    CloudType0_UpdateData['TempValue']=get_mi_singledata_temp
+                    CloudType0_UpdateData['HumidityValue']=get_mi_singledata_humidity
 
                 SetKey2="LightSensor"
                 InformationData[SetKey][SetKey2]={}
