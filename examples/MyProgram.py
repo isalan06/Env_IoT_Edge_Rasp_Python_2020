@@ -199,6 +199,7 @@ class MyDelegate(btle.DefaultDelegate):
                         get_mi_singledata_temp = data4
                         get_mi_singledata_humidity = data3
                         dtMiTimeoutTimer = time.time()
+                        dtCaptureMiTime = datetime.now()
 
 
 class MyTest():

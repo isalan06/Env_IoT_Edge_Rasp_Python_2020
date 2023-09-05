@@ -229,7 +229,7 @@ def CloudType0_UpdateValue():
         response= requests.request('POST', url, headers=headers, data=payload)
 
         iCloudType0UpdateSuccessCount = iCloudType0UpdateSuccessCount + 1
-        tCloudType0UpdateTime = datetime.now()
+        dtCloudType0UpdateTime = datetime.now()
 
         getData = response.json()
 
