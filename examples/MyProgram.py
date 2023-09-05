@@ -55,6 +55,7 @@ get_mi_data_humidity = []
 get_mi_data_battery = []
 get_mi_singledata_temp = 0
 get_mi_singledata_humidity = 0
+dtMiTimeoutTimer = time.time()
 
 hostname = ''
 local_mac_address = ''
@@ -173,6 +174,7 @@ class MyDelegate(btle.DefaultDelegate):
             global get_mi_data_humidity
             global get_mi_singledata_temp
             global get_mi_singledata_humidity
+            global dtMiTimeoutTimer
             #print(data)
             if len(data) >= 3:
                 data1 = data[0]
@@ -191,6 +193,7 @@ class MyDelegate(btle.DefaultDelegate):
                     if self.index == 0:
                         get_mi_singledata_temp = data4
                         get_mi_singledata_humidity = data3
+                        dtMiTimeoutTimer = time.time()
 
 
 class MyTest():
@@ -742,7 +745,7 @@ def GetSensorsData():
             tStartTime_ShowInformation = time.time()
             print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
             print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
-            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}%".format(get_mi_singledata_temp, get_mi_singledata_humidity))
+            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}% Timeout_Value: {}".format(get_mi_singledata_temp, get_mi_singledata_humidity, (tEndTime - dtMiTimeoutTimer)))
             print("     Get G Sensors Success: " + sVibrationStatus)
             print("     Get ThermalPixels Success: " + sFireDetectStatus)
             print("------------------------------------------------------------------" + ANSI_OFF)
