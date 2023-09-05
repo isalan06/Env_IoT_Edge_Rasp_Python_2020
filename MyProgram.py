@@ -42,6 +42,8 @@ get_mi_data_flag2 = []
 get_mi_data_temp = []
 get_mi_data_humidity = []
 get_mi_data_battery = []
+get_mi_singledata_temp = 0
+get_mi_singledata_humidity = 0
 
 hostname = ''
 local_mac_address = ''
@@ -158,6 +160,8 @@ class MyDelegate(btle.DefaultDelegate):
             global get_mi_data_flag2
             global get_mi_data_temp
             global get_mi_data_humidity
+            global get_mi_singledata_temp
+            global get_mi_singledata_humidity
             #print(data)
             if len(data) >= 3:
                 data1 = data[0]
@@ -173,6 +177,9 @@ class MyDelegate(btle.DefaultDelegate):
                     get_mi_data_battery[self.index] = data5
                     get_mi_data_flag[self.index]=True
                     get_mi_data_flag2[self.index]=True
+                    if self.index == 0:
+                        get_mi_singledata_temp = data4
+                        get_mi_singledata_humidity = data3
 
 class MyTest():
     BLE_Connected=False
@@ -290,6 +297,8 @@ class BLEDeviceForMi():
         global get_mi_data_temp
         global get_mi_data_humidity
         global get_mi_data_battery
+        global get_mi_singledata_temp
+        global get_mi_singledata_humidity
 
         while self.bRunning:
 
@@ -344,6 +353,8 @@ class BLEDeviceForMi():
                 if self.bBLEDeviceExist:
                     print("List of Mac Address: Number=>" + str(length))
                     print(mac_address_list)
+
+                    calcount = 0
 
                     for index in range(length):
                         _device = MyTest(index, mac_address_list[index])
@@ -584,6 +595,7 @@ def GetSensorsData():
             tStartTime_ShowInformation = time.time()
             print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
             print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
+            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}%".format(get_mi_singledata_temp, get_mi_singledata_humidity))
             print("     Get G Sensors Success: " + sVibrationStatus)
             print("     Get ThermalPixels Success: " + sFireDetectStatus)
             print("------------------------------------------------------------------" + ANSI_OFF)
