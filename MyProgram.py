@@ -33,7 +33,7 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from PIL import Image
 
-sSoftwareVersion='1.0.5.7'
+sSoftwareVersion='1.0.5.8'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -594,6 +594,13 @@ def GetSensorsData():
                     humidity = dhtDevice.humidity
         except RuntimeError as error:
             print("Get DHT Error: " + error.args[0])
+            try:
+                temp_c = get_mi_data_temp[0]
+                humidity = get_mi_data_humidity[0]
+            except RuntimeError as error2:
+                temp_c = 0
+                humidity = 0
+
 
         #Vibration Status Return Normal Check
         if sVibrationStatus == "Normal":
