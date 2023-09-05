@@ -44,7 +44,7 @@ from MyParameter import DIO_Finish
 
 import serial
 
-sSoftwareVersion='1.2.0.2'
+sSoftwareVersion='1.2.0.3'
 
 get_mi_device_number = 0
 mac_address_list = []
@@ -56,6 +56,10 @@ get_mi_data_battery = []
 get_mi_singledata_temp = 0
 get_mi_singledata_humidity = 0
 dtMiTimeoutTimer = time.time()
+dtStartTime = datetime.now()
+dtCaptureMiTime = datetime.now()
+update_mi_data_temp = 0
+update_mi_data_humidity = 0
 
 hostname = ''
 local_mac_address = ''
@@ -175,6 +179,7 @@ class MyDelegate(btle.DefaultDelegate):
             global get_mi_singledata_temp
             global get_mi_singledata_humidity
             global dtMiTimeoutTimer
+            global dtCaptureMiTime
             #print(data)
             if len(data) >= 3:
                 data1 = data[0]
@@ -633,6 +638,8 @@ def GetSensorsData():
 
     global get_mi_singledata_temp
     global get_mi_singledata_humidity
+    global update_mi_data_temp
+    global update_mi_data_humidity 
 
     #Vibration Attribute
     global gyro_xout
@@ -743,12 +750,15 @@ def GetSensorsData():
 
         if (tEndTime - tStartTime_ShowInformation) >= fIntervalTime_ShowInformation:
             tStartTime_ShowInformation = time.time()
+            sShowLastGetMiTime = dtCaptureMiTime.strftime('%Y-%m-%d %H:%M:%S')
+            sShowLastUpdateTime = MyCommunication.dtCloudType0UpdateTime.strftime('%Y-%m-%d %H:%M:%S')
             print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
             print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
-            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}% Timeout_Value: {:.1f}".format(get_mi_singledata_temp, get_mi_singledata_humidity, (tEndTime - dtMiTimeoutTimer)))
+            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}% Timeout_Value: {:.1f} Time: {}".format(get_mi_singledata_temp, get_mi_singledata_humidity, (tEndTime - dtMiTimeoutTimer), sShowLastGetMiTime))
             print("     Get G Sensors Success: " + sVibrationStatus)
             print("     Get ThermalPixels Success: " + sFireDetectStatus)
             print("     Cloud Used: {}; Cloud Type: {}; Update Success: {}; Update Failure: {}".format(MyParameter.UseCloud, MyParameter.CloudType, MyCommunication.iCloudType0UpdateSuccessCount, MyCommunication.iCloudType0UpdateFailureCount))
+            print("     Last Update Time: {}; Update_Temp: {}; Update_Humidity: {};".format(sShowLastUpdateTime, update_mi_data_temp, update_mi_data_humidity))
             print("------------------------------------------------------------------" + ANSI_OFF)
 
         #DHT22
@@ -953,6 +963,8 @@ def UpdateLocalSensorsInformation():
     global get_mi_data_humidity
     global get_mi_data_battery
     global mac_address_list
+    global update_mi_data_temp
+    global update_mi_data_humidity
 
 
     global bRunning
@@ -1143,6 +1155,9 @@ def UpdateLocalSensorsInformation():
                 else:
                     CloudType0_UpdateData['TempValue']=get_mi_singledata_temp
                     CloudType0_UpdateData['HumidityValue']=get_mi_singledata_humidity
+
+                update_mi_data_temp = CloudType0_UpdateData['TempValue']
+                update_mi_data_humidity = CloudType0_UpdateData['HumidityValue']
 
                 SetKey2="LightSensor"
                 InformationData[SetKey][SetKey2]={}

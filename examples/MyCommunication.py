@@ -10,8 +10,9 @@ import requests
 import os
 import ssl
 import time
+from datetime import datetime
 
-sSoftwareVersion='1.1.0.2'
+sSoftwareVersion='1.1.0.3'
 
 
 basicUrl='http://211.75.141.1:40080/Gateway'
@@ -35,6 +36,7 @@ bCloudType0UpdateTrigger=False
 
 iCloudType0UpdateSuccessCount = 0
 iCloudType0UpdateFailureCount = 0
+dtCloudType0UpdateTime = datetime.now()
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -212,6 +214,7 @@ def CloudType0_UpdateValue():
     global aCloudType0UpdateData
     global iCloudType0UpdateSuccessCount
     global iCloudType0UpdateFailureCount
+    global dtCloudType0UpdateTime
 
     url = MyParameter.CloudUrl + '/addSensorValue'
 
@@ -226,6 +229,7 @@ def CloudType0_UpdateValue():
         response= requests.request('POST', url, headers=headers, data=payload)
 
         iCloudType0UpdateSuccessCount = iCloudType0UpdateSuccessCount + 1
+        tCloudType0UpdateTime = datetime.now()
 
         getData = response.json()
 
