@@ -11,7 +11,7 @@ import os
 import ssl
 import time
 
-sSoftwareVersion='1.1.0.1'
+sSoftwareVersion='1.1.0.2'
 
 
 basicUrl='http://211.75.141.1:40080/Gateway'
@@ -32,6 +32,9 @@ aODParameter={}
 
 aCloudType0UpdateData={}
 bCloudType0UpdateTrigger=False
+
+iCloudType0UpdateSuccessCount = 0
+iCloudType0UpdateFailureCount = 0
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -207,6 +210,8 @@ def CloudType0_AnaylsisGetThresholdValue(response):
 def CloudType0_UpdateValue():
 
     global aCloudType0UpdateData
+    global iCloudType0UpdateSuccessCount
+    global iCloudType0UpdateFailureCount
 
     url = MyParameter.CloudUrl + '/addSensorValue'
 
@@ -220,11 +225,14 @@ def CloudType0_UpdateValue():
     try:
         response= requests.request('POST', url, headers=headers, data=payload)
 
+        iCloudType0UpdateSuccessCount = iCloudType0UpdateSuccessCount + 1
+
         getData = response.json()
 
         CloudType0_AnalysisUpdateValue(getData)
 
     except requests.exceptions.RequestException as e:
+        iCloudType0UpdateFailureCount = iCloudType0UpdateFailureCount + 1
         print(ANSI_RED + '[Error] ' + str(e) + ANSI_OFF)
 
 def CloudType0_AnalysisUpdateValue(response):

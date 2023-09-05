@@ -745,9 +745,10 @@ def GetSensorsData():
             tStartTime_ShowInformation = time.time()
             print(ANSI_YELLOW + "Capture Sensors---------------------------------------------------")
             print("     Temp: {:.1f}C Humidity: {}%".format(temp_c, humidity))
-            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}% Timeout_Value: {}".format(get_mi_singledata_temp, get_mi_singledata_humidity, (tEndTime - dtMiTimeoutTimer)))
+            print("     Mi_Temp: {:.1f}C Mi_Humidity: {}% Timeout_Value: {:.1f}".format(get_mi_singledata_temp, get_mi_singledata_humidity, (tEndTime - dtMiTimeoutTimer)))
             print("     Get G Sensors Success: " + sVibrationStatus)
             print("     Get ThermalPixels Success: " + sFireDetectStatus)
+            print("     Cloud Used: {}; Cloud Type: {}; Update Success: {}; Update Failure: {}".format(MyParameter.UseCloud, MyParameter.CloudType, MyCommunication.iCloudType0UpdateSuccessCount, MyCommunication.iCloudType0UpdateFailureCount))
             print("------------------------------------------------------------------" + ANSI_OFF)
 
         #DHT22
@@ -1136,10 +1137,10 @@ def UpdateLocalSensorsInformation():
                 humiditylist["Value"]=humidity
                 InformationData[SetKey][SetKey2][SetKey3].append(humiditylist)
                 
-                try:
-                    CloudType0_UpdateData['TempValue'] = get_mi_data_temp[0]
-                    CloudType0_UpdateData['HumidityValue'] = get_mi_data_humidity[0]
-                except:
+                if get_mi_singledata_temp == 0:
+                    CloudType0_UpdateData['TempValue'] = get_mi_singledata_temp
+                    CloudType0_UpdateData['HumidityValue'] = get_mi_singledata_humidity
+                else:
                     CloudType0_UpdateData['TempValue']=temp_c
                     CloudType0_UpdateData['HumidityValue']=humidity
 
