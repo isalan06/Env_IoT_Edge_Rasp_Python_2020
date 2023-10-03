@@ -127,12 +127,13 @@ class MyMiBLEDeivce():
                     ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
                     ccc_desc.write(b"\x02")
                     self.bFirstOneFlag = True
+                    MyPrint.Print_Green("Machine-" + str(self.index) + " Set Notification Success")
             except:
-                MyPrint.Print("Machine-" + str(self.index) + " Set Notification Error")
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Set Notification Error")
          
         except:
             self.BLE_Connected = False
-            MyPrint.Print("Machine-" + str(self.index) + " Connect Error")
+            MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error")
 
     def Run(self):
         try:
@@ -140,19 +141,20 @@ class MyMiBLEDeivce():
             self.DoWorkThread = threading.Thread(target=self.DoWork)
             self.DoWorkThread.start()
         except:
-            MyPrint.Print("Machine-" + str(self.index) + " Run Threading Fail")
+            MyPrint.Print_Red("Machine-" + str(self.index) + " Run Threading Fail")
         finally:
-            MyPrint.Print("Machine-" + str(self.index) + " Run Threading Success")
+            MyPrint.Print_Green("Machine-" + str(self.index) + " Run Threading Success")
 
     def DoWork(self):
         global get_mi_data_battery
         while self.bRunning:
             if (self.BLE_Connected & self.bRunning):
                 try:
-                    self.p.waitForNotifications(0.5)
+                    self.p.waitForNotifications(2.0)
+                    MyPrint.Print_Green("Machine-" + str(self.index) + " - Wait For Notification Error")
                 except:
                     self.BLE_Connected = False
-                    MyPrint.Print("Machine-" + str(self.index) + " - Wait For Notification Error")
+                    MyPrint.Print_Red("Machine-" + str(self.index) + " - Wait For Notification Error")
             else:
                 timer = time.time()-self.start_time3
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
