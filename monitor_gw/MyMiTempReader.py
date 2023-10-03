@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#MiTempReader.py
+#MyMiTempReader.py
 
 from bluepy.btle import UUID, Peripheral
 from bluepy import btle
