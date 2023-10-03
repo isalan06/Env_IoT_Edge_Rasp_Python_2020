@@ -3,6 +3,7 @@
 
 import MyPrint
 from MiTempReader import BLEDeviceForMi
+import time
 
 if __name__ == "__main__":
     MyPrint.Print_Red('test')
