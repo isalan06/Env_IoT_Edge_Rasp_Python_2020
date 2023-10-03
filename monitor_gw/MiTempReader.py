@@ -9,6 +9,7 @@ from datetime import datetime
 import MyPrint
 import threading
 import argparse
+import sys
 
 class MiTemperDataDto:
     get_mi_device_number = 0
