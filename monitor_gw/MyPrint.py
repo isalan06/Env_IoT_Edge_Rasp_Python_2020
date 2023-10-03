@@ -19,17 +19,12 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-def Print_Ori(message):
-    def decorator(func):
-        print (message)
-        display_color = func(message)
-        textString = display_color
-        textString += message
-        textString += ANSI_OFF
-        print (textString)
-    return decorator
+def Print_Ori(message, color):
+    textString = color
+    textString += message
+    textString += ANSI_OFF
+    print (textString)
 
-@Print_Ori
 def Print_Red(message):
     color_string = ANSI_RED
-    return color_string
+    Print_Ori(message, color_string)
