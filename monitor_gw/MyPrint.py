@@ -25,6 +25,25 @@ def Print_Ori(message, color):
     textString += ANSI_OFF
     print (textString)
 
+def Print(message):
+    print(message)
+
 def Print_Red(message):
     color_string = ANSI_RED
+    Print_Ori(message, color_string)
+
+def Print_Green(message):
+    color_string = ANSI_GREEN
+    Print_Ori(message, color_string)
+
+def Print_Yellow(message):
+    color_string = ANSI_YELLOW
+    Print_Ori(message, color_string)
+
+def Print_Cyan(message):
+    color_string = ANSI_CYAN
+    Print_Ori(message, color_string)
+
+def Print_White(message):
+    color_string = ANSI_WHITE
     Print_Ori(message, color_string)
