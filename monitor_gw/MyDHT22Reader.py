@@ -31,7 +31,7 @@ class DHT22Reader:
         DHT22Data.sDHT22Status="Stop"
         DHT22Data.bDHT22DeviceExist = False
 
-    def Start():
+    def Start(self):
         global DHT22Data
         global dhtDevice
 
@@ -46,7 +46,7 @@ class DHT22Reader:
             DHT22Data.sDHT22Status="Stop"
             DHT22Data.bDHT22DeviceExist = False
 
-    def Read():
+    def Read(self):
         global DHT22Data
         global dhtDevice
 
