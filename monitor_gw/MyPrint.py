@@ -21,6 +21,7 @@ else:
 
 def Print_Ori(message):
     def decorator(func):
+        print (message)
         display_color = func(message)
         textString = display_color
         textString += message
