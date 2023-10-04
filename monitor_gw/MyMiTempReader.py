@@ -147,11 +147,14 @@ class MyMiBLEDeivce():
 
     def DoWork(self):
         global get_mi_data_battery
+
+        waitForNotificationsValue = 2.0
+
         while self.bRunning:
             if (self.BLE_Connected & self.bRunning):
                 try:
-                    self.p.waitForNotifications(2.0)
-                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " - Wait For Notification Error")
+                    self.p.waitForNotifications(waitForNotificationsValue)
+                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " - Wait For Notification Success")
                 except:
                     self.BLE_Connected = False
                     MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " - Wait For Notification Error")
@@ -160,7 +163,8 @@ class MyMiBLEDeivce():
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time3=time.time()
                     self.Connect()
-            time.sleep(0.5)
+                    
+            time.sleep(waitForNotificationsValue)
 
     def Disconnect(self):
         if self.BLE_Connected == True:

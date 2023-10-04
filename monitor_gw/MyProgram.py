@@ -7,6 +7,8 @@ import MyDHT22Reader
 import MyThermalReader
 import time
 
+bRunning = True
+
 if __name__ == "__main__":
     MyPrint.Print_Red('test')
 
@@ -21,7 +23,20 @@ if __name__ == "__main__":
     myThermalReader.Start()
     myThermalReader.Read()
 
-    time.sleep(30.0)
+    try:
+        while bRunning:
+
+
+
+
+            time.sleep(1.0)
+
+
+        MyPrint.Print_Yellow("[System]Main Threading is finished!")
+    except KeyboardInterrupt:
+        bRunning=False
+
+    bRunning=False
 
     myBLEDevice.Stop()
 
