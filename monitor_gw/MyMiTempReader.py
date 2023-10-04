@@ -117,6 +117,7 @@ class MyMiBLEDeivce():
         count = 3
         while (count > 0):
             count -= 1
+            print (count)
             try:
                 self.p = Peripheral(self.mac_address)
                 self.p.setDelegate(Delegate_HandleReceivedData(self.index))
@@ -138,6 +139,7 @@ class MyMiBLEDeivce():
             except:
                 MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")
                 return False
+            time.sleep(1.0)
             
         return False
 
