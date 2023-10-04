@@ -113,9 +113,10 @@ class MyMiBLEDeivce():
         self.index=index
         self.mac_address=mac_address
 
-    def Connect(self):
-        MyPrint.Print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
-        try:
+    def __connect(self):
+        count = 3
+        while (count > 0):
+            count -= 1
             self.p = Peripheral(self.mac_address)
             self.p.setDelegate(Delegate_HandleReceivedData(self.index))
             self.BLE_Connected = True
@@ -128,8 +129,36 @@ class MyMiBLEDeivce():
                     ccc_desc.write(b"\x02")
                     self.bFirstOneFlag = True
                     MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Set Notification Success")
+                    return True
             except:
                 MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")
+                return False
+            
+        return False
+
+    def Connect(self):
+        MyPrint.Print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
+        try:
+            '''self.p = Peripheral(self.mac_address)
+            self.p.setDelegate(Delegate_HandleReceivedData(self.index))
+            self.BLE_Connected = True
+
+            try:
+                if self.bFirstOneFlag == False:
+                    se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                    ccc_desc.write(b"\x02")
+                    self.bFirstOneFlag = True
+                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Set Notification Success")
+            except:
+                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")'''
+            result = self.__connect(self)
+            if result:
+                MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
+            else:
+                self.BLE_Connected = False
+                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Connect Error")
          
         except:
             self.BLE_Connected = False
@@ -163,7 +192,7 @@ class MyMiBLEDeivce():
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
                     self.start_time3=time.time()
                     self.Connect()
-                    
+
             time.sleep(waitForNotificationsValue)
 
     def Disconnect(self):
