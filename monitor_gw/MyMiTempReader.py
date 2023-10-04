@@ -113,7 +113,7 @@ class MyMiBLEDeivce():
         self.index=index
         self.mac_address=mac_address
 
-    def __connect(self):
+    def connect_impl(self):
         print('execute __connect()')
         count = 3
         while (count > 0):
@@ -161,7 +161,8 @@ class MyMiBLEDeivce():
                     MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Set Notification Success")
             except:
                 MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")'''
-            result = self.__connect(self)
+            print ('execute function')
+            result = self.connect_impl(self)
             if result:
                 MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
             else:
