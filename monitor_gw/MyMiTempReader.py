@@ -113,7 +113,7 @@ class MyMiBLEDeivce():
         self.index=index
         self.mac_address=mac_address
 
-    def connect_impl(self):
+    def __connect(self):
         print('execute __connect()')
         count = 3
         while (count > 0):
@@ -124,7 +124,7 @@ class MyMiBLEDeivce():
                 self.p.setDelegate(Delegate_HandleReceivedData(self.index))
                 self.BLE_Connected = True
             except:
-                time.sleep(1.0)
+                time.sleep(0.5)
                 print ('Error')
                 continue
 
@@ -162,7 +162,7 @@ class MyMiBLEDeivce():
             except:
                 MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")'''
             print ('execute function')
-            result = self.connect_impl()
+            result = self.__connect()
             if result:
                 MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
             else:
@@ -186,7 +186,7 @@ class MyMiBLEDeivce():
     def DoWork(self):
         global get_mi_data_battery
 
-        waitForNotificationsValue = 2.0
+        waitForNotificationsValue = 3.0
 
         while self.bRunning:
             if (self.BLE_Connected & self.bRunning):
