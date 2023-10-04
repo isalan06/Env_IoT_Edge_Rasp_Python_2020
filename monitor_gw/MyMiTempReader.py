@@ -123,6 +123,7 @@ class MyMiBLEDeivce():
                 self.BLE_Connected = True
             except:
                 time.sleep(1.0)
+                print ('Error')
                 continue
 
             try:
