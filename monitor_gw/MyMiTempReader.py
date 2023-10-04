@@ -114,8 +114,7 @@ class MyMiBLEDeivce():
         self.mac_address=mac_address
 
     def __connect(self):
-        print('execute __connect()')
-        count = 3
+        count = 5
         while (count > 0):
             count -= 1
             print (count)
@@ -124,8 +123,7 @@ class MyMiBLEDeivce():
                 self.p.setDelegate(Delegate_HandleReceivedData(self.index))
                 self.BLE_Connected = True
             except:
-                time.sleep(0.5)
-                print ('Error')
+                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Connect Error. Retry count:" + str(count))
                 continue
 
             try:
@@ -147,21 +145,6 @@ class MyMiBLEDeivce():
     def Connect(self):
         MyPrint.Print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
-            '''self.p = Peripheral(self.mac_address)
-            self.p.setDelegate(Delegate_HandleReceivedData(self.index))
-            self.BLE_Connected = True
-
-            try:
-                if self.bFirstOneFlag == False:
-                    se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
-                    ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
-                    ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
-                    ccc_desc.write(b"\x02")
-                    self.bFirstOneFlag = True
-                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Set Notification Success")
-            except:
-                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")'''
-            print ('execute function')
             result = self.__connect()
             if result:
                 MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
