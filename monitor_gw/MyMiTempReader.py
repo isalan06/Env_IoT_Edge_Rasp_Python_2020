@@ -162,7 +162,7 @@ class MyMiBLEDeivce():
             except:
                 MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")'''
             print ('execute function')
-            result = self.connect_impl(self)
+            result = self.connect_impl()
             if result:
                 MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
             else:
