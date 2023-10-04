@@ -4,6 +4,7 @@
 import MyPrint
 import MyMiTempReader 
 import MyDHT22Reader 
+import MyThermalReader
 import time
 
 if __name__ == "__main__":
@@ -15,6 +16,10 @@ if __name__ == "__main__":
     myDHT22Reader = MyDHT22Reader.DHT22Reader()
     myDHT22Reader.Start()
     myDHT22Reader.Read()
+
+    myThermalReader = MyThermalReader.ThermalReader()
+    myThermalReader.Start()
+    myThermalReader.Read()
 
     time.sleep(30.0)
 
