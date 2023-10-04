@@ -117,9 +117,13 @@ class MyMiBLEDeivce():
         count = 3
         while (count > 0):
             count -= 1
-            self.p = Peripheral(self.mac_address)
-            self.p.setDelegate(Delegate_HandleReceivedData(self.index))
-            self.BLE_Connected = True
+            try:
+                self.p = Peripheral(self.mac_address)
+                self.p.setDelegate(Delegate_HandleReceivedData(self.index))
+                self.BLE_Connected = True
+            except:
+                time.sleep(1.0)
+                continue
 
             try:
                 if self.bFirstOneFlag == False:
