@@ -114,6 +114,7 @@ class MyMiBLEDeivce():
         self.mac_address=mac_address
 
     def __connect(self):
+        print('execute __connect()')
         count = 3
         while (count > 0):
             count -= 1
