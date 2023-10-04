@@ -123,7 +123,6 @@ class MyMiBLEDeivce():
         count = 5
         while (count > 0):
             count -= 1
-            print (count)
             try:
                 self.p = Peripheral(self.mac_address)
                 self.p.setDelegate(Delegate_HandleReceivedData(self.index))
