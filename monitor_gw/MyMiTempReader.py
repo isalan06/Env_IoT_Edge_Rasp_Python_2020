@@ -60,7 +60,13 @@ class Delegate_ScanMiDevice(btle.DefaultDelegate):
             if(desc == 'Complete Local Name'):
                 if(val == 'LYWSD03MMC'):
                     MyPrint.Print_Red ('\t'+ '[MI Info]Get Sensors Address: %s' % (dev.addr))
-                    MiTemperData.mac_address_list.append(dev.addr)
+                    singleFlag = True
+                    for address_name in MiTemperData.mac_address_list:
+                        if address_name == dev.addr:
+                            singleFlag = False
+                            break
+                    if singleFlag:
+                        MiTemperData.mac_address_list.append(dev.addr)
 
         if not dev.scanData:
             MyPrint.Print ('\t(no data)')
