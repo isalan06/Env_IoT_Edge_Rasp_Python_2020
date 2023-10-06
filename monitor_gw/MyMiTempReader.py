@@ -111,7 +111,7 @@ class MyMiBLEDeivce():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 300#1800 # Capture MI Data interval time (sec)
+    ReconnectIntervalSecond = 60#1800 # Capture MI Data interval time (sec)
     bFirstOneFlag=False
 
     start_time2=time.time()
