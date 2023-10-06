@@ -5,6 +5,7 @@ import MyPrint
 import MyMiTempReader 
 import MyDHT22Reader 
 import MyThermalReader
+import MyVibrationReader
 import time
 
 bRunning = True
@@ -22,6 +23,10 @@ if __name__ == "__main__":
     myThermalReader = MyThermalReader.ThermalReader()
     myThermalReader.Start()
     myThermalReader.Read()
+
+    myVibrationReader = MyVibrationReader()
+    myVibrationReader.Start()
+    myVibrationReader.Read()
 
     try:
         while bRunning:
