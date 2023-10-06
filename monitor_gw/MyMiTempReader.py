@@ -152,7 +152,7 @@ class MyMiBLEDeivce():
         return False
 
     def Connect(self):
-        MyPrint.Print("Start To Connect BLE-" + str(self.index) + " - " +self.mac_address, MiInfoString)
+        MyPrint.Print("[Mi Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
             result = self.__connect()
             if result:
