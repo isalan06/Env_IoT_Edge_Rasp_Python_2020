@@ -5,8 +5,8 @@ import adafruit_dht
 import board
 import MyPrint
 
-__DHT22InfoString = 'DHT22 Info'
-__DHT22ErrorString = 'DHT22 Info'
+DHT22InfoString = 'DHT22 Info'
+DHT22ErrorString = 'DHT22 Info'
 
 
 class DHT22DataDto:
@@ -40,12 +40,12 @@ class DHT22Reader:
 
         try:
             dhtDevice = adafruit_dht.DHT22(board.D17)
-            MyPrint.Print_Green("Create DHT Device Success", __DHT22InfoString)
+            MyPrint.Print_Green("Create DHT Device Success", DHT22InfoString)
             DHT22Data.sDHT22Status="Running"
             DHT22Data.bDHT22DeviceExist = True
         except:
             dhtDevice = 0
-            MyPrint.Print_Red("Create DHT Device Fail", __DHT22ErrorString)
+            MyPrint.Print_Red("Create DHT Device Fail", DHT22ErrorString)
             DHT22Data.sDHT22Status="Stop"
             DHT22Data.bDHT22DeviceExist = False
 
@@ -58,8 +58,8 @@ class DHT22Reader:
                 DHT22Data.temp_c = dhtDevice.temperature
                 DHT22Data.humidity = dhtDevice.humidity
             else:
-                MyPrint.Print_Red("Get DHT Module did not exist", __DHT22ErrorString)
+                MyPrint.Print_Red("Get DHT Module did not exist", DHT22ErrorString)
         except RuntimeError as error:
-            MyPrint.Print_Red("Get DHT Error: " + error.args[0], __DHT22ErrorString)
+            MyPrint.Print_Red("Get DHT Error: " + error.args[0], DHT22ErrorString)
         except Exception as e:
-            MyPrint.Print_Red("Get DHT Module Error: " + error.args[0], __DHT22ErrorString)
+            MyPrint.Print_Red("Get DHT Module Error: " + error.args[0], DHT22ErrorString)
