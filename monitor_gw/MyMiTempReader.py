@@ -80,7 +80,7 @@ class Delegate_HandleReceivedData(btle.DefaultDelegate):
     def __init__(self, index):
         self.index=index
         btle.DefaultDelegate.__init__(self)
-        MyPrint.Print("Delegate initial Success-" + str(self.index), MiInfoString)
+        MyPrint.Print("[Mi Info]Delegate initial Success-" + str(self.index))
 
     def handleNotification(self, cHandle, data):
             global MiTemperData
