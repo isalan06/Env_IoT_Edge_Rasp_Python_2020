@@ -127,8 +127,11 @@ class MyMiBLEDeivce():
         while (count > 0):
             count -= 1
             try:
-                self.p = Peripheral(self.mac_address)
-                self.p.setDelegate(Delegate_HandleReceivedData(self.index))
+                if self.p == None:
+                    self.p = Peripheral(self.mac_address)
+                    self.p.setDelegate(Delegate_HandleReceivedData(self.index))
+                else:
+                    self.p.connect()
                 self.BLE_Connected = True
             except Exception as e:
                 MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error. Retry count:" + str(count), MiErrorString)
