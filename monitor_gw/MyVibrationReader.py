@@ -59,8 +59,9 @@ class VibrationReader:
         try:
             vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
             MyPrint.Print_Green("[Vibration Info]Start Vibration Sensor Success")
-        except:
+        except Exception as e:
             MyPrint.Print_Red("[Vibration Info]Start Vibration Sensor Fail")
+            print(e)
 
     def Read(self):
         global VibrationData
