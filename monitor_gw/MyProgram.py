@@ -24,7 +24,7 @@ if __name__ == "__main__":
     myThermalReader.Start()
     myThermalReader.Read()
 
-    myVibrationReader = MyVibrationReader()
+    myVibrationReader = MyVibrationReader.VibrationReader()
     myVibrationReader.Start()
     myVibrationReader.Read()
 
