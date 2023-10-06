@@ -11,6 +11,9 @@ import threading
 import argparse
 import sys
 
+__MiInfoString = '[MI Info]'
+__MiErrorString = '[MI Info]'
+
 class MiTemperDataDto:
     get_mi_device_number = 0
     mac_address_list = []
@@ -77,7 +80,7 @@ class Delegate_HandleReceivedData(btle.DefaultDelegate):
     def __init__(self, index):
         self.index=index
         btle.DefaultDelegate.__init__(self)
-        MyPrint.Print("[MI Info]Delegate initial Success-" + str(self.index))
+        MyPrint.Print("Delegate initial Success-" + str(self.index), __MiInfoString)
 
     def handleNotification(self, cHandle, data):
             global MiTemperData
@@ -88,7 +91,7 @@ class Delegate_HandleReceivedData(btle.DefaultDelegate):
                 data3 = data[2] #humidity
                 data4 = float(data2 * 256 + data1) / 100.0 #temperature
                 data5 = int.from_bytes(data[3:5],byteorder='little') / 1000. #battery
-                MyPrint.Print_White("[MI Info]Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH; Voltage:" + str(data5))
+                MyPrint.Print_White("Machine-" + str(self.index) + " => Get Temp:" + str(data4) + "C;   Humidity:" + str(data3) + "%RH; Voltage:" + str(data5), __MiInfoString)
                 if (self.index < MiTemperData.get_mi_device_number):
                     MiTemperData.get_mi_data_temp[self.index] = data4
                     MiTemperData.get_mi_data_humidity[self.index] = data3
@@ -108,7 +111,7 @@ class MyMiBLEDeivce():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 1800
+    ReconnectIntervalSecond = 300#1800 # Capture MI Data interval time (sec)
     bFirstOneFlag=False
 
     start_time2=time.time()
@@ -127,8 +130,9 @@ class MyMiBLEDeivce():
                 self.p = Peripheral(self.mac_address)
                 self.p.setDelegate(Delegate_HandleReceivedData(self.index))
                 self.BLE_Connected = True
-            except:
-                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Connect Error. Retry count:" + str(count))
+            except Exception as e:
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error. Retry count:" + str(count), __MiErrorString)
+                print (e)
                 continue
 
             try:
@@ -138,38 +142,40 @@ class MyMiBLEDeivce():
                     ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
                     ccc_desc.write(b"\x02")
                     self.bFirstOneFlag = True
-                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Set Notification Success")
+                    MyPrint.Print_Green("Machine-" + str(self.index) + " Set Notification Success", __MiInfoString)
                     return True
             except:
-                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Set Notification Error")
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Set Notification Error", __MiErrorString)
                 return False
             time.sleep(1.0)
             
         return False
 
     def Connect(self):
-        MyPrint.Print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
+        MyPrint.Print("Start To Connect BLE-" + str(self.index) + " - " +self.mac_address, __MiInfoString)
         try:
             result = self.__connect()
             if result:
-                MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Connect Success")
+                MyPrint.Print_Green("Machine-" + str(self.index) + " Connect Success", __MiInfoString)
             else:
                 self.BLE_Connected = False
-                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Connect Error")
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", __MiErrorString)
          
         except:
             self.BLE_Connected = False
-            MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Connect Error")
+            MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", __MiErrorString)
 
     def Run(self):
         try:
             self.bRunning = True
             self.DoWorkThread = threading.Thread(target=self.DoWork)
             self.DoWorkThread.start()
+            MyPrint.Print_Green("Machine-" + str(self.index) + " Run Threading Success", __MiInfoString)
         except:
-            MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " Run Threading Fail")
+            MyPrint.Print_Red("Machine-" + str(self.index) + " Run Threading Fail", __MiErrorString)
         finally:
-            MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " Run Threading Success")
+            pass
+            
 
     def DoWork(self):
         global get_mi_data_battery
@@ -180,10 +186,10 @@ class MyMiBLEDeivce():
             if (self.BLE_Connected & self.bRunning):
                 try:
                     self.p.waitForNotifications(waitForNotificationsValue)
-                    MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " - Wait For Notification Success")
+                    MyPrint.Print_Green("Machine-" + str(self.index) + " - Wait For Notification Success", __MiInfoString)
                 except:
                     self.BLE_Connected = False
-                    MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " - Wait For Notification Error")
+                    MyPrint.Print_Red("Machine-" + str(self.index) + " - Wait For Notification Error", __MiErrorString)
             else:
                 timer = time.time()-self.start_time3
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
@@ -198,20 +204,20 @@ class MyMiBLEDeivce():
             self.BLE_Connected = False
             try:
                 self.p.disconnect()
-                MyPrint.Print_Green("[MI Info]Machine-" + str(self.index) + " - Disconnect Success")
+                MyPrint.Print_Green("Machine-" + str(self.index) + " - Disconnect Success", __MiInfoString)
             except:
                 self.p=None
-                MyPrint.Print_Red("[MI Info]Machine-" + str(self.index) + " - Disconnect Fail")
+                MyPrint.Print_Red("Machine-" + str(self.index) + " - Disconnect Fail", __MiErrorString)
     
     def Close(self):
         self.bRunning = False
         if self.BLE_Connected == True:
             try:
                 self.p.disconnect()
-                MyPrint.Print("[MI Info]Machine-" + str(self.index) + " - Disconnect Success")
+                MyPrint.Print("Machine-" + str(self.index) + " - Disconnect Success", __MiInfoString)
             except:
                 self.p=None
-                MyPrint.Print("[MI Info]Machine-" + str(self.index) + " - Disconnect Fail")
+                MyPrint.Print("Machine-" + str(self.index) + " - Disconnect Fail", __MiErrorString)
 
 class BLEDeviceForMi():
     
@@ -271,12 +277,12 @@ class BLEDeviceForMi():
 
                     scanner = btle.Scanner(arg.hci).withDelegate(Delegate_ScanMiDevice(arg))
 
-                    MyPrint.Print_Cyan ("[MI Info]Scanning for devices...")
+                    MyPrint.Print_Cyan ("Scanning for devices...", __MiInfoString)
                     #devices = scanner.scan(arg.timeout)
                     try:
                         devices = scanner.scan(10)
                     except:
-                        MyPrint.Print_Red("[MI Info]Scanning for devices happen error")
+                        MyPrint.Print_Red("Scanning for devices happen error", __MiErrorString)
 
 
                 #endregion
@@ -308,7 +314,7 @@ class BLEDeviceForMi():
                         time.sleep(1.0)
 
                     #get_mi_device_number = length
-                    MyPrint.Print_Yellow("[MI Info]List of Mac Address: Number=>" + str(MiTemperData.get_mi_device_number))
+                    MyPrint.Print_Yellow("List of Mac Address: Number=>" + str(MiTemperData.get_mi_device_number), __MiInfoString)
 
                 else:
                     MyPrint.Print("[MI Info]There is no BLE Device")

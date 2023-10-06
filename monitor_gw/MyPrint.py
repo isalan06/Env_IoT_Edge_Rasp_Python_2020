@@ -19,8 +19,14 @@ else:
     ANSI_WHITE = ANSI_CSI + '37m'
     ANSI_OFF = ANSI_CSI + '0m'
 
-def Print_Ori(message, color):
+def Print_Ori(message, color, title=''):
     textString = color
+
+    if title != '':
+        textString += '['
+        textString += title
+        textString += ']'
+    
     textString += message
     textString += ANSI_OFF
     print (textString)
@@ -28,22 +34,22 @@ def Print_Ori(message, color):
 def Print(message):
     print(message)
 
-def Print_Red(message):
+def Print_Red(message, title=''):
     color_string = ANSI_RED
-    Print_Ori(message, color_string)
+    Print_Ori(message, color_string, title)
 
-def Print_Green(message):
+def Print_Green(message, title=''):
     color_string = ANSI_GREEN
-    Print_Ori(message, color_string)
+    Print_Ori(message, color_string, title)
 
-def Print_Yellow(message):
+def Print_Yellow(message, title=''):
     color_string = ANSI_YELLOW
-    Print_Ori(message, color_string)
+    Print_Ori(message, color_string, title)
 
-def Print_Cyan(message):
+def Print_Cyan(message, title=''):
     color_string = ANSI_CYAN
-    Print_Ori(message, color_string)
+    Print_Ori(message, color_string, title)
 
-def Print_White(message):
+def Print_White(message, title=''):
     color_string = ANSI_WHITE
-    Print_Ori(message, color_string)
+    Print_Ori(message, color_string, title)

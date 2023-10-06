@@ -8,6 +8,8 @@ import MyThermalReader
 import MyVibrationReader
 import time
 
+__SystemInfoString = 'System Info'
+
 bRunning = True
 
 if __name__ == "__main__":
@@ -37,7 +39,7 @@ if __name__ == "__main__":
             time.sleep(1.0)
 
 
-        MyPrint.Print_Yellow("[System]Main Threading is finished!")
+        MyPrint.Print_Yellow("Main Threading is finished!", __SystemInfoString)
     except KeyboardInterrupt:
         bRunning=False
 
@@ -45,4 +47,4 @@ if __name__ == "__main__":
 
     myBLEDevice.Stop()
 
-    MyPrint.Print_Green('finish')
+    MyPrint.Print_Green('Main Program is finished!', __SystemInfoString)
