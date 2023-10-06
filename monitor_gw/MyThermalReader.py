@@ -6,8 +6,8 @@ from Adafruit_AMG88xx import Adafruit_AMG88xx
 
 import MyPrint
 
-__ThermalInfoString = 'Thermal Info'
-__ThermalErrorString = 'Thermal Info'
+ThermalInfoString = 'Thermal Info'
+ThermalErrorString = 'Thermal Info'
 
 class ThermalDataDto:
     thermalpixels= []
@@ -38,12 +38,12 @@ class ThermalReader:
 
         try:
             thermalImage = Adafruit_AMG88xx()
-            MyPrint.Print_Green("Connect to Theraml Camera Success", __ThermalInfoString)
+            MyPrint.Print_Green("Connect to Theraml Camera Success", ThermalInfoString)
             ThermalData.sThermalStatus = "Running"
             ThermalData.bThermalCameraExist = True
         except:
             thermalImage = 0
-            MyPrint.Print_Red("Connect to Theraml Camera Fail", __ThermalErrorString)
+            MyPrint.Print_Red("Connect to Theraml Camera Fail", ThermalErrorString)
             ThermalData.sThermalStatus = "Stop"
             ThermalData.bThermalCameraExist = False
     
@@ -55,4 +55,4 @@ class ThermalReader:
             if (thermalImage != 0) and ThermalData.bThermalCameraExist:
                 ThermalData.thermalpixels = thermalImage.readPixels()
         except:
-            MyPrint.Print_Red("Get TermalPixels Failure", __ThermalErrorString)
+            MyPrint.Print_Red("Get TermalPixels Failure", ThermalErrorString)

@@ -6,8 +6,8 @@ import math
 import MyPrint
 from datetime import datetime
 
-__VibrationInfoString = 'Vibration Info'
-__VibrationErrorString = 'Vibration Info'
+VibrationInfoString = 'Vibration Info'
+VibrationErrorString = 'Vibration Info'
 
 class VibrationDataDto:
     #Vibration Attribute
@@ -57,9 +57,9 @@ class VibrationReader:
         #Vibration - Now make the 6050 up as it starts in sleep mode
         try:
             self.vib_bus.write_byte_data(self.vib_address, self.power_mgmt_1, 0)
-            MyPrint.Print_Green("Start Vibration Sensor Success", __VibrationInfoString)
+            MyPrint.Print_Green("Start Vibration Sensor Success", VibrationInfoString)
         except Exception as e:
-            MyPrint.Print_Red("Start Vibration Sensor Fail", __VibrationErrorString)
+            MyPrint.Print_Red("Start Vibration Sensor Fail", VibrationErrorString)
             print(e)
 
     def Read(self):
@@ -96,12 +96,12 @@ class VibrationReader:
                 if len(VibrationData.vibrationDataList['Data']) > 200:
                     del VibrationData.vibrationDataList['Data'][0]
             except Exception as e:
-                MyPrint.Print_Red("Record Vibration History Failure", __VibrationErrorString)
+                MyPrint.Print_Red("Record Vibration History Failure", VibrationErrorString)
 
 
             VibrationData.sAccelGaugeStatus = "Running"
         except BaseException as error:
-            MyPrint.Print_Red("Get G Sensor Failure", __VibrationErrorString)
+            MyPrint.Print_Red("Get G Sensor Failure", VibrationErrorString)
 
     #Vibration Function
     #region Vibration Function
