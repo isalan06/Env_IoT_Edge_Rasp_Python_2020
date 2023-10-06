@@ -51,13 +51,9 @@ class VibrationReader:
         pass
 
     def Start(self):
-        global vib_bus
-        global vib_address
-        global power_mgmt_1
-        global power_mgmt_2
         #Vibration - Now make the 6050 up as it starts in sleep mode
         try:
-            vib_bus.write_byte_data(vib_address, power_mgmt_1, 0)
+            self.vib_bus.write_byte_data(self.vib_address, self.power_mgmt_1, 0)
             MyPrint.Print_Green("[Vibration Info]Start Vibration Sensor Success")
         except Exception as e:
             MyPrint.Print_Red("[Vibration Info]Start Vibration Sensor Fail")
@@ -107,11 +103,11 @@ class VibrationReader:
     #Vibration Function
     #region Vibration Function
     def read_byte(self, adr):
-        return vib_bus.read_byte_data(vib_address, adr)
+        return self.vib_bus.read_byte_data(self.vib_address, adr)
 
     def read_word(self, adr):
-        high = vib_bus.read_byte_data(vib_address, adr)
-        low = vib_bus.read_byte_data(vib_address, adr+1)
+        high = self.vib_bus.read_byte_data(self.vib_address, adr)
+        low = self.vib_bus.read_byte_data(self.vib_address, adr+1)
         val = (high << 8) + low
         return val
 
