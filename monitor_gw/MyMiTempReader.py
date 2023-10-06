@@ -111,7 +111,7 @@ class MyMiBLEDeivce():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 60#1800 # Capture MI Data interval time (sec)
+    ReconnectIntervalSecond = 900#1800 # Capture MI Data interval time (sec)
     bFirstOneFlag=False
 
     start_time2=time.time()
@@ -133,6 +133,8 @@ class MyMiBLEDeivce():
             except Exception as e:
                 MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error. Retry count:" + str(count), MiErrorString)
                 print (e)
+                if count != 0:
+                    time.sleep(5.0)
                 continue
 
             try:
