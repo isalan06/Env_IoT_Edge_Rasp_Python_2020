@@ -111,7 +111,7 @@ class MyMiBLEDeivce():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 900#1800 # Capture MI Data interval time (sec)
+    ReconnectIntervalSecond = 60#1800 # Capture MI Data interval time (sec)
     bFirstOneFlag=False
 
     start_time2=time.time()
@@ -153,7 +153,7 @@ class MyMiBLEDeivce():
             
         return False
 
-    def Connect(self):
+    def Connect2(self):
         MyPrint.Print("[Mi Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
             result = self.connect_imp()
@@ -167,6 +167,27 @@ class MyMiBLEDeivce():
         except:
             self.BLE_Connected = False
             MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", MiErrorString)
+
+    def Connect(self):
+        print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
+        try:
+            self.p = Peripheral(self.mac_address)
+            self.p.setDelegate(Delegate_HandleReceivedData(self.index))
+            self.BLE_Connected = True
+
+            try:
+                if self.bFirstOneFlag == False:
+                    se10=self.p.getServiceByUUID('ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ch10=se10.getCharacteristics('ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6')
+                    ccc_desc = ch10[0].getDescriptors(forUUID=0x2902)[0]
+                    ccc_desc.write(b"\x02")
+                    self.bFirstOneFlag = True
+            except:
+                print("Machine-" + str(self.index) + " Set Notification Error")
+         
+        except:
+            self.BLE_Connected = False
+            print("Machine-" + str(self.index) + " Connect Error")
 
     def Run(self):
         try:
