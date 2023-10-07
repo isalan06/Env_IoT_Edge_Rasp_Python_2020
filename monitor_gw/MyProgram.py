@@ -6,6 +6,7 @@ import MyMiTempReader
 import MyDHT22Reader 
 import MyThermalReader
 import MyVibrationReader
+import MyCameraReader
 import time
 
 SystemInfoString = 'System Info'
@@ -30,6 +31,9 @@ if __name__ == "__main__":
     myVibrationReader.Start()
     myVibrationReader.Read()
 
+    myCameraReader = MyCameraReader.CameraReader()
+    myCameraReader.Start()
+
     try:
         while bRunning:
 
@@ -45,6 +49,7 @@ if __name__ == "__main__":
 
     bRunning=False
 
+    myCameraReader.Stop()
     myBLEDevice.Stop()
 
     MyPrint.Print_Green('Main Program is finished!', SystemInfoString)

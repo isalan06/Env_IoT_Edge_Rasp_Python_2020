@@ -115,7 +115,7 @@ class MyMiBLEDeivce():
     RetryCount = 5
     bFirstOneFlag=False
 
-    ReconnectIntervalValue_Second = 120#1800
+    ReconnectIntervalValue_Second = 1800
     RetryIntervalValue_Second = 30
 
     start_time2=time.time()
