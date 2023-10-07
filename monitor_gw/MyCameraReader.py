@@ -65,10 +65,11 @@ class CameraReader:
                     self.camera.capture(self.rawCapture, format="bgr")
                     image = self.rawCapture.array
                     MyPrint.Print_Yellow('Camera read image success', CameraInfoString)
-                except:
+                except Exception as e:
                     MyPrint.Print_Red('Camera read image failure', CameraErrorString)
+                    print(e)
 
-            time.sleep(2.0)
+            time.sleep(5.0)
 
         if self.camera != None:
             self.camera.close()
