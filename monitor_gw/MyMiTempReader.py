@@ -122,7 +122,7 @@ class MyMiBLEDeivce():
         self.index=index
         self.mac_address=mac_address
 
-    def __connect(self):
+    def connect_imp(self):
         count = 5
         while (count > 0):
             count -= 1
@@ -156,7 +156,8 @@ class MyMiBLEDeivce():
     def Connect(self):
         MyPrint.Print("[Mi Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
-            result = self.__connect()
+            result = self.connect_imp()
+            print('Get Result')
             if result:
                 MyPrint.Print_Green("Machine-" + str(self.index) + " Connect Success", MiInfoString)
             else:
