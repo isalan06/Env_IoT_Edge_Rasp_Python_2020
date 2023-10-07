@@ -62,8 +62,9 @@ class CameraReader:
 
             if(self.bStart) and (self.camera != None):
                 try:
-                    self.camera.capture(self.rawCapture, format="bgr")
-                    image = self.rawCapture.array
+                    rawCapture = PiRGBArray(self.camera, size=(1920, 1088))
+                    self.camera.capture(rawCapture, format="bgr")
+                    image = rawCapture.array
                     MyPrint.Print_Yellow('Camera read image success', CameraInfoString)
                 except Exception as e:
                     MyPrint.Print_Red('Camera read image failure', CameraErrorString)
