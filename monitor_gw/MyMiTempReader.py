@@ -169,7 +169,7 @@ class MyMiBLEDeivce():
             MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", MiErrorString)
 
     def Connect(self):
-        print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
+        MyPrint.Print("[MI Info]Start To Connect BLE-" + str(self.index) + " - " +self.mac_address)
         try:
             self.p = Peripheral(self.mac_address)
             self.p.setDelegate(Delegate_HandleReceivedData(self.index))
@@ -183,11 +183,14 @@ class MyMiBLEDeivce():
                     ccc_desc.write(b"\x02")
                     self.bFirstOneFlag = True
             except:
-                print("Machine-" + str(self.index) + " Set Notification Error")
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Set Notification Error", MiErrorString)
+
+            MyPrint.Print_Green("Machine-" + str(self.index) + " Connect Success", MiInfoString)
          
         except:
             self.BLE_Connected = False
-            print("Machine-" + str(self.index) + " Connect Error")
+            self.ReconnectIntervalSecond = 30
+            MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", MiErrorString)
 
     def Run(self):
         try:
