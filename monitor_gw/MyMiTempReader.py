@@ -111,8 +111,12 @@ class MyMiBLEDeivce():
     bRunning=False
     DoWorkThread = 0
     start_time=time.time()
-    ReconnectIntervalSecond = 60#1800 # Capture MI Data interval time (sec)
+    ReconnectIntervalSecond = 1800 # Capture MI Data interval time (sec)
+    RetryCount = 5
     bFirstOneFlag=False
+
+    ReconnectIntervalValue_Second = 120#1800
+    RetryIntervalValue_Second = 30
 
     start_time2=time.time()
     start_time3=time.time()
@@ -186,11 +190,19 @@ class MyMiBLEDeivce():
                 MyPrint.Print_Red("Machine-" + str(self.index) + " Set Notification Error", MiErrorString)
 
             MyPrint.Print_Green("Machine-" + str(self.index) + " Connect Success", MiInfoString)
+            self.RetryCount = 5
+            self.ReconnectIntervalSecond = self.ReconnectIntervalValue_Second
          
         except:
             self.BLE_Connected = False
-            self.ReconnectIntervalSecond = 30
-            MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", MiErrorString)
+            if self.RetryCount > 0:
+                self.RetryCount -= 1
+                self.ReconnectIntervalSecond = self.RetryIntervalValue_Second
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error. Retry count:" + str(self.RetryCount), MiErrorString)
+            else:
+                self.RetryCount = 5
+                self.ReconnectIntervalSecond = self.ReconnectIntervalValue_Second
+                MyPrint.Print_Red("Machine-" + str(self.index) + " Connect Error", MiErrorString)
 
     def Run(self):
         try:
