@@ -227,8 +227,9 @@ class MyMiBLEDeivce():
                     self.p.waitForNotifications(waitForNotificationsValue)
                     MyPrint.Print_Green("Machine-" + str(self.index) + " - Wait For Notification Success", MiInfoString)
                 except:
-                    self.BLE_Connected = False
+                    #self.BLE_Connected = False
                     MyPrint.Print_Red("Machine-" + str(self.index) + " - Wait For Notification Error", MiErrorString)
+                    self.Disconnect()
             else:
                 timer = time.time()-self.start_time3
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
