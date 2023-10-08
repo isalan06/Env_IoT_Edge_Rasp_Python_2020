@@ -79,7 +79,7 @@ def frame2ByteArray(frame):
             CameraData.bImageHandleError = True
 
 
-        MyPrint.Print_Green('Transfer Normal Image Data Success', CameraFunInfoString)
+        #MyPrint.Print_Green('Transfer Normal Image Data Success', CameraFunInfoString)
     except:
         CameraData.bNormalImageTransferSuccess = False
         MyPrint.Print_Red('Transfer Normal Image Data Failure', CameraFunErrorString)
@@ -107,7 +107,7 @@ def frame2base64(frame):
             MyPrint.Print_Red('Transfer Base64 Failure', CameraFunErrorString)
             CameraData.bImageHandleError = True
 
-        MyPrint.Print_Green('Transfer Small Image Data Success', CameraFunInfoString)
+        #MyPrint.Print_Green('Transfer Small Image Data Success', CameraFunInfoString)
     except:
         MyPrint.Print_Green('Transfer Small Image Data Failure', CameraFunErrorString)
         CameraData.bImageHandleError = True
