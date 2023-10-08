@@ -230,6 +230,9 @@ class MyMiBLEDeivce():
                     #self.BLE_Connected = False
                     MyPrint.Print_Red("Machine-" + str(self.index) + " - Wait For Notification Error", MiErrorString)
                     self.Disconnect()
+                    self.ReconnectIntervalSecond = self.RetryIntervalValue_Second
+                    self.RetryCount = 5
+                    
             else:
                 timer = time.time()-self.start_time3
                 if ((int(timer)>self.ReconnectIntervalSecond) or (timer < 0)):
