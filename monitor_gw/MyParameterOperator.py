@@ -111,6 +111,8 @@ class ParameterOperator:
                 ParameterData.CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
 
                 MyPrint.Print_Green('Load Parameter Success => ' + filePathString,ParameterInfoString)
+            else:
+                self.CreateParameter()
                 
         except:
             MyPrint.Print_Red('Load Parameter Failure => ' + filePathString, ParameterErrorString)
@@ -144,7 +146,7 @@ class ParameterOperator:
                 with open(filePathString, 'w') as configfile:
                     config.write(configfile)
             else:
-                CreateParameter()
+                self.CreateParameter()
 
 
             MyPrint.Print_Green('Save Parameter Success => ' + filePathString,ParameterInfoString)
