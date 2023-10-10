@@ -58,21 +58,21 @@ class ParameterOperator:
 
         config = configparser.ConfigParser()
         config['Parameter'] = {} 
-        config['Parameter']['VibrationWarningValue'] = str(ParameterData.VibrationWarningValue)
-        config['Parameter']['VibrationAlarmValue'] = str(ParameterData.VibrationAlarmValue)
-        config['Parameter']['FireWarningTempValue'] = str(ParameterData.FireWarningTempValue)
-        config['Parameter']['FireWarningCountValue'] = str(ParameterData.FireWarningCountValue)
-        config['Parameter']['FireAlarmTempValue'] = str(ParameterData.FireAlarmTempValue)
-        config['Parameter']['FireAlarmCountValue'] = str(ParameterData.FireAlarmCountValue)
-        config['Parameter']['CapturePictureRH'] = str(ParameterData.CapturePictureRH)
-        config['Parameter']['CapturePictureRV'] = str(ParameterData.CapturePictureRV)
-        config['Parameter']['CaptureVideoSecond'] = str(ParameterData.CaptureVideoSecond)
-        config['Parameter']['SensorsFValue'] = str(ParameterData.SensorsFValue)
-        config['Parameter']['CameraFValue'] = str(ParameterData.CameraFValue)
-        config['Parameter']['UpdateFValue'] = str(ParameterData.UpdateFValue)
-        config['Parameter']['PhotoFolderID'] = ParameterData.PhotoFolderID
-        config['Parameter']['VideoFolderID'] = ParameterData.VideoFolderID
-        config['Parameter']['CameraFunction'] = str(ParameterData.CameraFunctionFlag)
+        config['Parameter']['VibrationWarningValue'] = str(ParameterData.GeneralParameter.VibrationWarningValue)
+        config['Parameter']['VibrationAlarmValue'] = str(ParameterData.GeneralParameter.VibrationAlarmValue)
+        config['Parameter']['FireWarningTempValue'] = str(ParameterData.GeneralParameter.FireWarningTempValue)
+        config['Parameter']['FireWarningCountValue'] = str(ParameterData.GeneralParameter.FireWarningCountValue)
+        config['Parameter']['FireAlarmTempValue'] = str(ParameterData.GeneralParameter.FireAlarmTempValue)
+        config['Parameter']['FireAlarmCountValue'] = str(ParameterData.GeneralParameter.FireAlarmCountValue)
+        config['Parameter']['CapturePictureRH'] = str(ParameterData.GeneralParameter.CapturePictureRH)
+        config['Parameter']['CapturePictureRV'] = str(ParameterData.GeneralParameter.CapturePictureRV)
+        config['Parameter']['CaptureVideoSecond'] = str(ParameterData.GeneralParameter.CaptureVideoSecond)
+        config['Parameter']['SensorsFValue'] = str(ParameterData.GeneralParameter.SensorsFValue)
+        config['Parameter']['CameraFValue'] = str(ParameterData.GeneralParameter.CameraFValue)
+        config['Parameter']['UpdateFValue'] = str(ParameterData.GeneralParameter.UpdateFValue)
+        config['Parameter']['PhotoFolderID'] = ParameterData.GeneralParameter.PhotoFolderID
+        config['Parameter']['VideoFolderID'] = ParameterData.GeneralParameter.VideoFolderID
+        config['Parameter']['CameraFunction'] = str(ParameterData.GeneralParameter.CameraFunctionFlag)
 
         try:
             with open(filePathString, 'w') as configfile:
@@ -95,21 +95,21 @@ class ParameterOperator:
             if os.path.isfile(filePathString):
                 config = configparser.ConfigParser()
                 config.read(filePathString)
-                ParameterData.VibrationWarningValue = config['Parameter'].getfloat('VibrationWarningValue')
-                ParameterData.VibrationAlarmValue = config['Parameter'].getfloat('VibrationAlarmValue')
-                ParameterData.FireWarningTempValue = config['Parameter'].getfloat('FireWarningTempValue')
-                ParameterData.FireWarningCountValue = config['Parameter'].getint('FireWarningCountValue')
-                ParameterData.FireAlarmTempValue = config['Parameter'].getfloat('FireAlarmTempValue')
-                ParameterData.FireAlarmCountValue = config['Parameter'].getint('FireAlarmCountValue')
-                ParameterData.CapturePictureRH = config['Parameter'].getint('CapturePictureRH')
-                ParameterData.CapturePictureRV = config['Parameter'].getint('CapturePictureRV')
-                ParameterData.CaptureVideoSecond = config['Parameter'].getint('CaptureVideoSecond')
-                ParameterData.SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
-                ParameterData.CameraFValue = config['Parameter'].getfloat('CameraFValue')
-                ParameterData.UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
-                ParameterData.PhotoFolderID = config['Parameter'].get('PhotoFolderID')
-                ParameterData.VideoFolderID = config['Parameter'].get('VideoFolderID')
-                ParameterData.CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
+                ParameterData.GeneralParameter.VibrationWarningValue = config['Parameter'].getfloat('VibrationWarningValue')
+                ParameterData.GeneralParameter.VibrationAlarmValue = config['Parameter'].getfloat('VibrationAlarmValue')
+                ParameterData.GeneralParameter.FireWarningTempValue = config['Parameter'].getfloat('FireWarningTempValue')
+                ParameterData.GeneralParameter.FireWarningCountValue = config['Parameter'].getint('FireWarningCountValue')
+                ParameterData.GeneralParameter.FireAlarmTempValue = config['Parameter'].getfloat('FireAlarmTempValue')
+                ParameterData.GeneralParameter.FireAlarmCountValue = config['Parameter'].getint('FireAlarmCountValue')
+                ParameterData.GeneralParameter.CapturePictureRH = config['Parameter'].getint('CapturePictureRH')
+                ParameterData.GeneralParameter.CapturePictureRV = config['Parameter'].getint('CapturePictureRV')
+                ParameterData.GeneralParameter.CaptureVideoSecond = config['Parameter'].getint('CaptureVideoSecond')
+                ParameterData.GeneralParameter.SensorsFValue = config['Parameter'].getfloat('SensorsFValue')
+                ParameterData.GeneralParameter.CameraFValue = config['Parameter'].getfloat('CameraFValue')
+                ParameterData.GeneralParameter.UpdateFValue = config['Parameter'].getfloat('UpdateFValue')
+                ParameterData.GeneralParameter.PhotoFolderID = config['Parameter'].get('PhotoFolderID')
+                ParameterData.GeneralParameter.VideoFolderID = config['Parameter'].get('VideoFolderID')
+                ParameterData.GeneralParameter.CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
 
                 MyPrint.Print_Green('Load Parameter Success => ' + filePathString,ParameterInfoString)
             else:
@@ -128,21 +128,21 @@ class ParameterOperator:
             if os.path.isfile(filePathString):
                 config = configparser.ConfigParser()
                 config.read(filePathString)
-                config['Parameter']['VibrationWarningValue'] = str(ParameterData.VibrationWarningValue)
-                config['Parameter']['VibrationAlarmValue'] = str(ParameterData.VibrationAlarmValue)
-                config['Parameter']['FireWarningTempValue'] = str(ParameterData.FireWarningTempValue)
-                config['Parameter']['FireWarningCountValue'] = str(ParameterData.FireWarningCountValue)
-                config['Parameter']['FireAlarmTempValue'] = str(ParameterData.FireAlarmTempValue)
-                config['Parameter']['FireAlarmCountValue'] = str(ParameterData.FireAlarmCountValue)
-                config['Parameter']['CapturePictureRH'] = str(ParameterData.CapturePictureRH)
-                config['Parameter']['CapturePictureRV'] = str(ParameterData.CapturePictureRV)
-                config['Parameter']['CaptureVideoSecond'] = str(ParameterData.CaptureVideoSecond)
-                config['Parameter']['SensorsFValue'] = str(ParameterData.SensorsFValue)
-                config['Parameter']['CameraFValue'] = str(ParameterData.CameraFValue)
-                config['Parameter']['UpdateFValue'] = str(ParameterData.UpdateFValue)
-                config['Parameter']['PhotoFolderID'] = ParameterData.PhotoFolderID
-                config['Parameter']['VideoFolderID'] = ParameterData.VideoFolderID
-                config['Parameter']['CameraFunction'] = str(ParameterData.CameraFunctionFlag)
+                config['Parameter']['VibrationWarningValue'] = str(ParameterData.GeneralParameter.VibrationWarningValue)
+                config['Parameter']['VibrationAlarmValue'] = str(ParameterData.GeneralParameter.VibrationAlarmValue)
+                config['Parameter']['FireWarningTempValue'] = str(ParameterData.GeneralParameter.FireWarningTempValue)
+                config['Parameter']['FireWarningCountValue'] = str(ParameterData.GeneralParameter.FireWarningCountValue)
+                config['Parameter']['FireAlarmTempValue'] = str(ParameterData.GeneralParameter.FireAlarmTempValue)
+                config['Parameter']['FireAlarmCountValue'] = str(ParameterData.GeneralParameter.FireAlarmCountValue)
+                config['Parameter']['CapturePictureRH'] = str(ParameterData.GeneralParameter.CapturePictureRH)
+                config['Parameter']['CapturePictureRV'] = str(ParameterData.GeneralParameter.CapturePictureRV)
+                config['Parameter']['CaptureVideoSecond'] = str(ParameterData.GeneralParameter.CaptureVideoSecond)
+                config['Parameter']['SensorsFValue'] = str(ParameterData.GeneralParameter.SensorsFValue)
+                config['Parameter']['CameraFValue'] = str(ParameterData.GeneralParameter.CameraFValue)
+                config['Parameter']['UpdateFValue'] = str(ParameterData.GeneralParameter.UpdateFValue)
+                config['Parameter']['PhotoFolderID'] = ParameterData.GeneralParameter.PhotoFolderID
+                config['Parameter']['VideoFolderID'] = ParameterData.GeneralParameter.VideoFolderID
+                config['Parameter']['CameraFunction'] = str(ParameterData.GeneralParameter.CameraFunctionFlag)
 
 
                 with open(filePathString, 'w') as configfile:
