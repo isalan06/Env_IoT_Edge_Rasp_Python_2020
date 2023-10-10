@@ -27,12 +27,26 @@ class GeneralParameterDto:
     def __init__(self) -> None:
         pass
 
+class APIParameterDto:
+    IsDataPlatformConnected=0
+    Token = ''
+    UseCloud = 0
+    UserToken = ''
+    CloudType = 0
+    CloudUrl = ''
+
+
+    def __init__(self):
+        pass
+
 class ParameterDataDto:
     GeneralParameter = None
+    APIParameter = None
 
     def __init__(self) -> None:
 
         self.GeneralParameter = GeneralParameterDto()
+        self.APIParameter = APIParameterDto()
 
 ParameterData = ParameterDataDto()
 
@@ -74,6 +88,14 @@ class ParameterOperator:
         config['Parameter']['VideoFolderID'] = ParameterData.GeneralParameter.VideoFolderID
         config['Parameter']['CameraFunction'] = str(ParameterData.GeneralParameter.CameraFunctionFlag)
 
+        config['Parameter']['IsDataPlatformConnected']=str(ParameterData.APIParameter.IsDataPlatformConnected)
+        config['Parameter']['Token']=ParameterData.APIParameter.Token
+        config['Parameter']['UseCloud']=str(ParameterData.APIParameter.UseCloud)
+        config['Parameter']['UserToken']=ParameterData.APIParameter.UserToken
+        config['Parameter']['CloudType']=str(ParameterData.APIParameter.CloudType)
+        config['Parameter']['CloudUrl']=ParameterData.APIParameter.CloudUrl
+
+
         try:
             with open(filePathString, 'w') as configfile:
                 config.write(configfile)
@@ -111,6 +133,17 @@ class ParameterOperator:
                 ParameterData.GeneralParameter.VideoFolderID = config['Parameter'].get('VideoFolderID')
                 ParameterData.GeneralParameter.CameraFunctionFlag = config['Parameter'].getint('CameraFunction')
 
+                checkExist = config['Parameter'].getint('IsDataPlatformConnected', -1)
+                if checkExist == -1:
+                    self.SaveParameter()
+                else:
+                    ParameterData.APIParameter.IsDataPlatformConnected=config['Parameter'].getint('IsDataPlatformConnected')
+                    ParameterData.APIParameter.Token=config['Parameter'].get('Token')
+                    ParameterData.APIParameter.UseCloud=config['Parameter'].getint('UseCloud')
+                    ParameterData.APIParameter.UserToken=config['Parameter'].get('UserToken')
+                    ParameterData.APIParameter.CloudType=config['Parameter'].getint('CloudType')
+                    ParameterData.APIParameter.CloudUrl=config['Parameter'].get('CloudUrl')
+
                 MyPrint.Print_Green('Load Parameter Success => ' + filePathString,ParameterInfoString)
             else:
                 self.CreateParameter()
@@ -143,6 +176,13 @@ class ParameterOperator:
                 config['Parameter']['PhotoFolderID'] = ParameterData.GeneralParameter.PhotoFolderID
                 config['Parameter']['VideoFolderID'] = ParameterData.GeneralParameter.VideoFolderID
                 config['Parameter']['CameraFunction'] = str(ParameterData.GeneralParameter.CameraFunctionFlag)
+
+                config['Parameter']['IsDataPlatformConnected']=str(ParameterData.APIParameter.IsDataPlatformConnected)
+                config['Parameter']['Token']=ParameterData.APIParameter.Token
+                config['Parameter']['UseCloud']=str(ParameterData.APIParameter.UseCloud)
+                config['Parameter']['UserToken']=ParameterData.APIParameter.UserToken
+                config['Parameter']['CloudType']=str(ParameterData.APIParameter.CloudType)
+                config['Parameter']['CloudUrl']=ParameterData.APIParameter.CloudUrl
 
 
                 with open(filePathString, 'w') as configfile:
