@@ -78,8 +78,9 @@ class ParameterOperator:
             with open(filePathString, 'w') as configfile:
                 config.write(configfile)
             MyPrint.Print_Green('Create Parameter Success => ' + filePathString,ParameterInfoString)
-        except:
+        except Exception as e:
             MyPrint.Print_Red('Create Parameter Failure => ' + filePathString,ParameterErrorString)
+            print(e)
 
         #endregion
 
@@ -114,8 +115,9 @@ class ParameterOperator:
             else:
                 self.CreateParameter()
                 
-        except:
+        except Exception as e:
             MyPrint.Print_Red('Load Parameter Failure => ' + filePathString, ParameterErrorString)
+            print(e)
         
     def SaveParameter(self):
         global ParameterData
