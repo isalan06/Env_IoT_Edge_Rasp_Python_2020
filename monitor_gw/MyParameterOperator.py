@@ -50,9 +50,9 @@ class ParameterOperator:
     def CreateParameter(self):
         global ParameterData
 
-        if not os.path.isdir(self.TargetPath):
-            os.mkdir(self.TargetPath)
-        filePathString = self.TargetPath + self.GeneralFileName
+        if not os.path.isdir(TargetPath):
+            os.mkdir(TargetPath)
+        filePathString = TargetPath + GeneralFileName
 
         #region General Parameter
 
@@ -85,8 +85,10 @@ class ParameterOperator:
 
     def LoadParameter(self):
         global ParameterData
+        global TargetPath
+        global GeneralFileName
 
-        filePathString = self.TargetPath + self.GeneralFileName
+        filePathString = TargetPath + GeneralFileName
 
         try:
             if os.path.isfile(filePathString):
