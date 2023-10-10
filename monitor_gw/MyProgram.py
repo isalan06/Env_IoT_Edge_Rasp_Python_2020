@@ -7,6 +7,7 @@ import MyDHT22Reader
 import MyThermalReader
 import MyVibrationReader
 import MyCameraReader
+import MyParameterOperator
 import time
 
 SystemInfoString = 'System Info'
@@ -15,6 +16,8 @@ bRunning = True
 
 if __name__ == "__main__":
     MyPrint.Print_Red('test')
+
+    MyParameterOperator.ParameterOPInstance.LoadParameter()
 
     myBLEDevice = MyMiTempReader.BLEDeviceForMi(True)
     myBLEDevice.Start()
