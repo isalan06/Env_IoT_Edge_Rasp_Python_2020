@@ -154,8 +154,10 @@ class ParameterOperator:
         
     def SaveParameter(self):
         global ParameterData
+        global TargetPath
+        global GeneralFileName
 
-        filePathString = self.TargetPath + self.GeneralFileName
+        filePathString = TargetPath + GeneralFileName
 
         try:
             if os.path.isfile(filePathString):
