@@ -144,38 +144,43 @@ class ParameterOperator:
             os.mkdir(TargetPath)
         filePathString2 = TargetPath + ImageFileName
 
-        config2 = configparser.ConfigParser()
-        config2['CameraSetting']={}
-        config2['CameraSetting']['Parameter01'] = str(ParameterData.ImageParameter.C_ISO)
-        config2['CameraSetting']['Parameter02'] = str(ParameterData.ImageParameter.C_ShutterSpeed)
-        config2['CameraSetting']['Parameter03'] = str(ParameterData.ImageParameter.C_Rotation)
-        config2['CameraSetting']['Parameter04'] = ParameterData.ImageParameter.C_Image_Update_API
-        config2['CameraSetting']['Parameter05'] = ParameterData.ImageParameter.C_Video_Update_API
-        config2['CameraSetting']['Parameter06'] = '0'
-        config2['CameraSetting']['Parameter07'] = '0'
-        config2['CameraSetting']['Parameter08'] = '0'
-        config2['CameraSetting']['Parameter09'] = '0'
-        config2['CameraSetting']['Parameter10'] = '0'
-        config2['CameraIgnition']['Parameter01']=str(ParameterData.ImageParameter.C_OD_Funciton)
-        config2['CameraIgnition']['Parameter02']=str(ParameterData.ImageParameter.C_OD_X1)
-        config2['CameraIgnition']['Parameter03']=str(ParameterData.ImageParameter.C_OD_Y1)
-        config2['CameraIgnition']['Parameter04']=str(ParameterData.ImageParameter.C_OD_X2)
-        config2['CameraIgnition']['Parameter05']=str(ParameterData.ImageParameter.C_OD_Y2)
-        config2['CameraIgnition']['Parameter06']=str(ParameterData.ImageParameter.C_EF_Function)
-        config2['CameraIgnition']['Parameter07']=str(ParameterData.ImageParameter.C_EF_X1)
-        config2['CameraIgnition']['Parameter08']=str(ParameterData.ImageParameter.C_EF_X2)
-        config2['CameraIgnition']['Parameter09']='0'
-        config2['CameraIgnition']['Parameter10']='0'
-        config2['CameraIgnition']['Parameter11']='0'
-        config2['CameraIgnition']['Parameter12']='0'
-        config2['CameraIgnition']['Parameter13']='0'
-        config2['CameraIgnition']['Parameter14']='0'
-        config2['CameraIgnition']['Parameter15']='0'
-        config2['CameraIgnition']['Parameter16']='0'
-        config2['CameraIgnition']['Parameter17']='0'
-        config2['CameraIgnition']['Parameter18']='0'
-        config2['CameraIgnition']['Parameter19']='0'
-        config2['CameraIgnition']['Parameter20']='0'
+        try:
+
+            config2 = configparser.ConfigParser()
+            config2['CameraSetting']={}
+            config2['CameraSetting']['Parameter01'] = str(ParameterData.ImageParameter.C_ISO)
+            config2['CameraSetting']['Parameter02'] = str(ParameterData.ImageParameter.C_ShutterSpeed)
+            config2['CameraSetting']['Parameter03'] = str(ParameterData.ImageParameter.C_Rotation)
+            config2['CameraSetting']['Parameter04'] = ParameterData.ImageParameter.C_Image_Update_API
+            config2['CameraSetting']['Parameter05'] = ParameterData.ImageParameter.C_Video_Update_API
+            config2['CameraSetting']['Parameter06'] = '0'
+            config2['CameraSetting']['Parameter07'] = '0'
+            config2['CameraSetting']['Parameter08'] = '0'
+            config2['CameraSetting']['Parameter09'] = '0'
+            config2['CameraSetting']['Parameter10'] = '0'
+            config2['CameraIgnition']['Parameter01']=str(ParameterData.ImageParameter.C_OD_Funciton)
+            config2['CameraIgnition']['Parameter02']=str(ParameterData.ImageParameter.C_OD_X1)
+            config2['CameraIgnition']['Parameter03']=str(ParameterData.ImageParameter.C_OD_Y1)
+            config2['CameraIgnition']['Parameter04']=str(ParameterData.ImageParameter.C_OD_X2)
+            config2['CameraIgnition']['Parameter05']=str(ParameterData.ImageParameter.C_OD_Y2)
+            config2['CameraIgnition']['Parameter06']=str(ParameterData.ImageParameter.C_EF_Function)
+            config2['CameraIgnition']['Parameter07']=str(ParameterData.ImageParameter.C_EF_X1)
+            config2['CameraIgnition']['Parameter08']=str(ParameterData.ImageParameter.C_EF_X2)
+            config2['CameraIgnition']['Parameter09']='0'
+            config2['CameraIgnition']['Parameter10']='0'
+            config2['CameraIgnition']['Parameter11']='0'
+            config2['CameraIgnition']['Parameter12']='0'
+            config2['CameraIgnition']['Parameter13']='0'
+            config2['CameraIgnition']['Parameter14']='0'
+            config2['CameraIgnition']['Parameter15']='0'
+            config2['CameraIgnition']['Parameter16']='0'
+            config2['CameraIgnition']['Parameter17']='0'
+            config2['CameraIgnition']['Parameter18']='0'
+            config2['CameraIgnition']['Parameter19']='0'
+            config2['CameraIgnition']['Parameter20']='0'
+        except Exception as e:
+            MyPrint.Print_Red('Create Parameter Failure 2 => ' + filePathString2,ParameterErrorString)
+            print(e)
 
         try:
             with open(filePathString2, 'w') as configfile2:
