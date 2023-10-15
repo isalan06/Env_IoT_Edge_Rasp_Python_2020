@@ -255,6 +255,7 @@ class ParameterOperator:
                 ParameterData.ImageParameter.C_Image_Update_API = str(config2['CameraSetting'].get('Parameter04'))
                 ParameterData.ImageParameter.C_Video_Update_API = str(config2['CameraSetting'].get('Parameter05'))
                 checkExist = config2['CameraIgnition'].getint('Parameter01', -1)
+                print(checkExist)
                 if checkExist == -1:
                     self.SaveParameter2()
                 else:
