@@ -39,19 +39,48 @@ class APIParameterDto:
     def __init__(self):
         pass
 
+class ImageParameterDto:
+    C_ISO = 400
+    C_ShutterSpeed=3000
+    C_Rotation=0
+
+    C_OD_Funciton=0
+    C_OD_X1=0
+    C_OD_Y1=0
+    C_OD_X2=0
+    C_OD_Y2=0
+    C_EF_Function=0
+    C_EF_X1=0
+    C_EF_X2=0
+
+    C_OD_G_Mean=0.0
+    C_OD_G_Light=0.0
+    C_OD_G_R=0.0
+    C_OD_G_G=0.0
+    C_OD_G_B=0.0
+
+    C_Image_Update_API=''
+    C_Video_Update_API=''
+
+    def __init__(self) -> None:
+        pass
+
 class ParameterDataDto:
     GeneralParameter = None
     APIParameter = None
+    ImageParameter = None
 
     def __init__(self) -> None:
 
         self.GeneralParameter = GeneralParameterDto()
         self.APIParameter = APIParameterDto()
+        self.ImageParameter = ImageParameterDto()
 
 ParameterData = ParameterDataDto()
 
 TargetPath = "/home/pi/Parameter/V2_0/"
 GeneralFileName = "Parameter.ini"
+ImageFileName = "CameraParameter.ini"
 
 class ParameterOperator:
     global TargetPath
@@ -106,6 +135,54 @@ class ParameterOperator:
 
         #endregion
 
+    def CreateParameter2(self):
+        global ParameterData
+
+        if not os.path.isdir(TargetPath):
+            os.mkdir(TargetPath)
+        filePathString2 = TargetPath + ImageFileName
+
+        config2 = configparser.ConfigParser()
+        config2['CameraSetting']={}
+        config2['CameraSetting']['Parameter01'] = str(ParameterData.ImageParameter.C_ISO)
+        config2['CameraSetting']['Parameter02'] = str(ParameterData.ImageParameter.C_ShutterSpeed)
+        config2['CameraSetting']['Parameter03'] = str(ParameterData.ImageParameter.C_Rotation)
+        config2['CameraSetting']['Parameter04'] = ParameterData.ImageParameter.C_Image_Update_API
+        config2['CameraSetting']['Parameter05'] = ParameterData.ImageParameter.C_Video_Update_API
+        config2['CameraSetting']['Parameter06'] = '0'
+        config2['CameraSetting']['Parameter07'] = '0'
+        config2['CameraSetting']['Parameter08'] = '0'
+        config2['CameraSetting']['Parameter09'] = '0'
+        config2['CameraSetting']['Parameter10'] = '0'
+        config2['CameraIgnition']['Parameter01']=str(ParameterData.ImageParameter.C_OD_Funciton)
+        config2['CameraIgnition']['Parameter02']=str(ParameterData.ImageParameter.C_OD_X1)
+        config2['CameraIgnition']['Parameter03']=str(ParameterData.ImageParameter.C_OD_Y1)
+        config2['CameraIgnition']['Parameter04']=str(ParameterData.ImageParameter.C_OD_X2)
+        config2['CameraIgnition']['Parameter05']=str(ParameterData.ImageParameter.C_OD_Y2)
+        config2['CameraIgnition']['Parameter06']=str(ParameterData.ImageParameter.C_EF_Function)
+        config2['CameraIgnition']['Parameter07']=str(ParameterData.ImageParameter.C_EF_X1)
+        config2['CameraIgnition']['Parameter08']=str(ParameterData.ImageParameter.C_EF_X2)
+        config2['CameraIgnition']['Parameter09']='0'
+        config2['CameraIgnition']['Parameter10']='0'
+        config2['CameraIgnition']['Parameter11']='0'
+        config2['CameraIgnition']['Parameter12']='0'
+        config2['CameraIgnition']['Parameter13']='0'
+        config2['CameraIgnition']['Parameter14']='0'
+        config2['CameraIgnition']['Parameter15']='0'
+        config2['CameraIgnition']['Parameter16']='0'
+        config2['CameraIgnition']['Parameter17']='0'
+        config2['CameraIgnition']['Parameter18']='0'
+        config2['CameraIgnition']['Parameter19']='0'
+        config2['CameraIgnition']['Parameter20']='0'
+
+        try:
+            with open(filePathString2, 'w') as configfile2:
+                config2.write(configfile2)
+            MyPrint.Print_Green('Create Parameter Success => ' + filePathString2,ParameterInfoString)
+        except Exception as e:
+            MyPrint.Print_Red('Create Parameter Failure => ' + filePathString2,ParameterErrorString)
+            print(e)
+
     def LoadParameter(self):
         global ParameterData
         global TargetPath
@@ -151,13 +228,50 @@ class ParameterOperator:
         except Exception as e:
             MyPrint.Print_Red('Load Parameter Failure => ' + filePathString, ParameterErrorString)
             print(e)
+
+    def LoadParameter2(self):
+        global ParameterData
+
+        filePathString2 = TargetPath + ImageFileName
+
+        try:
+            if os.path.isfile(filePathString2):
+                config2 = configparser.ConfigParser()
+                config2.read(filePathString2)
+
+                ParameterData.ImageParameter.C_ISO = config2['CameraSetting'].getint('Parameter01')
+                ParameterData.ImageParameter.C_ShutterSpeed = config2['CameraSetting'].getint('Parameter02')
+                ParameterData.ImageParameter.C_Rotation = config2['CameraSetting'].getint('Parameter03')
+                ParameterData.ImageParameter.C_Image_Update_API = str(config2['CameraSetting'].get('Parameter04'))
+                ParameterData.ImageParameter.C_Video_Update_API = str(config2['CameraSetting'].get('Parameter05'))
+                ParameterData.ImageParameter.C_OD_Funciton = config2['CameraIgnition'].getint('Parameter01')
+                ParameterData.ImageParameter.C_OD_X1 = config2['CameraIgnition'].getint('Parameter02')
+                ParameterData.ImageParameter.C_OD_Y1 = config2['CameraIgnition'].getint('Parameter03')
+                ParameterData.ImageParameter.C_OD_X2 = config2['CameraIgnition'].getint('Parameter04')
+                ParameterData.ImageParameter.C_OD_Y2 = config2['CameraIgnition'].getint('Parameter05')
+                ParameterData.ImageParameter.C_EF_Function = config2['CameraIgnition'].getint('Parameter06')
+                ParameterData.ImageParameter.C_EF_X1 = config2['CameraIgnition'].getint('Parameter07')
+                ParameterData.ImageParameter.C_EF_X2 = config2['CameraIgnition'].getint('Parameter08')
+                ParameterData.ImageParameter.C_OD_G_Mean = config2['CameraIgnition'].getfloat('Parameter09')
+                ParameterData.ImageParameter.C_OD_G_Light = config2['CameraIgnition'].getfloat('Parameter10')
+                ParameterData.ImageParameter.C_OD_G_R = config2['CameraIgnition'].getfloat('Parameter11')
+                ParameterData.ImageParameter.C_OD_G_G = config2['CameraIgnition'].getfloat('Parameter12')
+                ParameterData.ImageParameter.C_OD_G_B = config2['CameraIgnition'].getfloat('Parameter13')
+
+                MyPrint.Print_Green('Load Parameter Success => ' + filePathString2, ParameterInfoString)
+            else:
+                self.CreateParameter2()
+                
+        except Exception as e:
+            MyPrint.Print_Red('Load Parameter Failure => ' + filePathString2, ParameterErrorString)
+            print(e)
         
     def SaveParameter(self):
         global ParameterData
         global TargetPath
         global GeneralFileName
 
-        filePathString = TargetPath + GeneralFileName
+        filePathString = TargetPath + ImageFileName
 
         try:
             if os.path.isfile(filePathString):
@@ -197,6 +311,60 @@ class ParameterOperator:
                 
         except:
             MyPrint.Print_Red('Save Parameter Failure => ' + filePathString, ParameterErrorString)
+
+    def SaveParameter2(self):
+        global ParameterData
+
+        filePathString2 = TargetPath + ImageFileName
+
+        try:
+            if os.path.isfile(filePathString2):
+                config2 = configparser.ConfigParser()
+                config2.read(filePathString2)
+                config2['CameraSetting']={}
+                config2['CameraSetting']['Parameter01'] = str(ParameterData.ImageParameter.C_ISO)
+                config2['CameraSetting']['Parameter02'] = str(ParameterData.ImageParameter.C_ShutterSpeed)
+                config2['CameraSetting']['Parameter03'] = str(ParameterData.ImageParameter.C_Rotation)
+                config2['CameraSetting']['Parameter04'] = str(ParameterData.ImageParameter.C_Image_Update_API)
+                config2['CameraSetting']['Parameter05'] = str(ParameterData.ImageParameter.C_Video_Update_API)
+                config2['CameraSetting']['Parameter06'] = '0'
+                config2['CameraSetting']['Parameter07'] = '0'
+                config2['CameraSetting']['Parameter08'] = '0'
+                config2['CameraSetting']['Parameter09'] = '0'
+                config2['CameraSetting']['Parameter10'] = '0'
+                config2['CameraIgnition']={}
+                config2['CameraIgnition']['Parameter01']=str(ParameterData.ImageParameter.C_OD_Funciton)
+                config2['CameraIgnition']['Parameter02']=str(ParameterData.ImageParameter.C_OD_X1)
+                config2['CameraIgnition']['Parameter03']=str(ParameterData.ImageParameter.C_OD_Y1)
+                config2['CameraIgnition']['Parameter04']=str(ParameterData.ImageParameter.C_OD_X2)
+                config2['CameraIgnition']['Parameter05']=str(ParameterData.ImageParameter.C_OD_Y2)
+                config2['CameraIgnition']['Parameter06']=str(ParameterData.ImageParameter.C_EF_Function)
+                config2['CameraIgnition']['Parameter07']=str(ParameterData.ImageParameter.C_EF_X1)
+                config2['CameraIgnition']['Parameter08']=str(ParameterData.ImageParameter.C_EF_X2)
+                config2['CameraIgnition']['Parameter09']=str(ParameterData.ImageParameter.C_OD_G_Mean)
+                config2['CameraIgnition']['Parameter10']=str(ParameterData.ImageParameter.C_OD_G_Light)
+                config2['CameraIgnition']['Parameter11']=str(ParameterData.ImageParameter.C_OD_G_R)
+                config2['CameraIgnition']['Parameter12']=str(ParameterData.ImageParameter.C_OD_G_G)
+                config2['CameraIgnition']['Parameter13']=str(ParameterData.ImageParameter.C_OD_G_B)
+                config2['CameraIgnition']['Parameter14']='0'
+                config2['CameraIgnition']['Parameter15']='0'
+                config2['CameraIgnition']['Parameter16']='0'
+                config2['CameraIgnition']['Parameter17']='0'
+                config2['CameraIgnition']['Parameter18']='0'
+                config2['CameraIgnition']['Parameter19']='0'
+                config2['CameraIgnition']['Parameter20']='0'
+
+
+                with open(filePathString2, 'w') as configfile:
+                    config2.write(configfile)
+            else:
+                self.CreateParameter2()
+
+
+            MyPrint.Print_Green('Save Parameter Success => ' + filePathString2,ParameterInfoString)
+                
+        except:
+            MyPrint.Print_Red('Save Parameter Failure => ' + filePathString2, ParameterErrorString)
 
 
         
