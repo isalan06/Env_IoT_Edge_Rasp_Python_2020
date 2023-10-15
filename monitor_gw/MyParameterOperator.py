@@ -158,6 +158,7 @@ class ParameterOperator:
             config2['CameraSetting']['Parameter08'] = '0'
             config2['CameraSetting']['Parameter09'] = '0'
             config2['CameraSetting']['Parameter10'] = '0'
+            config2['CameraIgnition']={}
             config2['CameraIgnition']['Parameter01']=str(ParameterData.ImageParameter.C_OD_Funciton)
             config2['CameraIgnition']['Parameter02']=str(ParameterData.ImageParameter.C_OD_X1)
             config2['CameraIgnition']['Parameter03']=str(ParameterData.ImageParameter.C_OD_Y1)
