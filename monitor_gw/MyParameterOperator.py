@@ -138,6 +138,8 @@ class ParameterOperator:
     def CreateParameter2(self):
         global ParameterData
 
+        print('Create Parameter 2')
+
         if not os.path.isdir(TargetPath):
             os.mkdir(TargetPath)
         filePathString2 = TargetPath + ImageFileName
@@ -238,6 +240,8 @@ class ParameterOperator:
             if os.path.isfile(filePathString2):
                 config2 = configparser.ConfigParser()
                 config2.read(filePathString2)
+
+                print('load parameter2')
 
                 ParameterData.ImageParameter.C_ISO = config2['CameraSetting'].getint('Parameter01')
                 ParameterData.ImageParameter.C_ShutterSpeed = config2['CameraSetting'].getint('Parameter02')

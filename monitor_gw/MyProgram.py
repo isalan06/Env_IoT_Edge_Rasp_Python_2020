@@ -15,7 +15,7 @@ SystemInfoString = 'System Info'
 bRunning = True
 
 if __name__ == "__main__":
-    MyPrint.Print_Red('test')
+    MyPrint.Print_Red('Start program to capture sensors.....')
 
     MyParameterOperator.ParameterOPInstance.LoadParameter()
     MyParameterOperator.ParameterOPInstance.LoadParameter2()
