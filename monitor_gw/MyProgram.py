@@ -18,6 +18,7 @@ if __name__ == "__main__":
     MyPrint.Print_Red('test')
 
     MyParameterOperator.ParameterOPInstance.LoadParameter()
+    MyParameterOperator.ParameterOPInstance.LoadParameter2()
 
     myBLEDevice = MyMiTempReader.BLEDeviceForMi(True)
     myBLEDevice.Start()
