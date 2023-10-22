@@ -2,6 +2,7 @@
 #MyPrint.py
 
 import os
+from datetime import datetime
 
 if os.getenv('C', '1') == '0':
     ANSI_RED = ''
@@ -21,6 +22,10 @@ else:
 
 def Print_Ori(message, color, title=''):
     textString = color
+
+    textString += '@'
+    textString += datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    textString += ' - '    
 
     if title != '':
         textString += '['
