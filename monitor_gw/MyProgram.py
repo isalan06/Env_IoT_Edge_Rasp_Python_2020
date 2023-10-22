@@ -66,7 +66,7 @@ if __name__ == "__main__":
     myCameraReader.Start()
 
     myCaptureThread = threading.Thread(target=DoCapture)
-    myCaptureThread.Start()
+    myCaptureThread.start()
 
     try:
         while bRunning:
