@@ -32,6 +32,7 @@ class VibrationDataDto:
     bRecordVibration = False
 
     sAccelGaugeStatus = "Stop"
+    bAccelGaugeDeviceExist = False
 
     
     def __init__(self):
@@ -58,8 +59,10 @@ class VibrationReader:
         try:
             self.vib_bus.write_byte_data(self.vib_address, self.power_mgmt_1, 0)
             MyPrint.Print_Green("Start Vibration Sensor Success", VibrationInfoString)
+            VibrationData.bAccelGaugeDeviceExist = True
         except Exception as e:
             MyPrint.Print_Red("Start Vibration Sensor Fail", VibrationErrorString)
+            VibrationData.bAccelGaugeDeviceExist = False
             print(e)
 
     def Read(self):
