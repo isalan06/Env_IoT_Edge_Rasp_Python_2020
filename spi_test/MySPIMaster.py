@@ -4,9 +4,8 @@
 import spidev
 import time
 spi=spidev.SpiDev()
-spi.open(0, 0)
+spi.open(1000000, 0)
 print(spi.mode)
-spi.max_speed_hz=7629
 message = []
 message.append(65)
 message.append(48)
