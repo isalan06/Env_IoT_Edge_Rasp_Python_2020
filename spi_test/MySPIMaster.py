@@ -10,8 +10,7 @@ print(spi.mode)
 message = []
 message.append(65)
 message.append(48)
-message.append(77)
-message.append(49)
+
 message.append(10)
 print("Start Communication")
 while 1:
