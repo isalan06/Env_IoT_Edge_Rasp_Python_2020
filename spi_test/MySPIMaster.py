@@ -15,6 +15,6 @@ message.append(49)
 message.append(10)
 print("Start Communication")
 while 1:
-    spi.writebytes(message)
+    spi.xfer(message)
     time.sleep(5)
     print("Next")
